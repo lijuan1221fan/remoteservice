@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.visionvera.remoteservice.dao.SignedPhotoDao">
+
+	<!-- 插入数字签名照片 -->
+	<insert id="addSignedPhoto" parameterType="com.visionvera.remoteservice.bean.SignedPhotoBean">
+		replace into t_signedphotoes
+		(id ,guid ,v2vid ,photopath ,
+		createTime ,width ,heigth ,format ,
+		version ,businessKey)
+		VALUES
+		(#{id},#{guid},#{v2vid},#{photopath},
+		#{createTime},#{width},#{heigth},#{format},
+		#{version},#{businessKey})
+	</insert>
+
+	<!-- 删除签名照片 -->
+	<update id="deleteSignedPhoto" parameterType="Map">
+		 <foreach collection="idArray" item="id"  separator=";">
+	       update t_signedphotoes 
+		   set `status` = -1
+		   where id = #{id}
+		   and businessKey = #{businessKey}
+	   </foreach>
+	</update>
+	
+	<!-- 查看签名照列表  -->
+	<select id="getSignedPhotoList" resultType="com.visionvera.remoteservice.bean.SignedPhotoBean" parameterType="Map">
+		SELECT id ,guid ,v2vid ,photopath ,createTime ,width ,heigth ,format ,version ,businessKey ,`status` 
+		FROM t_signedphotoes 
+		WHERE `status` > -1
+		AND businessKey = #{businessKey}
+	</select>
+ 
+     
+</mapper>

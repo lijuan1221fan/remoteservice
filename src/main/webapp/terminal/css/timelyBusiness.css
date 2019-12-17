@@ -1,0 +1,351 @@
+/******* layout *********/
+#csIndex{
+  height:100%;
+}
+/*****apply-conent*****/
+
+.content-apply {
+    height: 100%;
+    overflow: hidden;
+}
+
+.content-title {
+    box-sizing: border-box;
+    padding-top: 0.39rem;
+    height: 0.9rem;
+    font-size: 0.2rem;
+}
+
+.content-items {
+    display: flex;
+    box-sizing: border-box;
+    height: calc(100% - 0.9rem - 0.74rem);
+}
+
+.content-items .items-list {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+   /* padding-top: 0.43rem;*/
+    margin-right: 0.3rem;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 0.15rem;
+    background-color: #fff;
+}
+
+
+.content-items .items-list:nth-last-of-type(1) {
+    margin-right: 0;
+}
+.items-wrap{
+    width: 2.14rem;
+    /*height: 2.15rem;*/
+    margin:0 0.2rem;
+}
+.content-items .list-box {
+    margin: 0 auto;
+    /*width: 2.14rem;*/
+    height: 1.9rem;
+    /*line-height: 1.9rem;*/
+    /*font-size: 4.8rem;*/
+    /*text-shadow: 10px 10px 10px #000;*/
+    border-radius: 15px;
+    overflow: hidden;
+    padding-bottom: 0.2rem;
+    position: relative;
+}
+
+.content-items .list-box:active{
+    opacity: 0.9;
+}
+
+.content-items .list-box img {
+    margin: 0.1rem auto 0;
+    display: block;
+    width: 1rem;
+    height: 1rem;
+}
+
+.content-items .list-box h3 {
+    font-size: 0.43rem;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 0px 10px 10px rgba(0,0,0,0.2);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    width: 100%;
+    text-align: center;
+}
+
+.content-items .list-box.blue {
+    background-color: #3B84F7;
+    font-size: 200%;
+}
+
+.content-items .list-box.green {
+    background-color: #50D165;
+}
+
+.content-items .list-txt {
+    margin: 0.1rem auto 0;
+    display: flex;
+    width: 2.14rem;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.2rem;
+    color: #666;
+}
+
+.content-items .list-txt span {
+    padding: 0 0.1rem;
+    font-size: 0.26rem;
+    font-weight: bold;
+    color: #141414;
+}
+
+/*****apply-conent-end*****/
+/**content-end**/
+
+/*****result-conent*****/
+.content-result {
+    display: none;
+    height: 100%;
+    overflow: hidden;
+}
+
+.result-box {
+    position: relative;
+    margin-top: 0.54rem;
+    display: flex;
+    align-items: center;
+    height: calc(100% - 0.54rem - 0.54rem);
+    border-radius: 15px;
+    background-color: #fff;
+}
+
+.result-txt-box {
+    width: 100%;
+}
+
+.result-txt {
+    /* padding-left: 3rem;*/
+    font-size: 0.26rem;
+    text-align: center;
+}
+
+.result-txt span {
+    color: #3B84F7;
+}
+
+.result-txt.num {
+    margin-top: 0.3rem;
+}
+
+.result-txt.num span {
+    padding: 0 0.1rem;
+    font-size: 0.65rem;
+    vertical-align: sub;
+}
+
+.result-txt.back {
+    padding-left: 0;
+    font-size: 0.18rem;
+    /*text-indent: 3rem;*/
+    text-align: center;
+    color: #666;
+    margin-top: 0.5rem;
+}
+
+.result-txt.back span {
+    color: red;
+}
+
+.result-back-box a {
+    position: absolute;
+    bottom: 0.5rem;
+    right: 0.5rem;
+    z-index: 3;
+    height: 0.4rem;
+    line-height: 0.4rem;
+    width: 1.2rem;
+    text-align: center;
+    font-size: 0.16rem;
+    color: #306DB9;
+    background-color: #fff;
+    border: 1px solid #306DB9;
+}
+
+.result-back-box a:active {
+    background-color: #e8e4e4;
+}
+
+/*****result-conent-end*****/
+
+/*paging btns*/
+.paging-btns{
+    float: right;margin-top: 0.1rem;
+}
+.paging-btns li{
+    display: none;
+    float: left;
+    width: 1rem;
+    height:0.3rem;
+    border:1px solid #306DB9;
+    -webkit-border-radius:4px;
+    -moz-border-radius:4px;
+    border-radius:0.06rem;
+    background: #FFFFFF;
+    margin-left: 0.2rem;
+}
+.paging-btns li a{
+    display: block;
+    width:100%;
+    height:100%;
+    font-size: 0.16rem;
+    text-align: center;
+    line-height: 0.3rem;
+}
+/*paging btns*/
+
+
+/* index origin css */
+.main-box {
+    /* background: rgba(111, 174, 215, 1); */
+  min-height: 100vh;
+}
+#index {
+  background: rgba(111, 174, 215, 1);
+}
+#index .content {
+  min-height: calc(100vh - 1.32rem - 0.8rem);
+}
+
+.content-title {
+  height: auto;
+  padding: 0.3rem 0;
+}
+
+#index .content-items {
+  height: 2.6rem;
+}
+
+#index .content-items .items-list {
+  display: block;
+}
+
+.content-items .items-list p {
+  width: calc(100% - 0.4rem);
+  font-size: 0.4rem;
+  font-family: Microsoft YaHei;
+  font-weight: bold;
+  color: rgba(59, 132, 247, 1);
+  height: 1.3rem;
+  line-height: 1.3rem;
+  margin: 0 auto;
+  clear: both;
+}
+
+.content .yw2 {
+  width: 10.6rem;
+  margin: 0 auto;
+  clear: both;
+  padding-top: 0.3rem;
+  height: calc(100vh - 1rem);
+  background: #fff;
+  margin-top: 0.2rem;
+}
+
+.content .yw {
+  width: 10.6rem;
+  margin: 0 auto;
+  clear: both;
+  padding-top: 0.3rem;
+}
+
+.content .yw li,
+.content .yw2 li {
+  cursor: pointer;
+  text-align: center;
+  width: 2.45rem;
+  height: 3.9rem;
+  background: #fff;
+  float: left;
+}
+
+.content .yw li {
+  margin-right: 0.2rem;
+}
+
+.content .yw2 li {
+  width: 25%;
+}
+
+.content .yw li img,
+.content .yw2 li img {
+  padding-top: 1.3rem;
+}
+
+.content .yw li p,
+.content .yw2 li p {
+  font-size: 0.18rem;
+}
+
+.content .yw2 li p {
+  margin-top: 0.15rem;
+}
+
+.content .yw2 li .div {
+  width: 85%;
+  margin: 0 auto;
+  height: 1.84rem;
+  margin-top: 0.74rem;
+  line-height: 1.84rem;
+  text-align: center;
+  font-size: 0.48rem;
+  color: #fff;
+  border-radius: 10px;
+}
+
+.c1 {
+  background: #3B84F7;
+}
+
+.c2 {
+  background: #50D165;
+}
+
+.c3 {
+  background: #F36861;
+}
+
+.c4 {
+  background: #0FC9A8;
+}
+
+.c5 {
+  background: #3B84F7;
+}
+
+.next ul {
+  clear: both;
+}
+
+.next ul li {
+  float: right;
+  font-size: 0.18rem;
+  width: 0.6rem;
+  height: 0.35rem;
+  line-height: 0.35rem;
+  background: rgba(255, 255, 255, 1);
+  border: 1px solid rgba(48, 109, 185, 1);
+  border-radius: 4px;
+  color: rgba(48, 109, 185, 1);
+  margin: 0.2rem 0.15rem;
+  cursor: pointer;
+  padding: 0rem 0.05rem;
+}

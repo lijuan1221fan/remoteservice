@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 项目变更 -->
+<mapper namespace="com.visionvera.remoteservice.dao.ProjectChangeDao">
+
+	<!-- 添加项目变更  -->  
+	<insert id="addProjectChange" parameterType="com.visionvera.remoteservice.bean.ProjectChangeBean">
+		INSERT INTO t_project_change
+		(	businessKey ,
+			applicantName ,
+			IDNumber ,
+			address ,
+			phone ,
+			cause ,
+			projectName ,
+			beforeChangeNumber ,
+			afterChangeNumber ,
+			userName ,
+			changeTime ,
+			affiliation
+		)
+		VALUES
+		(   #{businessKey} ,#{applicantName} ,#{IDNumber} ,#{address} ,
+			#{phone} ,#{cause} ,#{projectName} ,#{beforeChangeNumber} ,
+			#{afterChangeNumber} ,#{userName} ,#{changeTime} ,#{affiliation})	
+	</insert>
+	
+	<!-- 查询变更列表  -->
+	<select id="getProjectChangeList" parameterType="Map" resultType="com.visionvera.remoteservice.bean.ProjectChangeBean">
+		SELECT id ,
+			businessKey ,
+			applicantName ,
+			IDNumber ,
+			address ,
+			phone ,
+			cause ,
+			projectName ,
+			beforeChangeNumber ,
+			afterChangeNumber ,
+			userName ,
+			changeTime ,
+			affiliation
+		FROM t_project_change
+		<where>
+			<if test="businessKey != null and businessKey != '' ">
+				businessKey = #{businessKey}
+			</if>
+		</where>
+	</select>
+     
+</mapper>

@@ -1,0 +1,1312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.visionvera.remoteservice.dao.BusinessTypeDao">
+  <resultMap id="BaseResultMap" type="com.visionvera.remoteservice.bean.BusinessTypeBean">
+    <id column="id" jdbcType="INTEGER" property="id"/>
+    <result column="parent_id" jdbcType="INTEGER" property="parentId"/>
+    <result column="describes" jdbcType="VARCHAR" property="describes"/>
+    <result column="dept_id" jdbcType="INTEGER" property="deptId"/>
+    <result column="service_key" jdbcType="VARCHAR" property="serviceKey"/>
+    <result column="grade" jdbcType="INTEGER" property="grade"/>
+    <result column="is_leaf" jdbcType="INTEGER" property="isLeaf"/>
+    <result column="version" jdbcType="INTEGER" property="version"/>
+    <result column="state" jdbcType="INTEGER" property="state"/>
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    <result column="is_form" jdbcType="INTEGER" property="isForm"/>
+    <result column="append_form" jdbcType="INTEGER" property="appendForm"/>
+    <result column="is_materials" jdbcType="INTEGER" property="isMaterials"/>
+    <result column="materials_print" jdbcType="INTEGER" property="materialsPrint"/>
+    <result column="e_signature" jdbcType="INTEGER" property="eSignature"/>
+    <result column="remote_print" jdbcType="INTEGER" property="remotePrint"/>
+    <result column="police_sign" jdbcType="INTEGER" property="policeSign"/>
+    <result column="police_notarize" jdbcType="INTEGER" property="policeNotarize"/>
+    <result column="whole_time" jdbcType="INTEGER" property="wholeTime"/>
+    <result column="business_month" jdbcType="VARCHAR" property="businessMonth"/>
+    <result column="business_day" jdbcType="VARCHAR" property="businessDay"/>
+    <result column="business_flow" jdbcType="VARCHAR" property="businessFlow"/>
+    <result column="type" jdbcType="VARCHAR" property="type"/>
+    <result column="morning_limit_number" jdbcType="INTEGER" property="morningLimitNumber"/>
+    <result column="afternoon_limit_number" jdbcType="INTEGER" property="afternoonLimitNumber"/>
+    <result column="sup_receipt" jdbcType="INTEGER" property="supReceipt"/>
+    <result column="is_custom" jdbcType="INTEGER" property="isCustom"/>
+    <result column="is_comprehensive" jdbcType="INTEGER" property="isComprehensive"/>
+  </resultMap>
+
+  <resultMap id="RelResultMap" type="com.visionvera.remoteservice.bean.BusinessTypeBean"
+    extends="BaseResultMap">
+    <result column="dept_name" jdbcType="VARCHAR" property="deptName"/>
+    <result column="parent_describes" jdbcType="VARCHAR" property="parentDescribes"/>
+    <collection property="materialsList" ofType="com.visionvera.remoteservice.bean.Materials"
+      select="selectMaterials" column="id">
+    </collection>
+  </resultMap>
+
+  <resultMap id="MaterialsResult" type="com.visionvera.remoteservice.bean.Materials">
+    <id column="id" jdbcType="INTEGER" property="id"/>
+    <result column="materials_name" jdbcType="VARCHAR" property="materialsName"/>
+    <result column="service_key" jdbcType="VARCHAR" property="serviceKey"/>
+    <result column="dept_id" jdbcType="INTEGER" property="deptId"/>
+    <result column="materials_type" jdbcType="INTEGER" property="materialsType"/>
+    <result column="is_upload" jdbcType="INTEGER" property="isUpload"/>
+    <result column="file_path" jdbcType="VARCHAR" property="filePath"/>
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    <result column="materials_version" jdbcType="INTEGER" property="materialsVersion"/>
+    <result column="state" jdbcType="INTEGER" property="state"/>
+  </resultMap>
+  <resultMap id="PhotoConfigResult" type="com.visionvera.remoteservice.bean.PhotoConfig">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="business_type" jdbcType="INTEGER" property="businessType" />
+    <result column="type" jdbcType="BIT" property="type" />
+    <result column="x" jdbcType="INTEGER" property="x" />
+    <result column="y" jdbcType="INTEGER" property="y" />
+    <result column="width" jdbcType="INTEGER" property="width" />
+    <result column="height" jdbcType="INTEGER" property="height" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, parent_id, describes, dept_id, service_key, grade, is_leaf, version, state,
+    create_time, update_time, is_form, append_form, is_materials, materials_print, e_signature,
+    remote_print, police_sign, police_notarize, whole_time, business_month, business_day, business_flow, type ,morning_limit_number,afternoon_limit_number,sup_receipt,is_custom,is_comprehensive
+  </sql>
+
+  <sql id="Column_List_Alias">
+    a.id, a.parent_id, a.describes, a.dept_id, a.service_key, a.grade, a.is_leaf, a.version, a.state,
+    a.create_time, a.update_time, a.is_form, a.append_form, a.is_materials, a.materials_print, a.e_signature,
+    a.remote_print, a.police_sign, a.police_notarize, a.whole_time, a.business_month, a.business_day, a.business_flow, a.type ,a.morning_limit_number,a.afternoon_limit_number,a.sup_receipt,a.is_custom,a.is_comprehensive
+  </sql>
+  <sql id="PhotoConfig_Column_List">
+    id, business_type, type, x, y, width, height
+  </sql>
+  <sql id="Materials_Column_List">
+    a.id, a.materials_name, a.service_key, a.dept_id, a.materials_type, a.is_upload, a.file_path, a.create_time,
+    a.update_time, a.materials_version, a.state
+  </sql>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from t_business_type
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_business_type
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.visionvera.remoteservice.bean.BusinessTypeBean">
+    insert into t_business_type (id, parent_id, describes,
+                                 dept_id, service_key, grade,
+                                 is_leaf, version, state,
+                                 create_time, update_time, is_form,
+                                 append_form, is_materials, materials_print,
+                                 e_signature, remote_print, police_sign,
+                                 police_notarize, whole_time, business_month,
+                                 business_day,business_flow,type,morning_limit_number,afternoon_limit_number,sup_receipt,is_custom,is_comprehensive)
+    values (#{id,jdbcType=INTEGER}, #{parentId,jdbcType=INTEGER}, #{describes,jdbcType=VARCHAR},
+                                    #{deptId,jdbcType=INTEGER}, #{serviceKey,jdbcType=VARCHAR},
+                                    #{grade,jdbcType=INTEGER},
+                                    #{isLeaf,jdbcType=INTEGER}, #{version,jdbcType=INTEGER},
+                                    #{state,jdbcType=INTEGER},
+                                    #{createTime,jdbcType=TIMESTAMP},
+                                    #{updateTime,jdbcType=TIMESTAMP}, #{isForm,jdbcType=INTEGER},
+                                                                      #{appendForm,jdbcType=INTEGER},
+                                                                      #{isMaterials,jdbcType=INTEGER},
+                                                                      #{materialsPrint,jdbcType=INTEGER},
+                                                                      #{eSignature,jdbcType=INTEGER},
+                                                                      #{remotePrint,jdbcType=INTEGER},
+                                                                      #{policeSign,jdbcType=INTEGER},
+                                                                      #{policeNotarize,jdbcType=INTEGER},
+                                                                      #{wholeTime,jdbcType=INTEGER},
+                                                                      #{businessMonth,jdbcType=VARCHAR},
+            #{businessDay,jdbcType=VARCHAR},
+            #{businessFlow,jdbcType=VARCHAR},
+            #{type,jdbcType=INTEGER},
+            #{morningLimitNumber,jdbcType=INTEGER},
+            #{afternoonLimitNumber,jdbcType=INTEGER},)
+            #{supReceipt,jdbcType=INTEGER},)
+            #{isCustom,jdbcType=INTEGER},#{isComprehensive,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.visionvera.remoteservice.bean.BusinessTypeBean"
+    useGeneratedKeys="true" keyProperty="id">
+    insert into t_business_type
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="parentId != null">
+        parent_id,
+      </if>
+      <if test="describes != null">
+        describes,
+      </if>
+      <if test="deptId != null">
+        dept_id,
+      </if>
+      <if test="serviceKey != null">
+        service_key,
+      </if>
+      <if test="grade != null">
+        grade,
+      </if>
+      <if test="isLeaf != null">
+        is_leaf,
+      </if>
+      <if test="version != null">
+        version,
+      </if>
+      <if test="state != null">
+        state,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="isForm != null">
+        is_form,
+      </if>
+      <if test="appendForm != null">
+        append_form,
+      </if>
+      <if test="isMaterials != null">
+        is_materials,
+      </if>
+      <if test="materialsPrint != null">
+        materials_print,
+      </if>
+      <if test="eSignature != null">
+        e_signature,
+      </if>
+      <if test="remotePrint != null">
+        remote_print,
+      </if>
+      <if test="policeSign != null">
+        police_sign,
+      </if>
+      <if test="policeNotarize != null">
+        police_notarize,
+      </if>
+      <if test="wholeTime != null">
+        whole_time,
+      </if>
+      <if test="businessMonth != null">
+        business_month,
+      </if>
+      <if test="businessDay != null">
+        business_day,
+      </if>
+      <if test="businessFlow != null">
+        business_flow,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="morningLimitNumber != null">
+        morning_limit_number,
+      </if>
+      <if test="afternoonLimitNumber != null">
+        afternoon_limit_number,
+      </if>
+      <if test="supReceipt != null">
+        sup_receipt,
+      </if>
+      <if test="isCustom != null">
+        is_custom,
+      </if>
+      <if test="isComprehensive != null">
+        is_comprehensive,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="parentId != null">
+        #{parentId,jdbcType=INTEGER},
+      </if>
+      <if test="describes != null">
+        #{describes,jdbcType=VARCHAR},
+      </if>
+      <if test="deptId != null">
+        #{deptId,jdbcType=INTEGER},
+      </if>
+      <if test="serviceKey != null">
+        #{serviceKey,jdbcType=VARCHAR},
+      </if>
+      <if test="grade != null">
+        #{grade,jdbcType=INTEGER},
+      </if>
+      <if test="isLeaf != null">
+        #{isLeaf,jdbcType=INTEGER},
+      </if>
+      <if test="version != null">
+        #{version,jdbcType=INTEGER},
+      </if>
+      <if test="state != null">
+        #{state,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isForm != null">
+        #{isForm,jdbcType=INTEGER},
+      </if>
+      <if test="appendForm != null">
+        #{appendForm,jdbcType=INTEGER},
+      </if>
+      <if test="isMaterials != null">
+        #{isMaterials,jdbcType=INTEGER},
+      </if>
+      <if test="materialsPrint != null">
+        #{materialsPrint,jdbcType=INTEGER},
+      </if>
+      <if test="eSignature != null">
+        #{eSignature,jdbcType=INTEGER},
+      </if>
+      <if test="remotePrint != null">
+        #{remotePrint,jdbcType=INTEGER},
+      </if>
+      <if test="policeSign != null">
+        #{policeSign,jdbcType=INTEGER},
+      </if>
+      <if test="policeNotarize != null">
+        #{policeNotarize,jdbcType=INTEGER},
+      </if>
+      <if test="wholeTime != null">
+        #{wholeTime,jdbcType=INTEGER},
+      </if>
+      <if test="businessMonth != null">
+        #{businessMonth,jdbcType=VARCHAR},
+      </if>
+      <if test="businessDay != null">
+        #{businessDay,jdbcType=VARCHAR},
+      </if>
+      <if test="businessFlow != null">
+        #{businessFlow,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="morningLimitNumber != null">
+        #{morningLimitNumber,jdbcType=INTEGER},
+      </if>
+      <if test="afternoonLimitNumber != null">
+        #{afternoonLimitNumber,jdbcType=INTEGER},
+      </if>
+      <if test="supReceipt != null">
+        #{supReceipt,jdbcType=INTEGER},
+      </if>
+      <if test="isCustom != null">
+        #{isCustom,jdbcType=INTEGER},
+      </if>
+      <if test="isComprehensive != null">
+        #{isComprehensive,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateByPrimaryKey"
+    parameterType="com.visionvera.remoteservice.bean.BusinessTypeBean">
+    update t_business_type
+    set parent_id     = #{parentId,jdbcType=INTEGER},
+      describes       = #{describes,jdbcType=VARCHAR},
+      dept_id         = #{deptId,jdbcType=INTEGER},
+      service_key     = #{serviceKey,jdbcType=VARCHAR},
+      grade           = #{grade,jdbcType=INTEGER},
+      is_leaf         = #{isLeaf,jdbcType=INTEGER},
+      version         = #{version,jdbcType=INTEGER},
+      state          = #{state,jdbcType=INTEGER},
+      create_time     = #{createTime,jdbcType=TIMESTAMP},
+      update_time     = #{updateTime,jdbcType=TIMESTAMP},
+      is_form         = #{isForm,jdbcType=INTEGER},
+      append_form     = #{appendForm,jdbcType=INTEGER},
+      is_materials    = #{isMaterials,jdbcType=INTEGER},
+      materials_print = #{materialsPrint,jdbcType=INTEGER},
+      e_signature     = #{eSignature,jdbcType=INTEGER},
+      remote_print    = #{remotePrint,jdbcType=INTEGER},
+      police_sign     = #{policeSign,jdbcType=INTEGER},
+      police_notarize = #{policeNotarize,jdbcType=INTEGER},
+      whole_time      = #{wholeTime,jdbcType=INTEGER},
+      business_month  = #{businessMonth,jdbcType=VARCHAR},
+      business_day    = #{businessDay,jdbcType=VARCHAR},
+      business_flow    = #{businessFlow,jdbcType=VARCHAR},
+      type    = #{type,jdbcType=INTEGER},
+      morning_limit_number = #{morningLimitNumber,jdbcType=INTEGER},
+      afternoon_limit_number    = #{afternoonLimitNumber,jdbcType=INTEGER},
+      sup_receipt = #{supReceipt,jdbcType=INTEGER},
+      is_custom = #{isCustom,jdbcType=INTEGER},
+      is_comprehensive = #{isComprehensive,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <!-- 加添业务类别项目-->
+  <insert id="addBusinessClasses" parameterType="Map">
+    insert into t_business_type
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="describes != null">
+        describes,
+      </if>
+      <if test="deptId != null">
+        dept_id,
+      </if>
+      <if test="serviceKey != null">
+        service_key,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="describes != null">
+        #{describes,jdbcType=VARCHAR},
+      </if>
+      <if test="deptId != null">
+        #{deptId,jdbcType=INTEGER},
+      </if>
+      <if test="serviceKey != null">
+        #{serviceKey,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <!-- 加添校验类别-->
+  <select id="checkoutClasses" parameterType="com.visionvera.remoteservice.bean.BusinessTypeBean"
+    resultType="int">
+    SELECT COUNT(id)
+    FROM t_business_type
+    where state <![CDATA[ <> ]]> 0
+    AND is_leaf = 0
+    <if test="id != null">
+      AND id != #{id}
+    </if>
+    <if test="serviceKey != null and serviceKey != ''">
+      AND service_key = #{serviceKey}
+    </if>
+    AND dept_id = #{deptId}
+    AND describes = #{describes}
+  </select>
+   <select id="checkDiddCenterClasses" parameterType="com.visionvera.remoteservice.bean.BusinessTypeBean" resultType="java.lang.Integer">
+     select
+      count(*)
+      FROM(
+      select
+      tbt.service_key,
+      tbt.describes
+      from t_business_type tbt where tbt.describes = #{describes}
+     AND id != #{id}
+     AND tbt.dept_id = #{deptId}
+     AND tbt.state <![CDATA[ <> ]]> 0 )a,(
+       select
+       tsc.servicekey,
+       tsc.parentKey
+       from t_service_center tsc where tsc.serviceKey = #{serviceKey} and tsc.state <![CDATA[ <> ]]> 0)b
+       WHERE  a.service_key = b.parentKey or a.service_key = b.servicekey
+   </select>
+  <select id="checkDiddCenterType" parameterType="com.visionvera.remoteservice.bean.BusinessTypeBean" resultType="java.lang.Integer">
+     select
+      count(*)
+      FROM(
+      select
+      tbt.service_key,
+      tbt.describes
+      from t_business_type tbt where tbt.describes = #{describes}
+     AND id != #{id}
+     AND tbt.dept_id = #{deptId}
+      tbt.state <![CDATA[ <> ]]> 0 )a,(
+       select
+       tsc.servicekey,
+       tsc.parentKey
+       from t_service_center tsc where tsc.serviceKey = #{serviceKey} and tsc.state <![CDATA[ <> ]]> 0)b
+       WHERE  a.service_key = b.parentKey or a.service_key = b.servicekey
+   </select>
+  <!--修改业务类别-->
+  <update id="updateBusinessClasses"
+    parameterType="com.visionvera.remoteservice.bean.BusinessTypeBean">
+    update t_business_type
+    SET describes = #{describes}, dept_id = #{deptId} ,service_key=#{serviceKey}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <!--签名及盖章位置自定义查询-->
+  <select id="selectPhotoConfig" parameterType="Integer" resultMap="PhotoConfigResult">
+   select
+   <include refid="PhotoConfig_Column_List"/>
+   from t_photo_config
+    WHERE business_type = #{id}
+  </select>
+  <!--业务类别查询-->
+  <select id="selectMaterials" parameterType="Integer" resultMap="MaterialsResult">
+    SELECT
+    a.id, (CASE WHEN a.file_path is not NULL THEN
+		CONCAT(
+		a.materials_name,
+		RIGHT(a.file_path,length
+	(a.file_path) -INSTR(a.file_path,'.doc')+1 )
+	)
+	ELSE
+		a.materials_name
+END )
+materials_name, a.service_key, a.dept_id, a.materials_type, a.is_upload, a.file_path, a.create_time,
+    a.update_time, a.materials_version, a.state
+    FROM t_materials a , t_type_materials_rel b
+    WHERE a.id = b.materials_id
+    AND b.type_id = #{id}
+    AND a.state <![CDATA[ <> ]]> 0
+    order by b.id
+  </select>
+  <select id="selectByBusinessDetailId" parameterType="java.lang.Integer" resultType="com.visionvera.remoteservice.bean.PhotoConfig">
+    SELECT
+    <include refid="PhotoConfig_Column_List" />
+    FROM t_photo_config tpc WHERE tpc.business_type = #{businessDetailId}
+  </select>
+  <select id="getBusinessClasseByServiceKeys" parameterType="com.visionvera.remoteservice.bean.BusinessTypeBean" resultMap="RelResultMap">
+    select
+    <include refid="Column_List_Alias"/>
+    , b.dept_name ,c.describes AS parent_describes,c.id as parentId,tsc.serviceName as serviceName
+    from t_business_type a
+    inner join t_sys_dept b
+    ON a.dept_id = b.id
+    LEFT JOIN t_business_type c
+    ON a.parent_id = c.id
+    LEFT JOIN t_service_center tsc on a.service_key = tsc.serviceKey and tsc.state <![CDATA[ <> ]]> 0
+    <where >
+      <!--取号机获取有业务详情的业务列表查询条件start-->
+      <if test="offerNumberCheck !=null ">
+        (select count(tbt.id) FROM t_business_type tbt where tbt.parent_id = a.id and tbt.state <![CDATA[ <> ]]> 0 ) >0
+      </if>
+      <if test="serviceKeys != null">
+        AND (a.service_key in
+        <foreach collection="serviceKeys" item="serviceKey" open="(" close=")" separator=",">
+          #{serviceKey}
+        </foreach>  or a.service_key is null or a.service_key = '')
+      </if>
+      <if test="deptId != null">
+        AND a.dept_id = #{deptId}
+      </if>
+      <choose>
+        <when test="state != null">
+          AND a.state > #{state}
+        </when>
+        <otherwise>
+          AND a.state <![CDATA[ <> ]]> 0
+        </otherwise>
+      </choose>
+    </where>
+  </select>
+  <select id="getBusinessClasses" parameterType="com.visionvera.remoteservice.bean.BusinessTypeBean"
+    resultMap="RelResultMap">
+    select
+    <include refid="Column_List_Alias"/>
+    , b.dept_name ,c.describes AS parent_describes,c.id as parentId,tsc.serviceName as serviceName
+    from t_business_type a
+    inner join t_sys_dept b
+    ON a.dept_id = b.id
+    LEFT JOIN t_business_type c
+    ON a.parent_id = c.id
+    LEFT JOIN t_service_center tsc on a.service_key = tsc.serviceKey and tsc.state <![CDATA[ <> ]]> 0
+    <where>
+      <!--取号机获取有业务详情的业务列表查询条件start-->
+      <if test="offerNumberCheck !=null ">
+        (select count(tbt.id) FROM t_business_type tbt where tbt.parent_id = a.id and tbt.state <![CDATA[ <> ]]> 0 ) >0
+      </if>
+      <!--取号机获取有业务详情的业务列表查询条件end-->
+      <if test="describes != null and describes != ''">
+        AND a.describes LIKE concat ('%',trim(#{describes}),'%')
+      </if>
+      <if test="serviceName != null and serviceName != ''">
+        AND tsc.serviceName LIKE concat ('%',trim(#{serviceName}),'%')
+      </if>
+      <if test="serviceKeys != null">
+      AND ( a.service_key in
+      <foreach collection="serviceKeys" open="(" close=")" item="serviceKey" separator=",">
+        #{serviceKey}
+      </foreach>  or a.service_key is null or a.service_key = '' )
+      </if>
+      <if test="deptId != null">
+        AND a.dept_id = #{deptId}
+      </if>
+      <if test="serviceKey != null and serviceKey != '' ">
+        AND a.service_key = #{serviceKey}
+      </if>
+      <if test="id != null">
+        AND a.id = #{id}
+      </if>
+      <if test="parentId != null">
+        AND a.parent_id = #{parentId}
+      </if>
+      <if test="isLeaf != null">
+        AND a.is_leaf = #{isLeaf}
+      </if>
+      <if test="isRests == 1 ">
+        AND a.describes != '其他'
+
+        AND a.type != 1
+      </if>
+      <choose>
+        <when test="state != null">
+          AND a.state > #{state}
+        </when>
+        <otherwise>
+          AND a.state <![CDATA[ <> ]]> 0
+        </otherwise>
+      </choose>
+    </where>
+    order by a.`update_time` desc
+  </select>
+  <select id="getBusinessTypeById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select <include refid="Column_List_Alias"/>
+    from t_business_type a
+    <where>
+      <if test="businessTypeId != null ">
+        AND a.id = #{businessTypeId}
+      </if>
+      AND a.state <![CDATA[ <> ]]> 0
+    </where>
+  </select>
+
+
+  <select id="getBusinessDetailById" parameterType="java.lang.Integer" resultMap="RelResultMap">
+    select
+    <include refid="Column_List_Alias"/>, b.dept_name ,c.describes AS parent_describes,c.id as parentI,tsc.serviceName as serviceName
+    from t_business_type a
+    inner join t_sys_dept b
+    ON a.dept_id = b.id
+    LEFT JOIN t_business_type c
+    ON a.parent_id = c.id
+    LEFT JOIN t_service_center tsc on a.service_key = tsc.serviceKey and tsc.state <![CDATA[ <> ]]> 0
+    <where>
+      <if test="businessDetailId != null ">
+        AND a.id = #{businessDetailId} and a.state <![CDATA[ <> ]]> 0
+      </if>
+    </where>
+  </select>
+
+  <!--业务详情校验-->
+  <select id="checkoutType" parameterType="com.visionvera.remoteservice.bean.BusinessTypeBean"
+    resultType="Integer">
+    SELECT COUNT(id)
+    FROM t_business_type
+    <where>
+      <if test="id != null">
+        AND id != #{id}
+      </if>
+      <if test="serviceKey !=null">
+        AND service_key = #{serviceKey}
+      </if>
+      AND dept_id = #{deptId}
+      AND describes = #{describes}
+      ANd parent_id =#{parentId}
+      AND state <![CDATA[ <> ]]> 0
+      AND is_leaf = 1
+    </where>
+  </select>
+
+
+  <!--业务详情校验-->
+  <select id="getBusinessInfo" parameterType="java.util.Map" resultMap="BaseResultMap">
+    SELECT *
+    FROM t_business_type
+    <where>
+      <if test="id != null">
+        AND id = #{id}
+      </if>
+      <if test="parentId != null and parentId != ''">
+        and parent_id =#{parentId}
+      </if>
+      <if test="serviceKey != null and serviceKey != '' ">
+        AND service_key = #{serviceKey}
+      </if>
+      <if test="deptId != null and deptId != '' ">
+        AND dept_id = #{deptId}
+      </if>
+      <if test="describes != null and describes != '' ">
+        AND describes = #{describes}
+      </if>
+      AND state <![CDATA[ <> ]]> 0
+      AND is_leaf = 1
+    </where>
+  </select>
+  <!--添加业务详情-->
+  <insert id="addBusiness" parameterType="com.visionvera.remoteservice.bean.BusinessTypeBean"
+    useGeneratedKeys="true" keyProperty="id">
+    insert into t_business_type
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="parentId != null">
+        parent_id,
+      </if>
+      <if test="describes != null">
+        describes,
+      </if>
+      <if test="deptId != null">
+        dept_id,
+      </if>
+      <if test="serviceKey != null">
+      service_key,
+      </if>
+      <if test="grade != null">
+        grade,
+      </if>
+      <if test="isLeaf != null">
+        is_leaf,
+      </if>
+      <if test="isForm != null">
+        is_form,
+      </if>
+      <if test="appendForm != null">
+        append_form,
+      </if>
+      <if test="isMaterials != null">
+        is_materials,
+      </if>
+      <if test="materialsPrint != null">
+        materials_print,
+      </if>
+      <if test="eSignature != null">
+        e_signature,
+      </if>
+      <if test="remotePrint != null">
+        remote_print,
+      </if>
+      <if test="policeSign != null">
+        police_sign,
+      </if>
+      <if test="policeNotarize != null">
+        police_notarize,
+      </if>
+      <if test="wholeTime != null">
+        whole_time,
+      </if>
+      <if test="businessMonth != null">
+        business_month,
+      </if>
+      <if test="businessDay != null">
+        business_day,
+      </if>
+      <if test="businessFlow != null">
+        business_flow,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="morningLimitNumber != null">
+        morning_limit_number,
+      </if>
+     <if test="afternoonLimitNumber != null">
+        afternoon_limit_number,
+      </if>
+      <if test="supReceipt != null">
+        sup_receipt,
+      </if>
+      <if test="isCustom != null">
+        is_custom,
+      </if>
+      <if test="isComprehensive != null">
+        is_comprehensive
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="parentId != null">
+        #{parentId,jdbcType=INTEGER},
+      </if>
+      <if test="describes != null">
+        #{describes,jdbcType=VARCHAR},
+      </if>
+      <if test="deptId != null">
+        #{deptId,jdbcType=INTEGER},
+      </if>
+      <if test="serviceKey != null">
+      #{serviceKey,jdbcType=VARCHAR},
+      </if>
+      <if test="grade != null">
+        #{grade,jdbcType=INTEGER},
+      </if>
+      <if test="isLeaf != null">
+        #{isLeaf,jdbcType=INTEGER},
+      </if>
+      <if test="isForm != null">
+        #{isForm,jdbcType=INTEGER},
+      </if>
+      <if test="appendForm != null">
+        #{appendForm,jdbcType=INTEGER},
+      </if>
+      <if test="isMaterials != null">
+        #{isMaterials,jdbcType=INTEGER},
+      </if>
+      <if test="materialsPrint != null">
+        #{materialsPrint,jdbcType=INTEGER},
+      </if>
+      <if test="eSignature != null">
+        #{eSignature,jdbcType=INTEGER},
+      </if>
+      <if test="remotePrint != null">
+        #{remotePrint,jdbcType=INTEGER},
+      </if>
+      <if test="policeSign != null">
+        #{policeSign,jdbcType=INTEGER},
+      </if>
+      <if test="policeNotarize != null">
+        #{policeNotarize,jdbcType=INTEGER},
+      </if>
+      <if test="wholeTime != null">
+        #{wholeTime,jdbcType=INTEGER},
+      </if>
+      <if test="businessMonth != null">
+        #{businessMonth,jdbcType=VARCHAR},
+      </if>
+      <if test="businessDay != null">
+        #{businessDay,jdbcType=VARCHAR},
+      </if>
+      <if test="businessFlow != null">
+        #{businessFlow,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="morningLimitNumber != null">
+        #{morningLimitNumber,jdbcType=INTEGER},
+      </if>
+      <if test="afternoonLimitNumber != null">
+        #{afternoonLimitNumber,jdbcType=INTEGER},
+      </if>
+      <if test="supReceipt != null">
+        #{supReceipt,jdbcType=VARCHAR},
+      </if>
+      <if test="isCustom != null">
+        #{isCustom,jdbcType=VARCHAR},
+      </if>
+      <if test="isComprehensive != null">
+        #{isComprehensive,jdbcType=VARCHAR}
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.visionvera.remoteservice.bean.BusinessTypeBean">
+    update t_business_type
+    <set>
+      <if test="parentId != null">
+        parent_id = #{parentId,jdbcType=INTEGER},
+      </if>
+      <if test="describes != null">
+        describes = #{describes,jdbcType=VARCHAR},
+      </if>
+      <if test="deptId != null">
+        dept_id = #{deptId,jdbcType=INTEGER},
+      </if>
+      <if test="serviceKey != null">
+        service_key = #{serviceKey,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null">
+        state = #{state,jdbcType=INTEGER},
+      </if>
+      <if test="isForm != null">
+        is_form = #{isForm,jdbcType=INTEGER},
+      </if>
+      <if test="appendForm != null">
+        append_form = #{appendForm,jdbcType=INTEGER},
+      </if>
+      <if test="isMaterials != null">
+        is_materials = #{isMaterials,jdbcType=INTEGER},
+      </if>
+      <if test="materialsPrint != null">
+        materials_print = #{materialsPrint,jdbcType=INTEGER},
+      </if>
+      <if test="eSignature != null">
+        e_signature = #{eSignature,jdbcType=INTEGER},
+      </if>
+      <if test="remotePrint != null">
+        remote_print = #{remotePrint,jdbcType=INTEGER},
+      </if>
+      <if test="policeSign != null">
+        police_sign = #{policeSign,jdbcType=INTEGER},
+      </if>
+      <if test="policeNotarize != null">
+        police_notarize = #{policeNotarize,jdbcType=INTEGER},
+      </if>
+      <if test="wholeTime != null">
+        whole_time = #{wholeTime,jdbcType=INTEGER},
+      </if>
+      <if test="businessMonth != null">
+        business_month = #{businessMonth,jdbcType=VARCHAR},
+      </if>
+      <if test="businessDay != null">
+        business_day = #{businessDay,jdbcType=VARCHAR},
+      </if>
+      <if test="businessFlow != null">
+        business_flow = #{businessFlow,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="morningLimitNumber != null">
+        morning_limit_number = #{morningLimitNumber,jdbcType=INTEGER},
+      </if>
+      <if test="afternoonLimitNumber != null">
+        afternoon_limit_number = #{afternoonLimitNumber,jdbcType=INTEGER},
+      </if>
+      <if test="supReceipt != null">
+        sup_receipt = #{supReceipt,jdbcType=VARCHAR},
+      </if>
+        is_custom = #{isCustom,jdbcType=VARCHAR},
+      <if test="isComprehensive != null">
+        is_comprehensive = #{isComprehensive,jdbcType=VARCHAR},
+      </if>
+      version = #{version,jdbcType=INTEGER} + 1,
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+    AND dept_id = #{deptId,jdbcType=INTEGER}
+    AND version = #{version,jdbcType=INTEGER}
+  </update>
+
+  <!--插入关联-->
+  <insert id="insertRel" parameterType="com.visionvera.remoteservice.bean.TypeMaterialsRel" useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO t_type_materials_rel (type_id,materials_id)
+    VALUES
+    <foreach collection="materialsIdList" item="materialsIdList" separator=",">
+      (#{typeId} , #{materialsIdList})
+    </foreach>
+  </insert>
+
+  <!--删除关联-->
+  <delete id="deleteRel" parameterType="Integer">
+    DELETE FROM t_type_materials_rel
+    WHERE type_id = #{typeId}
+  </delete>
+  <select id="getBusinessType" parameterType="Map" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from t_business_type
+    <where>
+      <if test="deptId != null ">
+        AND dept_id = #{deptId}
+      </if>
+      <if test="serviceKey != null">
+        AND (service_key = #{serviceKey} or service_key is null or service_key = '')
+      </if>
+      <if test="serviceKeys != null">
+        AND (service_key in
+         <foreach collection="serviceKeys" open="(" close=")" item="serviceKey" separator=",">
+        #{serviceKey}
+        </foreach>
+        or service_key is null or service_key = '')
+      </if>
+      <if test="parentId != null ">
+        AND parent_id = #{parentId}
+      </if>
+      <if test="isLeaf != null ">
+        AND is_leaf = #{isLeaf}
+      </if>
+      <if test="state != null">
+        AND state = #{state}
+      </if>
+      <if test="type != null">
+        AND type = #{type}
+      </if>
+    </where>
+    ORDER BY create_time DESC
+  </select>
+
+  <!--修改状态-->
+  <update id="updateState" parameterType="com.visionvera.remoteservice.bean.BusinessTypeBean">
+    UPDATE t_business_type
+    SET state = #{state}
+    WHERE id = #{id}
+  </update>
+
+  <!-- 删除多个关联-->
+  <delete id="deleteRelByIds">
+    DELETE FROM t_type_materials_rel WHERE type_id IN
+    <foreach collection="array" separator="," open="(" close=")" item="id">
+      #{id}
+    </foreach>
+  </delete>
+
+  <!--删除多个业务详情-->
+  <update id="deleteByIds">
+    UPDATE t_business_type
+    SET state = 0
+    WHERE id IN
+    <foreach collection="array" separator="," open="(" close=")" item="id">
+      #{id}
+    </foreach>
+  </update>
+
+  <!--删除业务类别-->
+  <update id="deleteBusinessClasses">
+    UPDATE t_business_type
+    SET state = 0
+    WHERE id IN
+    <foreach collection="array" open="(" close=")" item="id" separator=",">
+      #{id}
+    </foreach>
+  </update>
+
+  <!--根据部门删除业务类别和业务详情-->
+  <update id="deleteByDeptId">
+    UPDATE t_business_type
+    SET state = 0
+    WHERE dept_id IN
+    <foreach collection="array" open="(" close=")" item="deptId" separator=",">
+      #{deptId}
+    </foreach>
+  </update>
+
+  <!--根据业务类别id 获取部门id-->
+  <select id="getDeptIdByid" parameterType="Integer" resultType="Integer">
+    SELECT dept_id
+    FROM t_business_type
+    WHERE id = #{id}
+  </select>
+
+  <!--根据部门id 获取 默认类别 -->
+  <select id="getDefaultClassesByDeptId" parameterType="Integer" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List"/>  
+    FROM t_business_type
+    WHERE type = 1
+    AND dept_id = #{deptId}
+    and state <![CDATA[ <> ]]> 0
+    LIMIT 0 , 1
+  </select>
+
+  <!--根据 父id 修改父id-->
+  <update id="updateParentId">
+    UPDATE t_business_type
+    SET parent_id = #{newParentId}
+    WHERE parent_id = #{parentId}
+          and state = 1
+  </update>
+
+  <!--根据业务类型id 查询 业务详情id -->
+  <select id="getTypeIdsByClassesIds" resultType="Integer">
+    SELECT id
+    FROM t_business_type
+    WHERE state <![CDATA[ <> ]]> 0
+    AND parent_id IN
+    <foreach collection="array" item="parentId" open="(" close=")" separator=",">
+      #{parentId}
+    </foreach>
+  </select>
+  <!--根据业务类型id,部门id 查询 业务详情id -->
+  <select id="getBusinessInfoList"
+    parameterType="com.visionvera.remoteservice.bean.BusinessTypeBean" resultMap="BaseResultMap">
+    SELECT
+      tbt.id,
+      tbt.parent_id,
+      tbt.describes,
+      tbt.dept_id,
+      tbt.service_key,
+      tbt.grade,
+      tbt.is_leaf,
+      tbt.version,
+      tbt.state,
+      tbt.create_time,
+      tbt.update_time,
+      tbt.is_form,
+      tbt.append_form,
+      tbt.is_materials,
+      tbt.materials_print,
+      tbt.e_signature,
+      tbt.remote_print,
+      tbt.police_sign,
+      tbt.police_notarize,
+      tbt.whole_time,
+      tbt.business_month,
+      tbt.business_day,
+      tbt.business_flow,
+      tbt.type,
+      tbt.morning_limit_number,
+      tbt.afternoon_limit_number,
+      tbt.sup_receipt,
+      tbt.is_custom,
+      tbt.is_comprehensive
+    from t_business_type tbt
+      LEFT JOIN t_business_type tt on tt.id = tbt.parent_id
+    where tbt.state <![CDATA[ <> ]]> 0
+          and tbt.is_leaf = 1
+          and tt.is_leaf = 0
+          and tbt.dept_id = #{deptId,jdbcType=INTEGER}
+    and tt.id = #{parentId,jdbcType=INTEGER}
+    and tbt.id != #{id,jdbcType=INTEGER}
+    <if test="isComprehensive == 0 or isComprehensive == null">
+      and (tbt.is_comprehensive = #{isComprehensive,jdbcType=INTEGER} or tbt.is_comprehensive is null )
+    </if>
+    <if test="isComprehensive == 1">
+      and tbt.is_comprehensive = #{isComprehensive,jdbcType=INTEGER}
+    </if>
+    <if test="serviceKey != null">
+      and (tbt.service_key = #{serviceKey,jdbcType=VARCHAR} or tbt.service_key is null )
+    </if>
+    <if test="serviceKeys != null">
+      and (tbt.service_key in
+      <foreach item="serviceKey" collection="serviceKeys" open="(" separator="," close=")">
+        #{serviceKey}
+      </foreach>   or tbt.service_key is null )
+    </if>
+  </select>
+  <!--根据部门id 查询 业务详情id -->
+  <select id="getBusinessTypeByDeptId"
+    parameterType="com.visionvera.remoteservice.bean.BusinessTypeBean" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List"/>
+    from t_business_type tbt
+    where tbt.state <![CDATA[ <> ]]> 0
+    and tbt.is_leaf=0
+    <!--取号机获取有业务详情的业务列表查询条件start-->
+    <if test="offerNumberCheck !=null ">
+     and (select count(tbt.id) FROM t_business_type a where tbt.id = a.parent_id) >0
+    </if>
+    <if test="deptId != null">
+      and tbt.dept_id = #{deptId,jdbcType=INTEGER}
+    </if>
+    <if test="serviceKey != null">
+      and (tbt.service_key = #{serviceKey,jdbcType=VARCHAR} or tbt.service_key is null )
+    </if>
+    <if test="serviceKeys != null">
+      and (tbt.service_key in
+    <foreach item="serviceKey" collection="serviceKeys" open="(" separator="," close=")">
+        #{serviceKey} or tbt.service_key is null )
+    </foreach>
+    </if>
+    ORDER BY tbt.create_time DESC
+  </select>
+  <!--启用/禁用服务类别-->
+  <update id="updateBusinessTypeState"
+    parameterType="com.visionvera.remoteservice.pojo.BusinessTypeVo">
+    UPDATE t_business_type
+    SET `state` = #{state} WHERE id IN
+    <foreach collection="ids" open="(" close=")" item="id" separator=",">
+      #{id}
+    </foreach>
+  </update>
+
+  <select id="getBusinessTypeInfoById" resultType="java.util.Map" parameterType="Integer">
+  select
+  DISTINCT
+  tbt.id,
+  tbt.is_form,
+  tbt.append_form,
+  tbt.is_materials,
+  tm.materials_name,
+  tm.materials_type
+  from t_business_type tbt
+  LEFT JOIN t_type_materials_rel tms on tbt.id = tms.type_id
+  LEFT JOIN t_materials tm on  tms.materials_id = tm.id and tm.state <![CDATA[ <> ]]> 0
+  where ( tbt.is_form = 1
+  or  tbt.append_form = 1
+  or tbt.is_materials =1) AND tbt.id= #{id}
+</select>
+
+  <select id="selectBusinessTypeByServiceKeys"
+    resultType="com.visionvera.remoteservice.bean.BusinessTypeBean">
+    SELECT tbt.id,
+    tbt.parent_id as parentId,
+    tbt.describes,
+    tbt.dept_id as deptId,
+    tbt.service_key as serviceKey,
+    tbt.grade,
+    tbt.is_leaf as isLeaf,
+    tbt.version,
+    tbt.state,
+    tbt.create_time as createTime,
+    tbt.update_time as updateTime,
+    tbt.is_form as isForm,
+    tbt.append_form as appendForm,
+    tbt.is_materials as isMaterials,
+    tbt.materials_print as materialsPrint,
+    tbt.e_signature as eSignature,
+    tbt.remote_print as remotePrint,
+    tbt.police_sign as policeSign,
+    tbt.police_notarize as policeNotarize,
+    tbt.whole_time as wholeTime,
+    tbt.business_month as businessMonth,
+    tbt.business_day as businessDay,
+    tbt.business_flow as businessFlow,
+    tbt.type,
+    tbt.morning_limit_number as morningLimitNumber,
+    tbt.afternoon_limit_number as afternoonLimitNumber,
+    tbt.sup_receipt as supReceipt,
+    tbt.is_custom as isCustom,
+    tbt.is_comprehensive as isComprehensive
+    from t_business_type tbt
+    where tbt.service_key in
+    <foreach item="serviceKey" collection="serviceKeys" open="(" separator="," close=")">
+      #{serviceKey}
+    </foreach>
+    and state <![CDATA[ <> ]]> 0
+  </select>
+
+  <select id="selectBusinessTypeById"
+    resultType="com.visionvera.remoteservice.bean.BusinessTypeBean">
+    SELECT tbt.id,
+    tbt.parent_id as parentId,
+    tbt.describes,
+    tbt.dept_id as deptId,
+    tbt.service_key as serviceKey,
+    tbt.grade,
+    tbt.is_leaf as isLeaf,
+    tbt.version,
+    tbt.state,
+    tbt.create_time as createTime,
+    tbt.update_time as updateTime,
+    tbt.is_form as isForm,
+    tbt.append_form as appendForm,
+    tbt.is_materials as isMaterials,
+    tbt.materials_print as materialsPrint,
+    tbt.e_signature as eSignature,
+    tbt.remote_print as remotePrint,
+    tbt.police_sign as policeSign,
+    tbt.police_notarize as policeNotarize,
+    tbt.whole_time as wholeTime,
+    tbt.business_month as businessMonth,
+    tbt.business_day as businessDay,
+    tbt.business_flow as businessFlow,
+    tbt.type,
+    tbt.morning_limit_number as morningLimitNumber,
+    tbt.afternoon_limit_number as afternoonLimitNumber,
+    tbt.sup_receipt as supReceipt,
+    tbt.is_custom as isCustom,
+    tbt.is_comprehensive as isComprehensive
+    from t_business_type tbt
+    where tbt.id = #{id}
+    and state <![CDATA[ <> ]]> 0
+  </select>
+  <select id="selectBusinessTypeByParentId"
+    resultType="com.visionvera.remoteservice.bean.BusinessTypeBean">
+    SELECT tbt.id,
+    tbt.parent_id as parentId,
+    tbt.describes,
+    tbt.dept_id as deptId,
+    tbt.service_key as serviceKey,
+    tbt.grade,
+    tbt.is_leaf as isLeaf,
+    tbt.version,
+    tbt.state,
+    tbt.create_time as createTime,
+    tbt.update_time as updateTime,
+    tbt.is_form as isForm,
+    tbt.append_form as appendForm,
+    tbt.is_materials as isMaterials,
+    tbt.materials_print as materialsPrint,
+    tbt.e_signature as eSignature,
+    tbt.remote_print as remotePrint,
+    tbt.police_sign as policeSign,
+    tbt.police_notarize as policeNotarize,
+    tbt.whole_time as wholeTime,
+    tbt.business_month as businessMonth,
+    tbt.business_day as businessDay,
+    tbt.business_flow as businessFlow,
+    tbt.type,
+    tbt.morning_limit_number as morningLimitNumber,
+    tbt.afternoon_limit_number as afternoonLimitNumber,
+    tbt.sup_receipt as supReceipt,
+    tbt.is_custom as isCustom,
+    tbt.is_comprehensive as isComprehensive
+    from t_business_type tbt
+    where tbt.parent_id = #{parentId}
+    and state <![CDATA[ <> ]]> 0
+  </select>
+  <!--根据 父id 修改父id-->
+  <update id="updateBusinessTypeFormIsForm">
+    UPDATE t_business_type
+    SET is_form = #{isform}
+    WHERE id IN
+    <foreach collection="ids" open="(" close=")" item="id" separator=",">
+      #{id}
+    </foreach>
+  </update>
+  <!--根据待办业务中的村中心serviceKey取得业务详情-->
+  <select id="getBusinessTypeByServiceKey" resultMap="BaseResultMap">
+   SELECT
+    tt.*
+   FROM
+    t_business_type tt
+    INNER JOIN t_business_info ti ON tt.id = ti.business_type
+  WHERE
+    tt.state = 1
+    and ti.state = 1
+    and ti.service_key = #{serviceKey}
+  ORDER BY
+    ti.create_time
+    LIMIT 1
+
+  </select>
+
+  <!-- 审批中心查询业务详情数量 -->
+  <select id="getBusinessTypeDetailCountByCheck" resultType="integer">
+    SELECT
+    COUNT(tb.id)
+    FROM
+    t_business_type tb
+    LEFT JOIN
+    t_sys_dept sd
+    ON
+    tb.dept_id = sd.id
+      WHERE tb.state = 1 and tb.is_leaf = 1 and sd.state = 1
+      <if test="handleServiceKey != null">
+          AND ( tb.service_key = #{handleServiceKey} or tb.service_key IS NULL )
+    </if>
+    <if test="deptId != null">
+      AND tb.dept_id = #{deptId}
+    </if>
+  </select>
+
+  <!-- 统筹中心查询业务详情数量 -->
+  <select id="getBusinessTypeDetailCountByAdmin" resultType="integer">
+    SELECT
+    COUNT(tb.id)
+    FROM
+    t_business_type tb
+    LEFT JOIN
+    t_sys_dept sd
+    ON
+    tb.dept_id = sd.id
+      WHERE tb.state = 1 and tb.is_leaf = 1 and sd.state = 1
+    <if test="serviceKeyList != null">
+        AND ( tb.service_key in
+      <foreach collection="serviceKeyList" item="serviceKey" open="(" close=")" separator=",">
+        #{serviceKey}
+      </foreach>
+        or tb.service_key IS NULL )
+    </if>
+    <if test="deptId != null">
+      AND tb.dept_id = #{deptId}
+    </if>
+  </select>
+
+  <!-- 所有中心查询业务详情数量 -->
+  <select id="getBusinessTypeDetailCount" resultType="integer">
+    SELECT
+    COUNT(tb.id)
+    FROM
+    t_business_type tb
+    LEFT JOIN
+    t_sys_dept sd
+    ON
+    tb.dept_id = sd.id
+      WHERE tb.state = 1 and tb.is_leaf = 1 and sd.state = 1
+    <if test="deptId != null">
+      AND tb.dept_id = #{deptId}
+    </if>
+  </select>
+  <select id="getBusinessTypeInfoCount" resultType="integer">
+    SELECT
+    COUNT(tb.id)
+    FROM
+    t_business_type tb
+    WHERE tb.state = 1
+  <if test="deptId != null">
+    AND tb.dept_id = #{deptId}
+    </if>
+    and service_key is not null
+  </select>
+
+
+</mapper>

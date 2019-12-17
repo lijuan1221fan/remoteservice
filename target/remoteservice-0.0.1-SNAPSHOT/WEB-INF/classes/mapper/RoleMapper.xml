@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.visionvera.remoteservice.dao.RoleDao">
+
+    <!-- 根据用户id获取角色名称列表 -->
+    <select id="getRoleNameByUserId" resultType="String" parameterType="Integer">
+        SELECT b.roleName FROM t_user_role_rel a, t_role b
+		WHERE a.roleId = b.roleId
+		AND a.userId = #{userId}
+    </select>
+	 
+	 <!-- 根据用户id获取角色列表 -->
+    <select id="getRoleByUserId" resultType="com.visionvera.remoteservice.bean.RoleBean" parameterType="Integer">
+        SELECT b.roleId , b.roleName , b.description ,b.createTime ,b.updateTime ,b.`status` ,b.version  
+        FROM t_user_role_rel a, t_role b
+		WHERE a.roleId = b.roleId
+		AND a.userId = #{userId}
+    </select>
+    
+    <!-- 查询角色列表 -->
+    <select id="getRoleList" resultType="com.visionvera.remoteservice.bean.RoleBean" >
+		SELECT roleId , roleName , description , createTime ,updateTime , `status` , version
+		FROM t_role
+		WHERE `status` > 0
+    </select>
+
+	<!-- 添加用户角色关联 -->
+	<insert id="addUserAndRoleRel">
+		insert into t_user_role_rel
+		(userId , roleId)
+		value
+		(#{userId} , #{roleId})
+	</insert>
+ 
+ 	<!-- 根据用户id 批量删除角色关联  -->
+ 	<delete id="deleteRoleRel">
+ 		delete from t_user_role_rel
+ 		where userId
+ 		in 
+ 		<foreach collection="array" open="(" separator=","  close=")" item="userId">
+			#{userId} 		
+ 		</foreach>
+ 	</delete>
+ 
+	<!-- 根据用户id 修改 角色关联  -->
+	<update id="updateRelByUserId">
+		update t_user_role_rel 
+		set roleId = #{roleId}
+		where userId = #{userId}
+	</update>
+ 
+ </mapper>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.visionvera.remoteservice.dao.NumberIterationDao">
+	 
+	 <!-- 取号 -->
+	 <select id="getNumber" parameterType="String" resultType="com.visionvera.remoteservice.bean.NumberIteration">
+	     SELECT serviceKey , number , type FROM t_number_iteration
+		 <where>
+			 <if test="serviceKey != null">
+				 and  service_key = #{serviceKey}
+			 </if>
+			 <if test="type != null">
+				 and type = #{type}
+			 </if>
+		 </where>
+	 </select>
+	
+	<!-- 号码迭代 -->
+	<update id="numberIteration" parameterType="com.visionvera.remoteservice.bean.NumberIteration">
+	    UPDATE t_number_iteration SET number = number + 1  WHERE service_key = #{serviceKey} and dept_id = #{deptId} and number=#{number} ;
+	</update>
+	
+	<!-- 号码归零 -->
+	<update id="updateNumberIsZero">
+	    UPDATE t_number_iteration SET number = 0;
+	</update>
+	
+	<!--  添加号码迭代  -->
+	<insert id="addNumberIteration" parameterType="com.visionvera.remoteservice.bean.NumberIteration">
+		INSERT INTO
+		t_number_iteration
+		(service_key , dept_id )
+	  SELECT #{serviceKey},#{deptId} FROM dual
+        WHERE NOT EXISTS(SELECT 1 FROM t_number_iteration WHERE service_key = #{serviceKey} and dept_id = #{deptId})
+	</insert>
+  <select id="getNumberParam" parameterType="com.visionvera.remoteservice.bean.NumberIteration" resultType="com.visionvera.remoteservice.bean.NumberIteration">
+    SELECT
+    tni.number,
+    tni.dept_id as deptId,
+    tni.service_key as serviceKey
+    FROM
+    t_number_iteration tni
+    <where>
+      <if test="serviceKey != null">
+        and tni.service_key = #{serviceKey}
+      </if>
+      <!-- test把整数0等同于空字符串处理 -->
+      <if test="deptId != null and deptId !='' or deptId=='0'.toString()">
+        and tni.dept_id = #{deptId,jdbcType=INTEGER}
+      </if>
+    </where>
+  </select>
+  <!-- 号码迭代 -->
+  <update id="updateServiceKey" parameterType="com.visionvera.remoteservice.bean.NumberIteration">
+	    UPDATE t_number_iteration SET service_key = #{serviceKey}  WHERE dept_id = #{deptId} ;
+	</update>
+</mapper>

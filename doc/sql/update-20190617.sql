@@ -1,0 +1,1 @@
+alter table t_meeting_operation add meeting_name VARCHAR(255) default NULL;

@@ -1,0 +1,538 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.visionvera.remoteservice.dao.MaterialsDao">
+  <resultMap id="BaseResultMap" type="com.visionvera.remoteservice.bean.Materials">
+    <id column="id" jdbcType="INTEGER" property="id"/>
+    <result column="materials_name" jdbcType="VARCHAR" property="materialsName"/>
+    <result column="service_key" jdbcType="VARCHAR" property="serviceKey"/>
+    <result column="dept_id" jdbcType="INTEGER" property="deptId"/>
+    <result column="materials_type" jdbcType="INTEGER" property="materialsType"/>
+    <result column="is_upload" jdbcType="INTEGER" property="isUpload"/>
+    <result column="file_path" jdbcType="VARCHAR" property="filePath"/>
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    <result column="materials_version" jdbcType="INTEGER" property="materialsVersion"/>
+    <result column="state" jdbcType="INTEGER" property="state"/>
+  </resultMap>
+
+  <resultMap id="TypeMaterialRelResultMap"
+    type="com.visionvera.remoteservice.bean.TypeMaterialsRel">
+    <result column="type_id" jdbcType="INTEGER" property="TypeId"/>
+    <result column="materials_id" jdbcType="INTEGER" property="materialsId"/>
+  </resultMap>
+
+  <resultMap id="RelResultMap" type="com.visionvera.remoteservice.bean.Materials"
+    extends="BaseResultMap">
+    <result column="dept_name" jdbcType="INTEGER" property="deptName"/>
+    <result column="serviceName" jdbcType="VARCHAR" property="serviceName"/>
+    <collection property="businessTypeList" select="selectBusinessTypeList" column="id"
+      ofType="com.visionvera.remoteservice.bean.BusinessTypeBean">
+      <id column="id" jdbcType="INTEGER" property="id"/>
+      <result column="parent_id" jdbcType="INTEGER" property="parentId"/>
+      <result column="describes" jdbcType="VARCHAR" property="describes"/>
+      <result column="dept_id" jdbcType="INTEGER" property="deptId"/>
+      <result column="service_key" jdbcType="VARCHAR" property="serviceKey"/>
+      <result column="grade" jdbcType="INTEGER" property="grade"/>
+      <result column="is_leaf" jdbcType="INTEGER" property="isLeaf"/>
+      <result column="version" jdbcType="INTEGER" property="version"/>
+      <result column="state" jdbcType="INTEGER" property="state"/>
+      <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+      <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+      <result column="is_form" jdbcType="INTEGER" property="isForm"/>
+      <result column="append_form" jdbcType="INTEGER" property="appendForm"/>
+      <result column="is_materials" jdbcType="INTEGER" property="isMaterials"/>
+      <result column="materials_print" jdbcType="INTEGER" property="materialsPrint"/>
+      <result column="e_signature" jdbcType="INTEGER" property="eSignature"/>
+      <result column="remote_print" jdbcType="INTEGER" property="remotePrint"/>
+      <result column="police_sign" jdbcType="INTEGER" property="policeSign"/>
+      <result column="police_notarize" jdbcType="INTEGER" property="policeNotarize"/>
+      <result column="whole_time" jdbcType="INTEGER" property="wholeTime"/>
+      <result column="business_month" jdbcType="VARCHAR" property="businessMonth"/>
+      <result column="business_day" jdbcType="VARCHAR" property="businessDay"/>
+      <result column="business_flow" jdbcType="VARCHAR" property="businessFlow"/>
+    </collection>
+  </resultMap>
+
+
+
+  <sql id="Base_Column_List">
+    m.id, m.materials_name, m.service_key, m.dept_id, m.materials_type, m.is_upload, m.file_path, m.create_time,
+    m.update_time, m.materials_version, m.state
+  </sql>
+
+  <sql id="Column_List_Alias">
+    a.id, a.materials_name, a.service_key, a.dept_id, a.materials_type, a.is_upload, a.file_path, a.create_time,
+    a.update_time, a.materials_version, a.state
+  </sql>
+
+  <sql id="Business_Type_Column_List">
+    a.id, a.parent_id, a.describes, a.dept_id, a.service_key, a.grade, a.is_leaf, a.version, a.state,
+    a.create_time, a.update_time, a.is_form, a.append_form, a.is_materials, a.materials_print, a.e_signature,
+    a.remote_print, a.police_sign, a.police_notarize, a.whole_time, a.business_month, a.business_day ,a.business_flow
+  </sql>
+
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_materials
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.visionvera.remoteservice.bean.Materials">
+    insert into t_materials (id, materials_name, service_key,
+      dept_id, materials_type, is_upload,
+      file_path, create_time, update_time,
+      materials_version, state)
+    values (#{id,jdbcType=INTEGER}, #{materialsName,jdbcType=VARCHAR}, #{serviceKey,jdbcType=VARCHAR},
+      #{deptId,jdbcType=INTEGER}, #{materialsType,jdbcType=INTEGER}, #{isUpload,jdbcType=INTEGER},
+      #{filePath,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP},
+      #{materialsVersion,jdbcType=INTEGER}, #{state,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.visionvera.remoteservice.bean.Materials"
+    useGeneratedKeys="true" keyProperty="id">
+    insert into t_materials
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="materialsName != null">
+        materials_name,
+      </if>
+      <if test="serviceKey != null">
+        service_key,
+      </if>
+      <if test="deptId != null">
+        dept_id,
+      </if>
+      <if test="materialsType != null">
+        materials_type,
+      </if>
+      <if test="isUpload != null">
+        is_upload,
+      </if>
+      <if test="filePath != null">
+        file_path,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="materialsVersion != null">
+        materials_version,
+      </if>
+      <if test="state != null">
+        state,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="materialsName != null">
+        #{materialsName,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceKey != null">
+        #{serviceKey,jdbcType=VARCHAR},
+      </if>
+      <if test="deptId != null">
+        #{deptId,jdbcType=INTEGER},
+      </if>
+      <if test="materialsType != null">
+        #{materialsType,jdbcType=INTEGER},
+      </if>
+      <if test="isUpload != null">
+        #{isUpload,jdbcType=INTEGER},
+      </if>
+      <if test="filePath != null">
+        #{filePath,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="materialsVersion != null">
+        #{materialsVersion,jdbcType=INTEGER},
+      </if>
+      <if test="state != null">
+        #{state,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective"
+    parameterType="com.visionvera.remoteservice.bean.Materials">
+    update t_materials
+    <set>
+      <if test="materialsName != null">
+        materials_name = #{materialsName,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceKey != null">
+        service_key = #{serviceKey,jdbcType=VARCHAR},
+      </if>
+      <if test="deptId != null">
+        dept_id = #{deptId,jdbcType=INTEGER},
+      </if>
+      <if test="materialsType != null">
+        materials_type = #{materialsType,jdbcType=INTEGER},
+      </if>
+      <if test="isUpload != null">
+        is_upload = #{isUpload,jdbcType=INTEGER},
+      </if>
+      <if test="filePath != null">
+        file_path = #{filePath,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="materialsVersion != null">
+        materials_version = #{materialsVersion,jdbcType=INTEGER},
+      </if>
+      <if test="state != null">
+        state = #{state,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.visionvera.remoteservice.bean.Materials">
+    update t_materials
+    set materials_name = #{materialsName,jdbcType=VARCHAR},
+      service_key = #{serviceKey,jdbcType=VARCHAR},
+      dept_id = #{deptId,jdbcType=INTEGER},
+      materials_type = #{materialsType,jdbcType=INTEGER},
+      is_upload = #{isUpload,jdbcType=INTEGER},
+      file_path = #{filePath,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      materials_version = #{materialsVersion,jdbcType=INTEGER},
+      state = #{state,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <!--校验名称-->
+  <select id="checkoutByName" resultType="int">
+    SELECT COUNT(id)
+    FROM t_materials
+    <where>
+      <if test="id != null ">
+        AND id != #{id}
+      </if>
+      AND materials_name = #{materialsName}
+      AND materials_type = #{materialsType}
+      AND dept_id = #{deptId}
+      <if test="serviceKey != null and serviceKey != '' ">
+        AND service_key = #{serviceKey}
+      </if>
+      AND state <![CDATA[ <> ]]> 0
+    </where>
+  </select>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from t_materials m
+    where m.id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByIds" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from t_materials m
+    where m.id in
+    <foreach collection="array" item="id" separator="," open="(" close=")">
+      #{id,jdbcType=INTEGER}
+    </foreach>
+  </select>
+
+  <!--根据名称查询-->
+  <select id="selectByName" resultMap="BaseResultMap"
+    parameterType="com.visionvera.remoteservice.bean.Materials">
+    select
+    <include refid="Base_Column_List"/>
+    from t_materials m
+    where m.materials_name = #{materialsName}
+    AND m.state <![CDATA[ <> ]]> 0
+    and m.materials_type = #{materialsType}
+    AND m.dept_id = #{deptId}
+    LIMIT 0 ,1
+  </select>
+
+  <!--根据名称修改文件路径-->
+  <update id="updateMaterialsByName" parameterType="com.visionvera.remoteservice.bean.Materials">
+    update t_materials
+    set file_path = #{filePath,jdbcType=VARCHAR}
+    where materials_name = #{materialsName}
+    AND state <![CDATA[ <> ]]> 0
+    and materials_type = #{materialsType}
+    AND dept_id = #{deptId}
+  </update>
+
+  <!--添加材料与业务的关联-->
+  <insert id="addRelevanceBusinessType"
+    parameterType="com.visionvera.remoteservice.pojo.MaterialsVo">
+    INSERT INTO t_type_materials_rel (type_id,materials_id)
+    VALUES
+    <foreach collection="typeIds" item="typeId" separator=",">
+      (#{typeId} , #{materialId})
+    </foreach>
+  </insert>
+
+  <!--修改材料-->
+  <update id="updateMaterials" parameterType="com.visionvera.remoteservice.bean.Materials">
+    update t_materials
+    <set>
+      <if test="materialsName != null and materialsName != ''">
+        materials_name = trim(#{materialsName,jdbcType=VARCHAR}),
+      </if>
+      <if test="filePath != null and filePath != 'updateMaterials'">
+        file_path = #{filePath,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null">
+        state = #{state,jdbcType=INTEGER},
+      </if>
+      materials_version = #{materialsVersion,jdbcType=INTEGER} + 1,
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+    AND materials_version = #{materialsVersion}
+
+  </update>
+
+  <!--删除关联-->
+  <delete id="deleteRel" parameterType="Integer">
+    DELETE FROM t_type_materials_rel WHERE materials_id = #{materialsId}
+  </delete>
+
+  <!--查询材料-->
+  <select id="selectMaterialsList" parameterType="com.visionvera.remoteservice.pojo.MaterialsVo"
+    resultMap="RelResultMap">
+    SELECT
+    <include refid="Column_List_Alias"/>
+    ,b.dept_name ,tsc.serviceName as serviceName
+    FROM t_materials a, t_sys_dept b,t_service_center tsc
+    where
+    a.dept_id = b.id
+    and a.service_key = tsc.serviceKey
+    <if test=" id != null">
+      AND a.id = #{id}
+    </if>
+    <if test=" materialsName != null and materialsName != '' ">
+      AND a.materials_name LIKE CONCAT ('%', trim(#{materialsName}),'%')
+    </if>
+    <if test=" serviceName != null and serviceName != '' ">
+      AND tsc.serviceName LIKE CONCAT ('%', trim(#{serviceName}),'%')
+    </if>
+    <if test=" serviceKey != null and serviceKey != '' ">
+      AND a.service_key = #{serviceKey}
+    </if>
+    <if test="serviceKeys != null">
+      AND a.service_key in
+      <foreach collection="serviceKeys" open="(" close=")" item="serviceKey" separator=",">
+        #{serviceKey}
+      </foreach>
+    </if>
+    <if test=" deptId != null">
+      AND a.dept_id = #{deptId}
+    </if>
+    <if test=" materialsType != null">
+      AND a.materials_type = #{materialsType}
+    </if>
+    <if test=" isUpload != null">
+      AND a.is_upload = #{isUpload}
+    </if>
+    AND a.state <![CDATA[ <> ]]> 0
+    ORDER BY a.update_time DESC
+  </select>
+  <!--查询材料-->
+  <select id="getMaterialsById" parameterType="java.lang.Integer" resultMap="RelResultMap">
+    SELECT
+    a.id, (CASE WHEN a.file_path is not NULL THEN
+    CONCAT(
+    a.materials_name,RIGHT(a.file_path,length
+    (a.file_path) -INSTR(a.file_path,'.doc')+1 )
+    )
+    ELSE
+    a.materials_name
+    END )
+    materials_name
+    , a.service_key, a.dept_id, a.materials_type, a.is_upload, a.file_path, a.create_time,
+    a.update_time, a.materials_version, a.state
+    ,b.dept_name,tsc.serviceName
+    FROM t_materials a, t_sys_dept b,t_service_center tsc
+    where
+    a.dept_id = b.id
+    and a.service_key = tsc.serviceKey
+    <if test=" materialsId != null">
+      AND a.id = #{materialsId}
+    </if>
+    AND a.state <![CDATA[ <> ]]> 0
+    and tsc.state <![CDATA[ <> ]]> 0
+    ORDER BY a.update_time DESC
+  </select>
+  <select id="selectBusinessTypeList" parameterType="Integer"
+    resultType="com.visionvera.remoteservice.bean.BusinessTypeBean">
+    SELECT
+    <include refid="Business_Type_Column_List"/>
+    FROM t_business_type a , t_type_materials_rel b
+    WHERE a.id = b.type_id
+    AND b.materials_id = #{id}
+    AND a.state <![CDATA[ <> ]]> 0
+  </select>
+  <!--根据业务id查询所需申请材料-->
+  <select id="selectMaterialsByTypeIdAndMaterialsType" parameterType="java.lang.Integer"
+    resultMap="BaseResultMap">
+    SELECT
+    m.id, (CASE WHEN m.file_path is not NULL THEN
+		CONCAT(
+		m.materials_name,RIGHT(m.file_path,length
+	(m.file_path) -INSTR(m.file_path,'.doc')+1 )
+	)
+	ELSE
+		m.materials_name
+END )as materials_name, m.service_key, m.dept_id, m.materials_type, m.is_upload, m.file_path, m.create_time,
+    m.update_time, m.materials_version, m.state
+    FROM
+    t_materials m
+    LEFT JOIN t_type_materials_rel r ON m.id = r.materials_id
+    WHERE
+    r.type_id = #{businessTypeId}
+    AND m.materials_type = #{materialsType}
+    AND m.state <![CDATA[ <> ]]> 0
+    order by m.update_time DESC
+  </select>
+
+  <!--删除多个材料业务关联-->
+  <delete id="deleteRelByArray">
+    DELETE FROM t_type_materials_rel WHERE materials_id IN
+    <foreach collection="array" separator="," open="(" close=")" item="id">
+      #{id}
+    </foreach>
+  </delete>
+  <select id="checkBusinessIsUsed" resultType="java.lang.Integer">
+    select count(ttmr.type_id) FROM t_type_materials_rel ttmr WHERE ttmr.materials_id IN
+    <foreach collection="array" separator="," open="(" close=")" item="id">
+      #{id}
+    </foreach>
+  </select>
+  <!--删除多个材料-->
+  <update id="deleteByArray">
+    UPDATE t_materials
+    SET state = 0
+    WHERE id IN
+    <foreach collection="array" item="id" open="(" close=")" separator=",">
+      #{id}
+    </foreach>
+  </update>
+
+  <!--根据部门删除材料-->
+  <update id="deleteByDeptId">
+    UPDATE t_materials
+    SET state = 0
+    WHERE dept_id IN
+    <foreach collection="array" item="deptId" open="(" close=")" separator=",">
+      #{deptId}
+    </foreach>
+  </update>
+
+  <!-- 根据部门查询 材料id-->
+  <select id="selectIdByDeptId" resultType="Integer">
+    SELECT id
+    FROM t_materials
+    WHERE dept_id IN
+    <foreach collection="array" item="deptId" open="(" close=")" separator=",">
+      #{deptId}
+    </foreach>
+    AND state <![CDATA[ <> ]]> 0
+  </select>
+
+  <select id="selectIdListByDeptId" resultType="Integer">
+    SELECT id
+    FROM t_materials
+    WHERE dept_id = #{deptId}
+    AND state <![CDATA[ <> ]]> 0
+  </select>
+
+  <!-- 根据部门查询 材料id-->
+  <select id="checkRelevanceBusinessType"
+    parameterType="com.visionvera.remoteservice.pojo.MaterialsVo"
+    resultMap="TypeMaterialRelResultMap">
+    SELECT *
+    FROM t_type_materials_rel
+    WHERE type_id IN
+    <foreach collection="typeIds" item="typeId" open="(" close=")" separator=",">
+      #{typeId}
+    </foreach>
+    AND materials_id = #{materialId}
+  </select>
+
+  <select id="getCountNotInDeptByMaterialId" resultType="java.lang.Integer">
+    select count(*) from t_materials where id in
+    <foreach collection="materialsIdArray" separator="," open="(" close=")" item="id">
+      #{id,jdbcType=INTEGER}
+    </foreach>
+    and dept_id != #{depId}
+  </select>
+  <select id="checkIsfromMoreOne" resultType="java.lang.String">
+    SELECT
+    tbt.describes
+    FROM
+    t_business_type tbt
+    WHERE
+    tbt.id IN (
+    SELECT
+    ttmr.type_id AS type_id
+    FROM
+    t_type_materials_rel ttmr
+    LEFT JOIN t_materials tm ON ttmr.materials_id = tm.id
+    AND tm.materials_type = 1
+    WHERE ttmr.type_id in 
+    <foreach collection="typeIds" separator="," open="(" close=")" item="id">
+      #{id,jdbcType=INTEGER}
+    </foreach>
+    AND tm.id IS NOT NULL)
+    and tbt.state <![CDATA[ <> ]]> 0;
+  </select>
+  <select id="getBusinessMaterialsByIdCard"
+    resultType="com.visionvera.remoteservice.bean.MaterialsVO">
+    SELECT
+      tm.id,
+      tm.materials_name as materialsName
+    FROM
+      t_materials tm
+    WHERE
+      tm.id IN (
+      SELECT
+        tmr.materials_id
+      FROM
+        t_type_materials_rel tmr
+      WHERE
+        tmr.type_id = (
+        SELECT
+          t.business_type
+        FROM
+          t_business_info t,
+          t_client_info ci,
+          t_business_client_rel bcr
+        WHERE
+          t.id = bcr.business_id
+          AND ci.id = bcr.client_id
+          AND ci.idcard = #{idCard}
+          AND t.final_state = 1
+          AND t.state = 3
+          AND t.operator_id IS NOT NULL
+        ORDER BY
+          t.end_time DESC
+          LIMIT 1
+        )
+      )
+  </select>
+
+  <select id="getBusinessDetailIdsByMaterialsId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+    SELECT type_id
+    FROM t_type_materials_rel
+    WHERE materials_id = #{materialId}
+  </select>
+</mapper>

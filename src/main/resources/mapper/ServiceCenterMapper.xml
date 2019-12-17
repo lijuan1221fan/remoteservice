@@ -1,0 +1,1063 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.visionvera.remoteservice.dao.ServiceCenterDao">
+	<!-- 通用查询结果列 -->
+	<sql id="Base_Column_List">
+		serviceId, serviceKey, parentKey, serviceName, gradeId, regionKey, regionId,
+		regionAll, province, city, area, street, community, address, state, createTime,
+		updateTime, version ,type,x86Url
+	</sql>
+	<sql id="Base_Return_List">
+		serviceId, serviceKey, parentKey, serviceName, gradeId, regionKey, regionId,
+		regionAll, address, state, createTime, updateTime, version,parentName,type,x86Url
+	</sql>
+
+	<!-- 通用查询条件 -->
+	<sql id="Where_Common">
+		<if test="null != serviceId">
+			AND serviceId = #{serviceId}
+		</if>
+		<if test="null != serviceKey">
+			AND serviceKey = #{serviceKey}
+		</if>
+		<if test="null != parentKey">
+			AND parentKey = #{parentKey}
+		</if>
+		<if test="null != serviceName and serviceName!=''">
+			AND serviceName LIKE CONCAT('%',#{serviceName},'%')
+		</if>
+		<if test="null != gradeId">
+			AND gradeId = #{gradeId}
+		</if>
+		<if test="null != regionKey">
+			AND regionKey = #{regionKey}
+		</if>
+		<if test="null != regionId">
+			AND regionId = #{regionId}
+		</if>
+		<if test="null != regionAll">
+			AND regionAll = #{regionAll}
+		</if>
+		<if test="null != address">
+			AND address = #{address}
+		</if>
+		<if test="null != createTime">
+			AND createTime = #{createTime}
+		</if>
+		<if test="null != updateTime">
+			AND updateTime = #{updateTime}
+		</if>
+		<if test="null != version">
+			AND version = #{version}
+		</if>
+		<if test="null != type">
+			AND type = #{type}
+		</if>
+		AND state <![CDATA[ <> ]]> 0
+	</sql>
+	<select id="selectByPrimaryKey" resultType="com.visionvera.remoteservice.bean.ServiceCenterBean">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM t_service_center WHERE serviceKey = #{serviceKey}
+	</select>
+
+	<select id="get" resultType="com.visionvera.remoteservice.bean.ServiceCenterBean">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM t_service_center
+		<where>
+			<include refid="Where_Common" />
+		</where>
+		limit 1
+	</select>
+
+	<select id="queryList" resultType="com.visionvera.remoteservice.bean.ServiceCenterBean"
+		parameterType="com.visionvera.remoteservice.bean.ServiceCenterBean">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM t_service_center
+		<where>
+			<include refid="Where_Common" />
+		</where>
+	</select>
+
+	<select id="queryCount" resultType="java.lang.Integer"
+		parameterType="com.visionvera.remoteservice.bean.ServiceCenterBean">
+		SELECT count(*) FROM t_service_center
+		<where>
+			<include refid="Where_Common" />
+		</where>
+	</select>
+
+	<insert id="insert" parameterType="com.visionvera.remoteservice.bean.ServiceCenterBean">
+		INSERT INTO t_service_center
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			serviceKey,
+			parentKey,
+			serviceName,
+			gradeId,
+			regionKey,
+			regionId,
+			regionAll,
+			address,
+			state,
+			createTime,
+			updateTime,
+			version,
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{serviceKey},
+			#{parentKey},
+			#{serviceName},
+			#{gradeId},
+			#{regionKey},
+			#{regionId},
+			#{regionAll},
+			#{address},
+			#{state},
+			#{createTime},
+			#{updateTime},
+			#{version},
+		</trim>
+	</insert>
+
+	<insert id="insertSelective" parameterType="com.visionvera.remoteservice.bean.ServiceCenterBean">
+		INSERT INTO t_service_center
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="null != serviceId">
+				serviceId,
+			</if>
+			<if test="null != serviceKey">
+				serviceKey,
+			</if>
+			<if test="null != parentKey">
+				parentKey,
+			</if>
+			<if test="null != serviceName">
+				serviceName,
+			</if>
+			<if test="null != gradeId">
+				gradeId,
+			</if>
+			<if test="null != regionKey">
+				regionKey,
+			</if>
+			<if test="null != regionId">
+				regionId,
+			</if>
+			<if test="null != regionAll">
+				regionAll,
+			</if>
+			<if test="null != address">
+				address,
+			</if>
+			<if test="null != state">
+				state,
+			</if>
+			<if test="null != createTime">
+				createTime,
+			</if>
+			<if test="null != updateTime">
+				updateTime,
+			</if>
+			<if test="null != version">
+				version,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="null != serviceId">
+				#{serviceId},
+			</if>
+			<if test="null != serviceKey">
+				#{serviceKey},
+			</if>
+			<if test="null != parentKey">
+				#{parentKey},
+			</if>
+			<if test="null != serviceName">
+				#{serviceName},
+			</if>
+			<if test="null != gradeId">
+				#{gradeId},
+			</if>
+			<if test="null != regionKey">
+				#{regionKey},
+			</if>
+			<if test="null != regionId">
+				#{regionId},
+			</if>
+			<if test="null != regionAll">
+				#{regionAll},
+			</if>
+			<if test="null != address">
+				#{address},
+			</if>
+			<if test="null != state">
+				#{state},
+			</if>
+			<if test="null != createTime">
+				#{createTime},
+			</if>
+			<if test="null != updateTime">
+				#{updateTime},
+			</if>
+			<if test="null != version">
+				#{version},
+			</if>
+		</trim>
+	</insert>
+
+	<update id="updateByPrimaryKeySelective" parameterType="com.visionvera.remoteservice.bean.ServiceCenterBean">
+		update t_service_center
+		<set>
+			<trim suffixOverrides=",">
+				<if test="null != serviceKey">
+					serviceKey = #{serviceKey},
+				</if>
+				<if test="null != parentKey">
+					parentKey = #{parentKey},
+				</if>
+				<if test="null != serviceName">
+					serviceName = #{serviceName},
+				</if>
+				<if test="null != gradeId">
+					gradeId = #{gradeId},
+				</if>
+				<if test="null != regionKey">
+					regionKey = #{regionKey},
+				</if>
+				<if test="null != regionId">
+					regionId = #{regionId},
+				</if>
+				<if test="null != regionAll">
+					regionAll = #{regionAll},
+				</if>
+				<if test="null != address">
+					address = #{address},
+				</if>
+				<if test="null != state">
+					state = #{state},
+				</if>
+				<if test="null != createTime">
+					createTime = #{createTime},
+				</if>
+				<if test="null != updateTime">
+					updateTime = #{updateTime},
+				</if>
+				<if test="null != version">
+					version = #{version},
+				</if>
+			</trim>
+		</set>
+		WHERE serviceKey = #{serviceKey}
+	</update>
+
+	<update id="updateByPrimaryKey" parameterType="com.visionvera.remoteservice.bean.ServiceCenterBean">
+		update t_service_center
+		<set>
+			<trim suffixOverrides=",">
+				serviceKey = #{serviceKey},
+				parentKey = #{parentKey},
+				serviceName = #{serviceName},
+				gradeId = #{gradeId},
+				regionKey = #{regionKey},
+				regionId = #{regionId},
+				regionAll = #{regionAll},
+				address = #{address},
+				state = #{state},
+				createTime = #{createTime},
+				updateTime = #{updateTime},
+				version = #{version},
+			</trim>
+		</set>
+		WHERE serviceKey = #{serviceKey}
+	</update>
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from t_service_center
+		where serviceKey = #{serviceKey}
+	</delete>
+
+	<delete id="delete" parameterType="com.visionvera.remoteservice.bean.ServiceCenterBean">
+		delete from t_service_center
+		where 1=1
+		<if test="null != serviceId">
+			and serviceId = #{serviceId}
+		</if>
+		<if test="null != serviceKey">
+			and serviceKey = #{serviceKey}
+		</if>
+		<if test="null != parentKey">
+			and parentKey = #{parentKey}
+		</if>
+		<if test="null != serviceName">
+			and serviceName = #{serviceName}
+		</if>
+		<if test="null != gradeId">
+			and gradeId = #{gradeId}
+		</if>
+		<if test="null != regionKey">
+			and regionKey = #{regionKey}
+		</if>
+		<if test="null != regionId">
+			and regionId = #{regionId}
+		</if>
+		<if test="null != regionAll">
+			and regionAll = #{regionAll}
+		</if>
+		<if test="null != address">
+			and address = #{address}
+		</if>
+		<if test="null != state">
+			and state = #{state}
+		</if>
+		<if test="null != createTime">
+			and createTime = #{createTime}
+		</if>
+		<if test="null != updateTime">
+			and updateTime = #{updateTime}
+		</if>
+		<if test="null != version">
+			and version = #{version}
+		</if>
+	</delete>
+	<select id="getOfferNumOfServiceCenterList" parameterType="com.visionvera.remoteservice.bean.ServiceCenterBean" resultType="com.visionvera.remoteservice.bean.ServiceCenterBean">
+		SELECT a.serviceId , a.serviceKey , a.parentKey , a.serviceName ,
+		a.gradeId ,
+		a.regionKey,a.regionId , a.regionAll , a.address ,a.`state` ,a.createTime , a.updateTime ,
+		a.version
+		FROM t_service_center a where a.`state`<![CDATA[ <> ]]> 0
+		<if test="serviceName !=null and serviceName != ''">
+			AND a.serviceName LIKE
+			CONCAT('%',#{serviceName},'%')
+		</if>
+		<if test="type !=null">
+			and a.type = #{type}
+		</if>
+		<if test="parentKey !=null and parentKey != ''">
+			AND a.parentKey = #{parentKey}
+		</if>
+
+	</select>
+	<!-- 查询服务中心列表 -->
+	<select id="getServiceCenterList" resultType="com.visionvera.remoteservice.bean.ServiceCenterBean">
+		SELECT a.serviceId , a.serviceKey , a.parentKey , a.serviceName ,
+		a.gradeId ,
+		a.regionKey,a.regionId , a.regionAll , a.address ,a.`state` ,a.createTime , a.updateTime ,
+		a.version
+		FROM t_service_center a where a.`state` <![CDATA[ <> ]]> 0 and a.type = 3
+		<if test="fuzzyServiceName !=null and fuzzyServiceName != ''">
+			AND a.serviceName LIKE
+			CONCAT('%',#{fuzzyServiceName},'%')
+		</if>
+		<if test="serviceKey !=null and serviceKey != ''">
+			AND a.parentKey = #{serviceKey}
+		</if>
+	</select>
+
+	<select id="getPageServiceCenterList" resultType="com.visionvera.remoteservice.bean.ServiceCenterBean">
+		SELECT a.serviceId , a.serviceKey , a.parentKey , a.serviceName ,
+		a.gradeId ,a.type,
+		a.regionKey,a.regionId , a.regionAll ,a.province, a.city, a.area, a.street,a.community,
+		a.lal, a.address ,a.state ,a.createTime , a.updateTime , a.version, b.serviceName AS parentName
+		FROM t_service_center a LEFT JOIN t_service_center b
+		ON a.parentKey = b.serviceKey
+		where a.state <![CDATA[ <> ]]> 0
+		<if test="serviceName !=null and serviceName != ''">
+			AND a.serviceName LIKE
+			CONCAT('%',#{serviceName},'%')
+		</if>
+		<if test="type !=null">
+			AND a.type = #{type}
+		</if>
+		<if test="userServiceKey !=null and userServiceKey != ''">
+			AND a.serviceKey IN (
+			SELECT DISTINCT
+			tsc1.serviceKey
+			FROM
+			t_service_center tsc1
+			left join t_service_center tsc2 on tsc1.parentKey = tsc2.serviceKey
+			WHERE
+			tsc1.serviceKey = #{userServiceKey}
+			or tsc1.parentKey = #{userServiceKey}
+			or tsc2.parentKey = #{userServiceKey}
+			)
+		</if>
+		<if test="serviceKey != null and serviceKey != ''">
+			AND a.parentKey = #{serviceKey}
+		</if>
+		order by a.type ASC,a.createTime ASC
+	</select>
+
+	<!-- 删除服务中心 -->
+	<update id="deleteServiceCenter">
+		<foreach collection="array" item="serviceId" separator=";">
+			update t_service_center
+			set `state` = 0,
+			updateTime = NOW()
+			where serviceId = #{serviceId}
+		</foreach>
+	</update>
+
+	<!-- 添加服务中心 -->
+	<insert id="addServiceCenter" parameterType="com.visionvera.remoteservice.bean.ServiceCenterBean">
+		INSERT INTO
+		t_service_center
+		(serviceKey , parentKey , serviceName , gradeId ,
+		regionKey, regionId , regionAll , province , city ,
+		area, street , community , lal , address ,state,type,x86Url)
+		VALUES
+		(#{serviceKey} , #{parentKey} , #{serviceName} , #{gradeId}
+		,#{regionKey}, #{regionId} , #{regionAll} , #{province} , #{city} ,
+		#{area} , #{street} , #{community} , #{lal} , #{address} ,#{state},#{type},#{x86Url})
+	</insert>
+
+	<!-- 根据serviceName获取中心 -->
+	<select id="getServiceCenterByName"
+		resultType="com.visionvera.remoteservice.bean.ServiceCenterBean">
+		SELECT a.serviceId , a.serviceKey , a.parentKey , a.serviceName ,
+		a.gradeId , a.address ,a.`state`
+		FROM t_service_center a
+		<where>
+			AND a.`state` <![CDATA[ <> ]]> 0
+			AND a.serviceName = #{serviceName}
+		</where>
+	</select>
+
+	<!-- 修改服务中心 -->
+	<update id="updateServiceCenter" parameterType="com.visionvera.remoteservice.bean.ServiceCenterBean">
+		update t_service_center
+		<set>
+			<if test="serviceName != null and serviceName != '' ">
+				serviceName = #{serviceName} ,
+			</if>
+			<if test="parentKey != null and parentKey != '' ">
+				parentKey = #{parentKey} ,
+			</if>
+			<if test="regionKey != null and regionKey != '' ">
+				regionKey = #{regionKey} ,
+			</if>
+			<if test="regionId != null and regionId != '' ">
+				regionId = #{regionId} ,
+			</if>
+			<if test="regionAll != null and regionAll != '' ">
+				regionAll = #{regionAll} ,
+			</if>
+            <if test="province != null">
+                province = #{province},
+            </if>
+            <if test="city != null">
+                city = #{city},
+            </if>
+            <if test="area != null">
+                area = #{area},
+            </if>
+            <if test="street != null">
+                street = #{street},
+            </if>
+            <if test="community != null">
+                community = #{community},
+            </if>
+			<if test="lal != null and lal != '' ">
+				lal = #{lal},
+			</if>
+			<if test="address != null and address != '' ">
+				address = #{address},
+			</if>
+			<if test="state != null  ">
+				state = #{state},
+			</if>
+			<if test="x86Url != null and x86Url != '' ">
+				x86Url = #{x86Url}
+			</if>
+		</set>
+		where serviceId =#{serviceId}
+	</update>
+
+	<!-- 通过服务中心key查询级别 -->
+	<select id="getServiceGradeIdByKey" parameterType="String"
+		resultType="int">
+		SELECT gradeId
+		FROM t_service_center
+		WHERE serviceKey =
+		#{serviceKey}
+	</select>
+
+	<!-- 查询服务中心 -->
+	<select id="getServiceCenter" resultType="com.visionvera.remoteservice.bean.ServiceCenterBean"
+		parameterType="String">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM t_service_center
+		WHERE serviceKey =
+		#{serviceKey}
+		AND `state` <![CDATA[ <> ]]> 0
+	</select>
+
+	<!-- 根据行政区域key查询服务中心列表 -->
+	<select id="getCenterListByParams" resultType="com.visionvera.remoteservice.bean.ServiceCenterBean"
+		parameterType="com.visionvera.remoteservice.bean.ServiceCenterBean">
+		SELECT a.serviceId , a.serviceKey , a.parentKey , a.serviceName , a.gradeId
+		,a.regionKey, a.regionId , a.regionAll ,a.address , a.state , a.createTime ,
+		a.updateTime ,a.version ,b.serviceName AS parentName FROM t_service_center a LEFT JOIN t_service_center b
+		ON a.parentKey = b.serviceKey
+		<where>
+			a.state <![CDATA[ <> ]]> 0
+			<if test="null != regionKey and regionKey !=''">
+				and a.regionKey = #{regionKey}
+			</if>
+			<if test="null != parentKey and parentKey !=''">
+				and  a.parentKey = #{parentKey}
+			</if>
+		</where>
+		<if test="null != serviceName and serviceName !=''">
+			and a.serviceName LIKE CONCAT('%',#{serviceName},'%')
+		</if>
+		<if test="null != gradeId and gradeId !=''">
+			and a.gradeId = #{gradeId}
+		</if>
+
+	</select>
+
+	<!--根据级别查询服务中心数量  -->
+	<select id="getServiceCenterCountByGradeId" parameterType="Integer" resultType="Integer">
+		SELECT COUNT(serviceId)
+		FROM t_service_center
+		where gradeId = #{gradeId}
+		AND `state` <![CDATA[ <> ]]> 0
+	</select>
+
+	<!-- 根据serviceId 查询serviceKey  -->
+	<select id="getServiceKeysByServiceIds" resultType="String" >
+		SELECT
+		a.serviceKey
+		FROM
+		t_service_center AS a
+		WHERE
+		a.serviceId IN
+		<foreach collection="array" open="(" close=")" item="serviceId" separator=",">
+			#{serviceId}
+		</foreach>
+	</select>
+
+	<!-- 根据上级key删除服务中心  -->
+	<update id="deleteByParentKey">
+		<foreach collection="list" item="parentKey" separator=";">
+			update t_service_center
+			set `state` = 0
+			where parentKey = #{parentKey}
+		</foreach>
+	</update>
+
+	<!-- 查询子集服务servicekey -->
+	<select id="getServiceKeysByParentServiceKeys" resultType="String">
+		SELECT
+		a.serviceKey
+		FROM
+		t_service_center a
+		WHERE
+		a.parentKey IN
+		<foreach collection="serviceKeys" open="(" close=")" item="parentKey" separator=",">
+			#{parentKey}
+		</foreach>
+		and a.state <![CDATA[ <> ]]> 0
+	</select>
+
+
+	<!--查询审批中心标题-->
+	<select id="getServiceTitle" parameterType="String" resultType="String" >
+		SELECT serviceTitle
+		FROM t_service_center
+		<where>
+			<if test="serviceKey != null" >
+				AND serviceKey = #{serviceKey}
+			</if>
+			AND `state` <![CDATA[ <> ]]> 0
+			AND gradeId = 4
+		</where>
+		LIMIT 0 , 1
+	</select>
+
+	<update id="updateServiceTitle" >
+		UPDATE t_service_center
+		SET serviceTitle = #{serviceTitle}
+		<where>
+			<if test="serviceKey != null">
+				AND serviceKey = #{serviceKey}
+			</if>
+			AND `state` <![CDATA[ <> ]]> 0
+			AND gradeId = 4
+		</where>
+	</update>
+
+	<!--通过服务中心key 查询审批中心key-->
+	<select id="getParentKey" resultType="String" parameterType="String" >
+		SELECT parentKey
+		FROM t_service_center
+		WHERE serviceKey = #{serviceKey}
+		and `state` <![CDATA[ <> ]]> 0
+	</select>
+	<!-- 查询所有中心 -->
+	<select id="queryCenterList" resultType="com.visionvera.remoteservice.bean.ServiceCenterBean" parameterType="String">
+		SELECT *
+		FROM t_service_center
+		WHERE regionKey = #{regionKey}
+		and `state` <![CDATA[ <> ]]> 0
+	</select>
+
+	<!-- 查询子集servicekey -->
+	<select id="getServiceKeysByParentServiceKey" resultType="String">
+        SELECT
+        a.serviceKey
+        FROM
+        t_service_center AS a
+        WHERE
+        a.parentKey = #{serviceKey}
+        and `state` <![CDATA[ <> ]]> 0
+    </select>
+
+	<select id="getServiceCenterByCondition" parameterType="com.visionvera.remoteservice.bean.ServiceCenterBean" resultType="com.visionvera.remoteservice.bean.ServiceCenterBean">
+		SELECT
+		t.serviceId,
+		t.serviceKey,
+		t.parentKey,
+		t.serviceName,
+		t.type,
+		t.province,
+		t.city,
+		t.area,
+		t.street,
+		t.community,
+		t.address,
+		t.state,
+		c.serviceName as parentName
+		FROM
+		t_service_center t LEFT JOIN t_service_center c on t.parentKey = c.serviceKey
+		WHERE  1 = 1
+		<if test="type != null " >
+			AND t.type = #{type}
+		</if>
+		<if test="parentKey != null and parentKey  != ''" >
+			AND t.parentKey = #{parentKey}
+		</if>
+		<if test="serviceKey != null and serviceKey  != ''" >
+			AND t.serviceKey = #{serviceKey}
+		</if>
+		<if test="state != null and state  != '' and  state == '0'.toString()" >
+			AND t.state <![CDATA[ > ]]> 0
+		</if>
+		<if test="state != null or state  != '' and state ==  '-2'.toString()" >
+			AND t.state <![CDATA[ <> ]]> 0
+		</if>
+	</select>
+
+	<select id="getServiceCenterListByCondition" parameterType="com.visionvera.remoteservice.bean.ServiceCenterBean"
+			resultType="com.visionvera.remoteservice.bean.ServiceCenterBean">
+		SELECT
+		t.serviceId,
+		t.serviceKey,
+		t.parentKey,
+		t.serviceName,
+		t.type,
+		t.province,
+		t.city,
+		t.area,
+		t.street,
+		t.community,
+		t.address,
+		t.state,
+		c.serviceName as parentName
+		FROM
+		t_service_center t LEFT JOIN t_service_center c on t.parentKey = c.serviceKey
+		<where>
+			<if test="type != null ">
+				AND t.type = #{type}
+			</if>
+			<if test="state != null">
+				AND t.state = #{state}
+			</if>
+		</where>
+	</select>
+
+	<!-- 查询审核中心 -->
+	<select id="getVerifyCenterList" resultType="com.visionvera.remoteservice.bean.ServiceCenterBean" parameterType="Map">
+		select
+		*
+		from
+		t_service_center AS a
+		where
+		a.state <![CDATA[ <> ]]> 0 and a.type =2
+		<if test="parentKey != null and parentKey != '' ">
+			and a.parentKey = #{parentKey}
+		</if>
+		<if test="serviceKey != null and serviceKey != '' ">
+			and a.serviceKey = #{serviceKey}
+		</if>
+	</select>
+	<!-- 多中心新建业务类别时，admin取得所有统筹中心及审批中心，当为中心管理员时，取得当前用户下所在的中心 -->
+	<select id="getServiceCenterByUser" resultType="com.visionvera.remoteservice.bean.ServiceCenterBean" parameterType="java.lang.String">
+		select
+		*
+		from
+		t_service_center AS a
+		where
+		a.state <![CDATA[ <> ]]> 0 and a.type <![CDATA[ <> ]]> 3
+		<if test="serviceKey != null and serviceKey != '' ">
+			and a.serviceKey = #{serviceKey}
+		</if>
+	</select>
+	<!--根据服务中心的serviceKey查询统筹中心的serviceKey-->
+	<select id = "getOverAllByServiceKey" resultType="java.util.Map" parameterType="java.lang.String">
+		select
+		ta.serviceKey as overServiceKey,
+		ta.serviceId as overServiceId,
+		tb.serviceId as approvalServiceId,
+		tb.serviceKey as approvalServiceKey
+		from t_service_center ta
+		LEFT JOIN t_service_center tb on tb.parentKey = ta.serviceKey and tb.`state` <![CDATA[ <> ]]> 0 and tb.type = 2
+		LEFT JOIN t_service_center tc on tc.parentKey = tb.serviceKey and tc.`state` <![CDATA[ <> ]]> 0 and tc.type = 3
+		where ta.type = 1  and ta.state <![CDATA[ <> ]]> 0
+		<if test="serviceKey != null and serviceKey != '' ">
+			and tc.serviceKey = #{serviceKey}
+		</if>
+
+	</select>
+
+	<select id="getServiceCenterListByParentKey" resultType="com.visionvera.remoteservice.bean.ServiceCenterBean">
+		SELECT
+		t.serviceId,
+		t.serviceKey,
+		t.parentKey,
+		t.serviceName,
+		t.type,
+		t.address,
+		t.state,
+		s.serviceName as parentName,
+		t.lal
+
+		FROM
+		t_service_center t
+		left join t_service_center s on t.parentKey = s.serviceKey
+		WHERE
+		t.parentKey IN
+		<foreach collection="parentKeys" open="(" close=")" item="parentKey" separator=",">
+			#{parentKey}
+		</foreach>
+		and t.`state` <![CDATA[ <> ]]> 0
+		and s.`state` <![CDATA[ <> ]]> 0
+	</select>
+
+
+	<!-- 查询服务中心 -->
+	<select id="getServiceCentList" resultType="com.visionvera.remoteservice.bean.ServiceCenterBean"
+		parameterType="String">
+		SELECT *
+		FROM t_service_center
+		WHERE  `state` <![CDATA[ <> ]]> 0
+	</select>
+
+	<select id="getServiceCenterByServiceCenterKey" resultType="com.visionvera.remoteservice.bean.ServiceCenterBean">
+		SELECT
+		t.serviceId,
+		t.serviceName,
+		t.type,
+		t.`state`,
+		t.address,
+		t.serviceKey,
+		t.parentKey,
+		s.serviceName AS parentName
+		FROM
+		t_service_center t
+		LEFT JOIN t_service_center s ON t.parentKey = s.serviceKey
+		WHERE t.state <![CDATA[ <> ]]> 0
+		<if test="serviceCenterKey != null and serviceCenterKey != '' ">
+			and t.serviceKey = #{serviceCenterKey}
+		</if>
+		<if test="parentKey != null and parentKey != '' ">
+			and s.serviceKey = #{parentKey}
+		</if>
+	</select>
+
+	<select id="getServiceCenterByServiceKey" resultType="com.visionvera.remoteservice.bean.ServiceCenterBean">
+		SELECT
+		t.serviceId,
+		t.serviceName,
+		t.type,
+		t.`state`,
+		t.province AS province,
+		t.city AS city,
+		t.area AS area,
+		t.street AS street,
+		t.community AS community,
+		t.lal,
+		t.address,
+		t.serviceKey,
+		t.parentKey,
+		s.serviceName AS parentName,
+		t.x86Url
+		FROM
+		t_service_center t
+		LEFT JOIN t_service_center s ON t.parentKey = s.serviceKey
+		WHERE t.serviceKey = #{serviceCenterKey} and t.state <![CDATA[ <> ]]> 0
+	</select>
+	<select id="getServiceCenterByParentKey" parameterType="java.lang.String" resultType="com.visionvera.remoteservice.bean.ServiceCenterBean">
+		SELECT
+		t.serviceId,
+		t.serviceName,
+		t.type,
+		t.`state`,
+		t.address,
+		t.serviceKey,
+		t.parentKey,
+		t.lal
+		FROM
+		t_service_center t
+		WHERE t.parentKey = #{parentKey} and t.state <![CDATA[ <> ]]> 0
+	</select>
+  <!--根据统筹中心serviceKey查询所有村中心-->
+	<select id="getServiceKeysByParentKey" parameterType="java.lang.String" resultType="java.lang.String">
+		select ts.serviceKey
+		from t_service_center ts
+		LEFT JOIN t_service_center tsc on ts.parentKey= tsc.serviceKey
+		where tsc.parentKey = #{parentKey} and tsc.state <![CDATA[ <> ]]> 0
+		and ts.state <![CDATA[ <> ]]> 0
+	</select>
+  <!--根据审批中心serviceKey查询所有村中心-->
+	<select id="getServiceListByParentKey" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT
+		t.serviceKey
+		FROM
+		t_service_center t
+		WHERE t.parentKey = #{parentKey} and t.state <![CDATA[ <> ]]> 0
+	</select>
+	<select id="getServiceListByChildServiceKey" parameterType="java.lang.String" resultType="com.visionvera.remoteservice.bean.ServiceCenterBean">
+		SELECT
+		t.serviceId,
+		t.serviceName,
+		t.type,
+		t.`state`,
+		t.address,
+		t.serviceKey,
+		t.parentKey
+		FROM
+		t_service_center t
+		LEFT JOIN t_service_center tsc on t.serviceKey = tsc.parentKey
+		WHERE tsc.serviceKey = #{serviceKey} and t.state <![CDATA[ <> ]]> 0
+		and tsc.state <![CDATA[ <> ]]> 0
+	</select>
+  <select id="getServiceCenterKeyByParentKey"
+    resultType="com.visionvera.remoteservice.bean.ServiceCenterBean">
+		SELECT
+	  c.serviceKey,c.lal
+		FROM
+			t_service_center a
+			INNER JOIN t_service_center b ON a.serviceKey = b.parentKey
+			INNER JOIN t_service_center c ON b.serviceKey = c.parentKey
+		WHERE
+			a.serviceKey = #{serviceKey} and c.state <![CDATA[ <> ]]> 0
+			and a.state <![CDATA[ <> ]]> 0
+	</select>
+
+  <select id="getServiceKeyListByWholeParentKey" parameterType="java.lang.String"
+    resultType="java.lang.String">
+		SELECT
+			c.serviceKey
+		FROM
+			t_service_center a
+			INNER JOIN t_service_center b ON a.serviceKey = b.parentKey
+			INNER JOIN t_service_center c ON b.serviceKey = c.parentKey
+		WHERE
+			a.serviceKey = #{serviceKey} and c.state <![CDATA[ <> ]]> 0
+			and a.state <![CDATA[ <> ]]> 0
+	</select>
+
+  <select id="getServiceCenterListByWholeParentKey" parameterType="java.lang.String" resultType="com.visionvera.remoteservice.bean.ServiceCenterBean">
+		SELECT
+		t.serviceId,
+		t.serviceName,
+		t.type,
+		t.`state`,
+		t.address,
+		t.serviceKey,
+		t.parentKey
+		FROM
+		t_service_center t
+		INNER JOIN t_service_center b ON b.serviceKey = t.parentKey
+			INNER JOIN t_service_center c ON c.serviceKey = b.parentKey
+		WHERE
+			c.serviceKey = #{serviceKey} and c.state <![CDATA[ <> ]]> 0
+			and t.state <![CDATA[ <> ]]> 0
+	</select>
+
+  <select id="getParentServiceCenterByServiceKey" parameterType="java.lang.String" resultType="com.visionvera.remoteservice.bean.ServiceCenterBean">
+		SELECT
+		t.serviceId,
+		t.serviceName,
+		t.type,
+		t.`state`,
+		t.address,
+		t.serviceKey,
+		t.parentKey
+		FROM
+		t_service_center t
+		INNER JOIN t_service_center c ON t.serviceKey = c.parentKey
+		WHERE
+			c.serviceKey = #{serviceKey} and c.state <![CDATA[ <> ]]> 0
+			and t.state <![CDATA[ <> ]]> 0
+	</select>
+
+	<select id="getServiceCenterByLal" parameterType="java.lang.String"
+			resultType="com.visionvera.remoteservice.bean.ServiceCenterBean">
+		SELECT
+		serviceId,
+		serviceName,
+		type,
+		address,
+		serviceKey,
+		parentKey,
+		lal
+		FROM
+		t_service_center
+		WHERE
+		lal = #{lal}
+		and state <![CDATA[ <> ]]> 0
+	</select>
+
+	<select id="getServiceKeyListByServiceKey" parameterType="java.lang.String"
+    resultType="java.lang.String">
+    SELECT
+    tsc.serviceKey
+    FROM t_service_center tsc INNER JOIN t_service_center ts on tsc.parentKey = ts.serviceKey and ts.state <![CDATA[ <> ]]> 0
+    WHERE ts.serviceKey = 
+    (
+    SELECT tc.parentKey FROM t_service_center tc
+    WHERE tc.serviceKey= #{serviceKey}
+    and tc.state <![CDATA[ <> ]]> 0
+    )
+    and tsc.state <![CDATA[ <> ]]> 0
+	</select>
+
+    <select id="getServiceKeyListByWholeServiceKey" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT
+        c.serviceKey as serviceKey
+        FROM
+        t_service_center a
+        INNER JOIN t_service_center b ON a.serviceKey = b.parentKey
+        INNER JOIN t_service_center c ON b.serviceKey = c.parentKey
+        WHERE
+        a.serviceKey = #{serviceKey} and c.state <![CDATA[ <> ]]> 0
+        UNION ALL
+        SELECT
+        b.serviceKey as serviceKey
+        FROM
+        t_service_center a
+        INNER JOIN t_service_center b ON a.serviceKey = b.parentKey
+        WHERE
+        a.serviceKey = #{serviceKey} and b.state <![CDATA[ <> ]]> 0
+    </select>
+
+   <!--根据村中心serviceKey获取所有同审批中心下的所有村中心-->
+  <select id="getServiceCentListByserviceKey"  parameterType="java.lang.String" resultType="com.visionvera.remoteservice.bean.ServiceCenterBean">
+    SELECT
+    t.serviceId,
+		t.serviceName,
+		t.type,
+		t.`state`,
+		t.address,
+		t.serviceKey,
+		t.parentKey
+    FROM t_service_center t INNER JOIN t_service_center ts on t.parentKey = ts.serviceKey
+    INNER JOIN t_service_center tsc on ts.serviceKey = tsc.parentKey
+    WHERE tsc.serviceKey = #{serviceKey}
+  </select>
+  <select id="getChirdServiceList" resultType="com.visionvera.remoteservice.bean.ServiceCenterBean">
+   select
+    tsc.*
+    FROM t_service_center tsc
+    where tsc.type = 3
+    AND state = 1
+  </select>
+
+	<select id="getServiceCenterListByServiceKeys" resultType="com.visionvera.remoteservice.bean.ServiceCenterBean">
+		SELECT
+		serviceKey as serviceKey,
+		lal as lal
+		FROM
+		t_service_center
+		<where>
+			<if test="serviceKeyList != null">
+				and serviceKey in
+				<foreach collection="serviceKeyList" item="serviceKey" open="(" close=")" separator=",">
+					#{serviceKey}
+				</foreach>
+			</if>
+		</where>
+	</select>
+
+	<select id="getDoingStatus" resultType="com.visionvera.remoteservice.bean.ServiceCenterBean">
+		SELECT DISTINCT
+		tsc.serviceKey as serviceKey,
+		tsc.lal as lal
+		FROM
+		t_service_center tsc
+		left JOIN t_business_info tbi on tsc.serviceKey = tbi.service_key
+		<where>
+			tbi.state = 2
+			<if test="serviceKeyList != null">
+				and tsc.serviceKey in
+				<foreach collection="serviceKeyList" item="serviceKey" open="(" close=")" separator=",">
+					#{serviceKey}
+				</foreach>
+			</if>
+		</where>
+	</select>
+
+	<select id="getWaitingStatus" resultType="com.visionvera.remoteservice.bean.ServiceCenterBean">
+		SELECT DISTINCT
+		tsc.serviceKey as serviceKey,
+		tsc.lal as lal
+		FROM
+		t_service_center tsc
+		left JOIN t_business_info tbi on tsc.serviceKey = tbi.service_key
+		<where>
+			tbi.state = 1
+			<if test="serviceKeyList != null">
+				and tsc.serviceKey in
+				<foreach collection="serviceKeyList" item="serviceKey" open="(" close=")" separator=",">
+					#{serviceKey}
+				</foreach>
+			</if>
+		</where>
+	</select>
+
+	<select id="getAreaServiceCenterOfType" resultType="java.lang.String">
+		SELECT serviceKey
+		FROM
+		t_service_center
+		<where>
+			province is not null
+			<if test="serviceKeys != null">
+				and serviceKey not in
+				<foreach collection="serviceKeys" item="serviceKey" open="(" close=")" separator=",">
+					#{serviceKey}
+				</foreach>
+			</if>
+			<if test="typeList != null">
+				and type in
+				<foreach collection="typeList" item="type" open="(" close=")" separator=",">
+					#{type}
+				</foreach>
+			</if>
+		</where>
+		order by type DESC
+		limit 0,#{number}
+	</select>
+
+  <select id="selecServiceCenterBeantByPrimaryKey" resultType="com.visionvera.remoteservice.bean.ServiceCenterBean">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM t_service_center WHERE serviceId = #{serviceId}
+  </select>
+</mapper>

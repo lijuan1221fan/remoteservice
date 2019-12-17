@@ -1,0 +1,66 @@
+spring:
+  datasource:
+    druid:
+      url: jdbc:mysql://mysql:3306/remoteservice?serverTimezone=Asia/Shanghai&characterEncoding=UTF-8&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull
+      username: root
+      password: Vv12345!
+      driver-class-name: com.mysql.jdbc.Driver
+      initial-size: 10
+      max-active: 100
+      min-idle: 10
+      max-wait: 60000
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      validation-query: SELECT 1 FROM DUAL
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      stat-view-servlet:
+        enabled: true
+        url-pattern: /druid/*
+      filter:
+        stat:
+          log-slow-sql: true
+          slow-sql-millis: 1000
+          merge-sql: false
+        wall:
+          config:
+            multi-statement-allow: true
+  redis:
+    database: 0
+    host: redis
+    port: 6379
+    password: 111111
+    timeout: 1800
+    jedis:
+      pool:
+        max-active: 8
+        max-wait: -1
+        max-idle: 8
+        min-idle: 0
+#系统维护开关  true/false
+maintenance:
+  time: true
+  cron: 0 0 2 * * ?
+  process: true
+  midday: 0 0 12 * * ?
+#开始业务等待时间发送短信
+sendSms:
+  sleep: 2
+  core-pool-size: 10
+  max-pool-size: 20
+  queue-capacity: 1000
+  keep-alive-seconds: 300
+#x86图片临时存储位置,部分服务器上传不能默认webapps文件夹下面，需要默认指定，所以配置两个变量一个上传，一个下载
+temp:
+  save:
+    path: X86/temp/pic
+    docpath: X86/temp/doc
+    downloadpath: X86/temp/download
+    downloadscupath: remoteservice/template/scu/
+    datapath: ../webapps/remoteservice/template/scu/
+# 12小时后过期
+token:
+  keepTime: 12

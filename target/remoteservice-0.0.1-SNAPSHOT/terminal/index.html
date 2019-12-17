@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-status-bar-style" content="normal|black|black-translucent">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+  <!-- <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" name="viewport" /> -->
+  <title>视联网申请自助终端</title>
+  <link rel="stylesheet" href="css/reset.css" />
+  <link rel="stylesheet" href="js/lib/layer/need/layer.css" />
+  <link rel="stylesheet" href="css/timelyBusiness.css" />
+  <link rel="stylesheet" href="css/otherpage.css"/>
+  <script src="js/lib/jquery2.2.4min.js"></script>
+  <script src="js/lib/layer/layer.js"></script>
+  <script src="js/comm.js"></script>
+  <script src="js/websocket.js"></script>
+  <script src="js/pickNumer.js"></script>
+  <script src="js/timelyBusiness.js"></script>
+  <script src="js/androidApi.js"></script>
+  <!-- <script src="js/clickTest.js"></script> -->
+</head>
+
+<body>
+  <div class="main-box">
+    <h6 id="test-html-box" style="max-height:2rem;overflow:auto;word-break: break-all;white-space:wrap;"></h6>
+    <!-- 播号页面 -->
+    <div id="index" >
+      <div class="header">
+        <div>
+          <h1 id="bmHeadName" style="text-align: left;margin-left: 0.4rem;"></h1>
+          <div class="header-back">
+            <!-- <a href="javascript:;" class="go-home" onclick="commonFun.clickGoBackHomePage()"></a> -->
+            <!-- <span class="home-timer-back"></span> -->
+          </div>
+        </div>
+      </div>
+      <div class="content">
+        <!-----apply----->
+        <div class="content-apply" id="bmConName">
+          <h4  id="bm" class="content-title" style="text-align: center;font-size: 0.48rem;font-weight: bold;color: #fff;height: 0.56rem;line-height:0.56rem;">
+            <!-- <span id="bmNum" style="font-size: 0.56rem;">15</span> -->
+          </h4>
+          <div class="content-items" style="width:88%;margin: 0 auto;margin-top:0.8rem;">
+            <div class="items-list" data-id="1000" data-name="公安" id="number_shell" style="width: 100%;">
+              <p style="border-bottom: 1px solid #7A9EC2;">呼叫：<span id="bmDoneNumber"></span><span class="fr" id="bmDoneName"></span></p>
+              <p style="color: #555;">等待：<span id="bmWaitName"></span><span class="fr" id="bmWaitNum"></span></p>
+            </div>
+          </div>
+          <p id="drp" style="font-size: 0.2rem;color: #fff;
+            text-align: center;margin-top:0.35rem;padding-bottom: 0.1rem;">
+            如需办理业务，请轻触屏幕领取号码</p>
+          <p id="hasId" style="font-size: 0.2rem;color: #fff;
+            text-align: center;margin-top:0.35rem;padding-bottom: 0.1rem;display: none;">
+            如需办理业务，请刷身份证领取号码</p>
+        </div>
+        <!-----apply-end----->
+      </div>
+      <p style="font-size: 0.2rem;width: 100%;height: 0.8rem;
+          line-height: 0.8rem;text-align: center;background: #053674;color: #fff;"></p>
+      <!-- <p style="font-size: 0.2rem;width: 100%;height: 0.8rem;
+          line-height: 0.8rem;text-align: center;background: #053674;color: #fff;">前往A2办理业务</p> -->
+    </div>
+    <!-- 部门列表页 -->
+    <div id="csIndex" class="dn">
+      <div class="header">
+        <h1>视联网申请自助终端</h1>
+        <div class="header-back">
+          <img src="./img/shouye.png" class="home-icon" style="width: 0.32rem;height: 0.32rem;" alt="">
+            <!-- <a href="javascript:;" style="display: block;width: 0.5rem;height: 0.5rem;" class="go-home" onclick="commonFun.clickGoBackHomePage()"></a> -->
+            <span class="home-timer-back" id="departments-back-timer" >59</span>
+        </div>
+      </div>
+      <div class="content">
+        <!-----apply----->
+        <div class="content-apply">
+          <h4 class="content-title">请选择您要办理的业务类型</h4>
+          <div class="content-items" style="overflow: auto">
+              <div class="items-list" data-id="1000" data-name="公安" id="department_shell" style="overflow: auto">
+              </div>
+          </div>
+          <ul class="paging-btns department-page-btns">
+              <li><a href="javascript:;" id="lastPage">上一页</a></li>
+              <li><a href="javascript:;" id="nextPage">下一页</a></li>
+          </ul>
+        </div>
+        <!-----apply-end----->
+      </div>
+    </div>
+    <!-- 业务页面 -->
+    <div id="picker" class="dn">
+      <div class="header">
+        <h1>视联网申请自助终端</h1>
+        <div class="header-back">
+          <a class="go-back-box" id="header_back">
+            <i class="back-icon"></i>
+            <!--<span>返回</span>-->
+          </a>
+          <a href="javascript:;" class="go-home" onclick="goHome()"></a>
+          <span class="timer-back">150</span>
+        </div>
+      </div>
+      <div class="content">
+        <div class="page2-content">
+          <h2 class="page2-content-title" id="conent_title"></h2>
+          <div class="page2-content-box">
+            <div class="wrap">
+              <ul id="item_box">
+              </ul>
+            </div>
+          </div>
+          <ul class="paging-btns business-page-btns">
+            <li><a href="javascript:;" id="lastPageBusiness">上一页</a></li>
+            <li><a href="javascript:;" id="nextPageBusiness">下一页</a></li>
+          </ul>
+          <!--<div class="page2-btn-box">-->
+              <!--&lt;!&ndash;<button>上一页</button>-->
+              <!--<button>下一页</button>&ndash;&gt;-->
+          <!--</div>-->
+        </div>
+        <!-----result----->
+        <div class="content-result">
+          <div class="result-box">
+            <div class="result-txt-box">
+              <p class="result-txt">您选择的是<span id="business_type"></span>业务办理<br /></p>
+              <p class="result-txt num">您的号码是<span id="oder_num">21</span>号</p>
+              <p class="result-txt back"><span id="countdown">10</span>秒后将返回首页！</p>
+            </div>
+            <!--<div class="result-back-box">-->
+            <!--<a href="timelyBusiness.html">返回</a>-->
+            <!--</div>-->
+          </div>
+        </div>
+        <!-----result-end----->
+      </div>
+    </div>
+
+
+    <div style="height: 100%;background:rgba(242,245,250,1);" class="dn">
+      <div class="header">
+        <h1 style="text-align: center;">视联网申请自助终端</h1>
+        <div class="header-back"></div>
+      </div>
+      <div class="content" style="">
+        <p style="font-size: 0.18rem;margin-top: 0.3rem">请选择您要办理的业务类型</p>
+        <ul class="yw2">
+          <li>
+            <img src="./img/index_timely.png" alt="">
+            <p>实时业务</p>
+          </li>
+          <li>
+            <img src="./img/index_msg.png" alt="">
+            <p>咨询业务</p>
+          </li>
+          <li>
+            <img src="./img/index_query.png" alt="">
+            <p>查询业务</p>
+          </li>
+          <li>
+            <img src="./img/index_autonomy.png" alt="">
+            <p>自助服务</p>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <!-- 多个终端 -->
+    <div id="listIndex" style="height: 100%;background:rgba(242,245,250,1);" class="dn">
+      <div class="header">
+        <h1 style="text-align: center;">视联网申请自助终端</h1>
+        <div class="header-back"></div>
+      </div>
+      <div class="content" style="">
+        <p style="font-size: 0.18rem;margin-top: 0.3rem;padding-left: 0.15rem;">请选择您要办理的业务类型</p>
+        <ul class="yw2">
+          <li>
+            <div class="div c1">公安</div>
+            <p>实时业务</p>
+          </li>
+          <li>
+            <div class="div c2">社保</div>
+            <p>咨询业务</p>
+          </li>
+          <li>
+            <div class="div c3">其他</div>
+            <p>查询业务</p>
+          </li>
+          <li>
+            <div class="div c4">琐事</div>
+            <p>自助服务</p>
+          </li>
+        </ul>
+        <div class="next">
+          <ul>
+            <li>下一页</li>
+            <li>上一页</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- <script>
+    alert(7777)
+    function ConnectWebSocket() {
+      if ("WebSocket" in window) {
+        alert(123)
+        //       var getData = commonFun.getAndroidInfo();//获取安卓的所有数据
+        //       var div = '<div>'+'22222'+JSON.stringify(getData)+'</div>';
+        // $("body").append(div);
+        // alert(JSON.stringify(getData))
+        // if(getData.deviceType == '01'){
+        //   // pad == 01
+        //   $("#hasId").hide();
+        //   $("#drp").show();
+        // }else if(getData.deviceType == '02'){
+        //   // 一体机 == 01
+        //   $("#drp").hide();
+        //   $("#hasId").show();
+        // }
+
+        //创建新的WebSocket
+        var url = "ws://" + '172.16.140.224:8080' + "/remoteservice/h5SocketServer";
+        var ws = new WebSocket(url);
+
+        ws.onopen = function () {
+
+          var agentData = _formatParams({
+            // serviceKey: getData.serviceKey,
+            serviceKey: 'RS_a4c9af959ae041baa8c686463889cd6b',
+            deviceCode: '111111',
+            type: 15,
+          })
+          alert(agentData)
+          ws.send(agentData);
+          var agentData2 = _formatParams({
+            // serviceKey: getData.serviceKey,
+            serviceKey: 'RS_a4c9af959ae041baa8c686463889cd6b',
+            deviceCode: '111111',
+            type: 16,
+            pageSize: 10,
+            pageNum: 1,
+            state: 0
+          })
+          ws.send(agentData2)
+        };
+
+        ws.onmessage = function (opt) {
+          var bmData = JSON.parse(opt.data);
+          console.log(bmData)
+          if (bmData.type == 16) {
+
+          } else {
+            $("#bmHeadName").text(bmData[0].serviceName);
+            $("#bm").text(bmData[0].deptName + "等待人数：" + bmData[0].waitNumber);
+            $("#bmDoneNumber").text("空闲" || bmData[0].doneNumber);
+            $("#bmWaitName").text("空闲" || bmData[0].waitNumber);
+            $("#bmWaitNum").text(" " || bmData[0].doneNumber);
+            var i = 0;
+
+            setInterval(function () {
+              if (i == bmData.length - 1) {
+                i = -1
+              }
+              i++
+              add(i)
+              function add(i) {
+                $("#bm").text(bmData[i].deptName + "等待人数：" + bmData[i].waitNumber);
+                $("#bmDoneNumber").text("空闲" || bmData[i].doneNumber);
+                $("#bmWaitName").text("空闲" || bmData[i].waitNumber);
+                $("#bmWaitNum").text(" " || bmData[i].doneNumber);
+              }
+            }, 3000)
+          }
+
+        };
+
+        $("#drp").click(function () {
+          alert(78888)
+          // window.location.href = "./index.html"
+          // $("#index").hide();
+          // $("#csIndex").show();
+          // setTimeout(function(){
+          //   $("#csIndex").hide();
+          //   $("#listIndex").show()
+          // },1000);
+        });
+        ws.onclose = function () {
+          // 关闭 websocket
+          alert("连接已关闭...");
+        };
+        // 参数格式化
+        function _formatParams(param) {
+          let str = null;
+          if (!param) { param = this.param }
+          switch (Object.prototype.toString.call(param)) {
+            case '[object Object]': {
+              str = JSON.stringify(param)
+            } break;
+            case '[object String]': { str = param } break;
+            case '[object Number]': {
+              str = JSON.stringify({ type: param + "" })
+            } break;
+            default: str = null;
+          }
+          return str
+        }
+      }
+      else {
+        // 无法使用WebSocket
+        alert("无法使用WebSocket");
+      }
+    }
+    ConnectWebSocket();
+
+  </script> -->
+
+</body>
+
+</html>

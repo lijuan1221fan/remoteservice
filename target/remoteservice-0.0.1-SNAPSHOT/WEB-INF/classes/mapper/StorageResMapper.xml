@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.visionvera.remoteservice.dao.StorageResDao">
+
+
+  <insert id="addStorageRes" useGeneratedKeys="true" keyProperty="fileId" keyColumn="file_id"
+          parameterType="com.visionvera.remoteservice.pojo.StorageResVo">
+    INSERT INTO
+    t_storage_res
+    (res_id , storage_url , file_url ,type)
+    VALUES
+    (#{resId} , #{storageUrl} , #{fileUrl} , #{type})
+  </insert>
+
+  <select id="selectStorageByFileId" parameterType="Integer"
+    resultType="com.visionvera.remoteservice.pojo.StorageResVo">
+    SELECT
+    file_id as fileId,res_id as resId,storage_url as storageUrl,file_url as fileUrl,type
+    FROM t_storage_res
+    WHERE file_id = #{fileId}
+  </select>
+
+  <select id="selectStorageByFileUrl" parameterType="String"
+    resultType="com.visionvera.remoteservice.pojo.StorageResVo">
+    SELECT
+    file_id as fileId,res_id as resId,storage_url as storageUrl,file_url as fileUrl,type
+    FROM t_storage_res
+    WHERE file_url = #{fileUrl}
+  </select>
+
+    <select id="selectStorageByBusinessId" parameterType="Integer"
+            resultType="com.visionvera.remoteservice.pojo.StorageResVo">
+        SELECT
+        tsr.file_id as fileId,tsr.res_id as resId,tsr.storage_url as storageUrl,tsr.file_url as fileUrl,tsr.type
+        FROM t_business_storage_rel tbsr
+        LEFT JOIN t_storage_res tsr
+        ON tbsr.file_id = tsr.file_id
+        WHERE tbsr.business_id = #{businessId}
+        ORDER BY tbsr.create_time DESC,id DESC
+        Limit 1
+    </select>
+
+    <insert id="insertStroageRel">
+        INSERT INTO
+        t_business_storage_rel
+        (business_id,file_id)
+        VALUES
+        (#{businessId},#{fileId})
+    </insert>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+        delete from t_storage_res
+        where file_id = #{id,jdbcType=INTEGER}
+    </delete>
+  <delete id="deleteByBusinessId" parameterType="java.lang.Integer" >
+        delete from t_business_storage_rel
+        where business_id = #{id,jdbcType=INTEGER}
+    </delete>
+  <select id="selectStorageListByBusinessId" parameterType="java.lang.Integer" resultType="com.visionvera.remoteservice.bean.StorageResBean">
+     select * from t_business_storage_rel where business_id = #{businessId,jdbcType=INTEGER}
+  </select>
+</mapper>

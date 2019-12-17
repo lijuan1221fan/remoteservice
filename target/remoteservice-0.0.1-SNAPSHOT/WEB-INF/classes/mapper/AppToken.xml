@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.visionvera.app.dao.AppTokenDao">
+
+  <insert id="addToken" parameterType="com.visionvera.app.entity.AppToken">
+    INSERT INTO
+    t_app_token (appUserId, token, expireTime, createTime, updateTime)
+    VALUES
+    (#{appUserId},#{token},#{expireTime},#{createTime},#{updateTime})
+  </insert>
+  <update id="updateToken" parameterType="com.visionvera.app.pojo.AppTokenVo">
+    UPDATE
+    t_app_token
+    <set>
+      <if test="token != null">
+        token = #{token},
+      </if>
+      <if test="expireTime != null">
+        expireTime = #{expireTime},
+      </if>
+      <if test="createTime != null">
+        createTime = #{createTime},
+      </if>
+      <if test="updateTime != null">
+        updateTime = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    Where appUserId = #{appUserId}
+  </update>
+
+  <update id="delToken" parameterType="Long">
+    UPDATE
+    t_app_token
+    <set>
+      state = 0
+    </set>
+    Where appUserId = #{appUserId}
+  </update>
+
+  <select id="getTokenInfoByAppUserId" resultType="com.visionvera.app.entity.AppToken" parameterType="Long">
+    SELECT *
+    FROM
+    t_app_token
+    WHERE appUserId = #{appUserId}
+  </select>
+
+  <select id="getTokenInfoByToken" resultType="com.visionvera.app.entity.AppToken" parameterType="java.lang.String">
+    SELECT *
+    FROM
+    t_app_token
+    WHERE  token = #{token}
+  </select>
+
+  <delete id="deleteTokenByAppUserId" parameterType="java.lang.Long">
+    delete from t_app_token
+    where appUserId = #{appUserId}
+  </delete>
+</mapper>

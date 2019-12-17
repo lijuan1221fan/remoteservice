@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.visionvera.remoteservice.dao.ClientInfoDao" >
+    <resultMap id="BaseResultMap" type="com.visionvera.remoteservice.bean.ClientInfo" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="username" property="username" jdbcType="VARCHAR" />
+        <result column="sex" property="sex" jdbcType="VARCHAR" />
+        <result column="birth_date" property="birthDate" jdbcType="DATE" />
+        <result column="address" property="address" jdbcType="VARCHAR" />
+        <result column="id_type" property="idType" jdbcType="INTEGER" />
+        <result column="idcard" property="idcard" jdbcType="VARCHAR" />
+        <result column="issuing_organ" property="issuingOrgan" jdbcType="VARCHAR" />
+        <result column="expiration_date" property="expirationDate" jdbcType="VARCHAR" />
+        <result column="new_addr" property="newAddr" jdbcType="VARCHAR" />
+        <result column="nation_name" property="nationName" jdbcType="VARCHAR" />
+        <result column="nation" property="nation" jdbcType="VARCHAR" />
+        <result column="birthplace" property="birthplace" jdbcType="VARCHAR" />
+        <result column="phone" property="phone" jdbcType="VARCHAR" />
+        <result column="extend" property="extend" jdbcType="VARCHAR" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+        <result column="version" property="version" jdbcType="INTEGER" />
+        <result column="education_id" property="educationId" jdbcType="INTEGER" />
+        <result column="source" property="source" jdbcType="INTEGER" />
+        <result column="icon_path" property="iconPath" jdbcType="VARCHAR" />
+    </resultMap>
+    <sql id="Base_Column_List" >
+        id, username, sex, birth_date, address, id_type, idcard, issuing_organ, expiration_date,
+        new_addr, nation_name, nation, birthplace, phone, extend, create_time, update_time,
+        version, education_id, source, icon_path
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+        select
+        <include refid="Base_Column_List" />
+        from t_client_info
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+        delete from t_client_info
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="com.visionvera.remoteservice.bean.ClientInfo" >
+        insert into t_client_info (id, username, sex,
+            birth_date, address, id_type,
+            idcard, issuing_organ, expiration_date,
+            new_addr, nation_name, nation,
+            birthplace, phone, extend,
+            create_time, update_time, version,
+            education_id, source, icon_path
+            )
+        values (#{id,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, #{sex,jdbcType=VARCHAR},
+            #{birthDate,jdbcType=DATE}, #{address,jdbcType=VARCHAR}, #{idType,jdbcType=INTEGER},
+            #{idcard,jdbcType=VARCHAR}, #{issuingOrgan,jdbcType=VARCHAR}, #{expirationDate,jdbcType=VARCHAR},
+            #{newAddr,jdbcType=VARCHAR}, #{nationName,jdbcType=VARCHAR}, #{nation,jdbcType=VARCHAR},
+            #{birthplace,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{extend,jdbcType=VARCHAR},
+            #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{version,jdbcType=INTEGER},
+            #{educationId,jdbcType=INTEGER}, #{source,jdbcType=INTEGER}, #{iconPath,jdbcType=VARCHAR}
+            )
+    </insert>
+    <insert id="insertSelective" parameterType="com.visionvera.remoteservice.bean.ClientInfo" useGeneratedKeys="true" keyProperty="id" >
+        insert into t_client_info
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                id,
+            </if>
+            <if test="username != null" >
+                username,
+            </if>
+            <if test="sex != null" >
+                sex,
+            </if>
+            <if test="birthDate != null" >
+                birth_date,
+            </if>
+            <if test="address != null" >
+                address,
+            </if>
+            <if test="idType != null" >
+                id_type,
+            </if>
+            <if test="idcard != null" >
+                idcard,
+            </if>
+            <if test="issuingOrgan != null" >
+                issuing_organ,
+            </if>
+            <if test="expirationDate != null" >
+                expiration_date,
+            </if>
+            <if test="newAddr != null" >
+                new_addr,
+            </if>
+            <if test="nationName != null" >
+                nation_name,
+            </if>
+            <if test="nation != null" >
+                nation,
+            </if>
+            <if test="birthplace != null" >
+                birthplace,
+            </if>
+            <if test="phone != null" >
+                phone,
+            </if>
+            <if test="extend != null" >
+                extend,
+            </if>
+            <if test="createTime != null" >
+                create_time,
+            </if>
+            <if test="updateTime != null" >
+                update_time,
+            </if>
+            <if test="version != null" >
+                version,
+            </if>
+            <if test="educationId != null" >
+                education_id,
+            </if>
+            <if test="source != null" >
+                source,
+            </if>
+            <if test="iconPath != null" >
+                icon_path,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="username != null" >
+                #{username,jdbcType=VARCHAR},
+            </if>
+            <if test="sex != null" >
+                #{sex,jdbcType=VARCHAR},
+            </if>
+            <if test="birthDate != null" >
+                #{birthDate,jdbcType=DATE},
+            </if>
+            <if test="address != null" >
+                #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="idType != null" >
+                #{idType,jdbcType=INTEGER},
+            </if>
+            <if test="idcard != null" >
+                #{idcard,jdbcType=VARCHAR},
+            </if>
+            <if test="issuingOrgan != null" >
+                #{issuingOrgan,jdbcType=VARCHAR},
+            </if>
+            <if test="expirationDate != null" >
+                #{expirationDate,jdbcType=VARCHAR},
+            </if>
+            <if test="newAddr != null" >
+                #{newAddr,jdbcType=VARCHAR},
+            </if>
+            <if test="nationName != null" >
+                #{nationName,jdbcType=VARCHAR},
+            </if>
+            <if test="nation != null" >
+                #{nation,jdbcType=VARCHAR},
+            </if>
+            <if test="birthplace != null" >
+                #{birthplace,jdbcType=VARCHAR},
+            </if>
+            <if test="phone != null" >
+                #{phone,jdbcType=VARCHAR},
+            </if>
+            <if test="extend != null" >
+                #{extend,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null" >
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null" >
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="version != null" >
+                #{version,jdbcType=INTEGER},
+            </if>
+            <if test="educationId != null" >
+                #{educationId,jdbcType=INTEGER},
+            </if>
+            <if test="source != null" >
+                #{source,jdbcType=INTEGER},
+            </if>
+            <if test="iconPath != null" >
+                #{iconPath,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.visionvera.remoteservice.bean.ClientInfo" >
+        update t_client_info
+        <set >
+            <if test="username != null" >
+                username = #{username,jdbcType=VARCHAR},
+            </if>
+            <if test="sex != null" >
+                sex = #{sex,jdbcType=VARCHAR},
+            </if>
+            <if test="birthDate != null" >
+                birth_date = #{birthDate,jdbcType=DATE},
+            </if>
+            <if test="address != null" >
+                address = #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="idType != null" >
+                id_type = #{idType,jdbcType=INTEGER},
+            </if>
+            <if test="idcard != null" >
+                idcard = #{idcard,jdbcType=VARCHAR},
+            </if>
+            <if test="issuingOrgan != null" >
+                issuing_organ = #{issuingOrgan,jdbcType=VARCHAR},
+            </if>
+            <if test="expirationDate != null" >
+                expiration_date = #{expirationDate,jdbcType=VARCHAR},
+            </if>
+            <if test="newAddr != null" >
+                new_addr = #{newAddr,jdbcType=VARCHAR},
+            </if>
+            <if test="nationName != null" >
+                nation_name = #{nationName,jdbcType=VARCHAR},
+            </if>
+            <if test="nation != null" >
+                nation = #{nation,jdbcType=VARCHAR},
+            </if>
+            <if test="birthplace != null" >
+                birthplace = #{birthplace,jdbcType=VARCHAR},
+            </if>
+            <if test="phone != null" >
+                phone = #{phone,jdbcType=VARCHAR},
+            </if>
+            <if test="extend != null" >
+                extend = #{extend,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null" >
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null" >
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="version != null" >
+                version = #{version,jdbcType=INTEGER},
+            </if>
+            <if test="educationId != null" >
+                education_id = #{educationId,jdbcType=INTEGER},
+            </if>
+            <if test="source != null" >
+                source = #{source,jdbcType=INTEGER},
+            </if>
+            <if test="iconPath != null" >
+                icon_path = #{iconPath,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.visionvera.remoteservice.bean.ClientInfo" >
+        update t_client_info
+        set username = #{username,jdbcType=VARCHAR},
+            sex = #{sex,jdbcType=VARCHAR},
+            birth_date = #{birthDate,jdbcType=DATE},
+            address = #{address,jdbcType=VARCHAR},
+            id_type = #{idType,jdbcType=INTEGER},
+            idcard = #{idcard,jdbcType=VARCHAR},
+            issuing_organ = #{issuingOrgan,jdbcType=VARCHAR},
+            expiration_date = #{expirationDate,jdbcType=VARCHAR},
+            new_addr = #{newAddr,jdbcType=VARCHAR},
+            nation_name = #{nationName,jdbcType=VARCHAR},
+            nation = #{nation,jdbcType=VARCHAR},
+            birthplace = #{birthplace,jdbcType=VARCHAR},
+            phone = #{phone,jdbcType=VARCHAR},
+            extend = #{extend,jdbcType=VARCHAR},
+            create_time = #{createTime,jdbcType=TIMESTAMP},
+            update_time = #{updateTime,jdbcType=TIMESTAMP},
+            version = #{version,jdbcType=INTEGER},
+            education_id = #{educationId,jdbcType=INTEGER},
+            source = #{source,jdbcType=INTEGER},
+            icon_path = #{iconPath,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <select id="selectByIdcard" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select
+        <include refid="Base_Column_List" />
+        from t_client_info
+        where idcard = #{idcard,jdbcType=VARCHAR}
+    </select>
+    <select id="selectByBusinessId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+       SELECT
+        id, username, sex, birth_date, address, id_type, idcard, issuing_organ, expiration_date,
+        new_addr, nation_name, nation, birthplace, c.phone, extend, c.create_time, update_time,
+        version, c.education_id, (CASE WHEN source =1 THEN '本地人口' ELSE '外来人口' END) as registration, icon_path,tet.educationHierarchy
+        FROM
+            t_business_client_rel cr LEFT JOIN
+            t_client_info c on cr.client_id=c.id
+        LEFT JOIN t_education_type tet on tet.educationId = c.education_id
+        WHERE cr.business_id = #{businessId,jdbcType=INTEGER}
+        ORDER BY cr.create_time
+        LIMIT 1
+    </select>
+    <insert id="addClientInfoRelevance" >
+	     replace into t_business_client_rel
+	     ( business_id , client_id, education_id, phone)
+	     values
+	     (#{businessId} , #{id}, #{educationId} , #{phone}  )
+	</insert>
+    <delete id="deleteByClientId">
+        delete from t_business_client_rel
+        where client_id = #{clientId,jdbcType=INTEGER}
+        and  business_id = #{businessId,jdbcType=INTEGER}
+    </delete>
+
+    <select id="getNationName" resultType="java.lang.String" parameterType="java.lang.String">
+        SELECT
+            nationName
+        FROM
+            t_nation
+        WHERE
+            nationNumber =#{nationNumber,jdbcType=VARCHAR}
+    </select>
+</mapper>

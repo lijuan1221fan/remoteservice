@@ -1,0 +1,1 @@
+ALTER TABLE t_meeting_operation MODIFY COLUMN dyn_device_number VARCHAR(255) DEFAULT NULL

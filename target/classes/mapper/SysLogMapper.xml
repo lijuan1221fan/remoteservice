@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.visionvera.common.dao.SysLogDao">
+    <!-- 通用查询映射结果 -->
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.visionvera.common.entity.SysLog">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="username" property="username"/>
+        <result column="operation" property="operation"/>
+        <result column="time" property="time"/>
+        <result column="method" property="method"/>
+        <result column="c_time" property="cTime"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, user_id AS userId, username, operation, time, method, params, c_time AS cTime, u_time AS uTime, remark
+    </sql>
+
+    <!-- 插入日志 -->
+    <insert id="insertLog" parameterType="com.visionvera.common.entity.SysLog" keyProperty="id" useGeneratedKeys="true">
+        insert into sys_log (id,user_id,username,operation,time,method,c_time)
+        values (#{id,jdbcType=BIGINT},#{userId,jdbcType=BIGINT},#{username,jdbcType=VARCHAR},#{operation,jdbcType=VARCHAR},
+        #{time,jdbcType=BIGINT},#{method,jdbcType=VARCHAR},#{cTime})
+    </insert>
+
+    <!-- 条件查询日志 -->
+    <select id="queryLog" resultMap="BaseResultMap" parameterType="java.util.Map">
+        select * from  sys_log
+        where 1=1
+        <if test="userName != null">
+            and username LIKE '%' #{userName,jdbcType=VARCHAR} '%'
+        </if>
+        <if test="operation != null">
+            and operation LIKE '%' #{operation,jdbcType=VARCHAR} '%'
+        </if>
+        <if test="startTime != null and startTime != ''">
+            and c_time &gt;= #{startTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and c_time &lt;= #{endTime}
+        </if>
+        order by c_time desc
+    </select>
+
+</mapper>

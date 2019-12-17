@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.visionvera.remoteservice.dao.DeptBeanDao">
+  <resultMap id="BaseResultMap" type="com.visionvera.remoteservice.bean.DeptBean" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="service_key" property="serviceKey" jdbcType="VARCHAR" />
+    <result column="dept_name" property="deptName" jdbcType="VARCHAR" />
+    <result column="dept_title" property="deptTitle" jdbcType="VARCHAR" />
+    <result column="dept_contacts" property="deptContacts" jdbcType="VARCHAR" />
+    <result column="dept_contacts_phone" property="deptContactsPhone" jdbcType="VARCHAR" />
+    <result column="dept_status" property="deptStatus" jdbcType="INTEGER" />
+    <result column="version" property="version" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="number_prefix" property="numberPrefix" jdbcType="CHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+        id, service_key, dept_name, dept_title, dept_contacts, dept_contacts_phone, dept_status,
+        version, create_time, update_time, number_prefix
+    </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from t_sys_dept
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+        delete from t_sys_dept
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+  <insert id="insert" parameterType="com.visionvera.remoteservice.bean.DeptBean" >
+        insert into t_dept (id, service_key, dept_name,
+            dept_title, dept_contacts, dept_contacts_phone,
+            dept_status, version, create_time,
+            update_time, number_prefix)
+        values (#{id,jdbcType=INTEGER}, #{serviceKey,jdbcType=VARCHAR}, #{deptName,jdbcType=VARCHAR},
+            #{deptTitle,jdbcType=VARCHAR}, #{deptContacts,jdbcType=VARCHAR}, #{deptContactsPhone,jdbcType=VARCHAR},
+            #{deptStatus,jdbcType=INTEGER}, #{version,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP},
+            #{updateTime,jdbcType=TIMESTAMP}, #{numberPrefix,jdbcType=CHAR})
+    </insert>
+  <insert id="insertSelective" parameterType="com.visionvera.remoteservice.bean.DeptBean" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_dept
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="serviceKey != null" >
+        service_key,
+      </if>
+      <if test="deptName != null" >
+        dept_name,
+      </if>
+      <if test="deptTitle != null" >
+        dept_title,
+      </if>
+      <if test="deptContacts != null" >
+        dept_contacts,
+      </if>
+      <if test="deptContactsPhone != null" >
+        dept_contacts_phone,
+      </if>
+      <if test="deptStatus != null" >
+        dept_status,
+      </if>
+      <if test="version != null" >
+        version,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="numberPrefix != null" >
+        number_prefix,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="serviceKey != null" >
+        #{serviceKey,jdbcType=VARCHAR},
+      </if>
+      <if test="deptName != null" >
+        #{deptName,jdbcType=VARCHAR},
+      </if>
+      <if test="deptTitle != null" >
+        #{deptTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="deptContacts != null" >
+        #{deptContacts,jdbcType=VARCHAR},
+      </if>
+      <if test="deptContactsPhone != null" >
+        #{deptContactsPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="deptStatus != null" >
+        #{deptStatus,jdbcType=INTEGER},
+      </if>
+      <if test="version != null" >
+        #{version,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="numberPrefix != null" >
+        #{numberPrefix,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.visionvera.remoteservice.bean.DeptBean" >
+    update t_dept
+    <set >
+      <if test="serviceKey != null" >
+        service_key = #{serviceKey,jdbcType=VARCHAR},
+      </if>
+      <if test="deptName != null" >
+        dept_name = #{deptName,jdbcType=VARCHAR},
+      </if>
+      <if test="deptTitle != null" >
+        dept_title = #{deptTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="deptContacts != null" >
+        dept_contacts = #{deptContacts,jdbcType=VARCHAR},
+      </if>
+      <if test="deptContactsPhone != null" >
+        dept_contacts_phone = #{deptContactsPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="deptStatus != null" >
+        dept_status = #{deptStatus,jdbcType=INTEGER},
+      </if>
+      <if test="version != null" >
+        version = #{version,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="numberPrefix != null" >
+        number_prefix = #{numberPrefix,jdbcType=CHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.visionvera.remoteservice.bean.DeptBean" >
+        update t_dept
+        set service_key = #{serviceKey,jdbcType=VARCHAR},
+            dept_name = #{deptName,jdbcType=VARCHAR},
+            dept_title = #{deptTitle,jdbcType=VARCHAR},
+            dept_contacts = #{deptContacts,jdbcType=VARCHAR},
+            dept_contacts_phone = #{deptContactsPhone,jdbcType=VARCHAR},
+            dept_status = #{deptStatus,jdbcType=INTEGER},
+            version = #{version,jdbcType=INTEGER},
+            create_time = #{createTime,jdbcType=TIMESTAMP},
+            update_time = #{updateTime,jdbcType=TIMESTAMP},
+            number_prefix = #{numberPrefix,jdbcType=CHAR}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+  <!--校验名称-->
+  <select id="checkTheName" resultType="int">
+    SELECT count(id) FROM t_dept
+    <where>
+      <if test="id !=null ">
+        AND id != #{id}
+      </if>
+      AND service_key = #{serviceKey}
+      AND dept_name = #{deptName}
+      AND dept_status > -2
+    </where>
+  </select>
+  <!--校验名称-->
+  <select id="selectByServiceKey" resultType="int">
+    SELECT count(id) FROM t_dept
+    where service_key = #{serviceKey};
+  </select>
+
+  <!--删除-->
+  <update id="deleteDeptByIds">
+    UPDATE t_dept
+    SET dept_status = -2
+    WHERE id IN
+    <foreach collection="array" item="id" open="(" close=")" separator=",">
+      #{id}
+    </foreach>
+  </update>
+
+  <!--查询接口-->
+  <select id="getDeptList" resultType="com.visionvera.remoteservice.bean.DeptBean" parameterType="Map">
+    SELECT
+    a.id,
+    a.service_key AS serviceKey,
+    a.dept_name AS deptName,
+    a.dept_title AS deptTitle ,
+    a.dept_contacts AS deptContacts,
+    a.dept_contacts_phone AS deptContactsPhone,
+    a.dept_status AS deptStatus,
+    a.version,
+    a.create_time AS createTime,
+    a.update_time AS updateTime,
+    a.number_prefix AS numberPrefix ,
+    b.serviceName
+    FROM
+    t_dept a INNER JOIN t_service_center b
+    ON a.service_key = b.serviceKey
+    <where>
+      <if test="id != null">
+        AND id = #{id}
+      </if>
+      <if test="serviceKey !=null and serviceKey != '' ">
+        AND service_key = #{serviceKey}
+      </if>
+      <if test="deptName != null and deptName != '' ">
+        AND dept_name like concat('%',#{deptName},'%')
+      </if>
+      <if test="deptStatus != null">
+        AND dept_status = #{deptStatus}
+      </if>
+      <choose>
+        <when test="deptStatus != null">
+          AND dept_status > #{deptStatus}
+        </when>
+        <otherwise>
+          AND dept_status > -2
+        </otherwise>
+      </choose>
+    </where>
+  </select>
+  <!--获取标题-->
+  <select id="getDeptTitle" resultType="String" parameterType="Integer">
+    SELECT dept_title
+    FROM t_dept
+    <where>
+      <if test="deptId != null">
+        AND id = #{deptId}
+      </if>
+      AND dept_status > -2
+    </where>
+  </select>
+
+  <update id="updateServiceTitle" >
+    UPDATE t_dept
+    SET dept_title = #{deptTitle}
+    WHERE id = #{deptId}
+      AND  dept_status > -2
+  </update>
+
+  <!--修改状态-->
+  <update id="updateState" parameterType="Map" >
+    UPDATE t_dept
+    SET dept_status = #{deptStatus}
+    WHERE id = #{id}
+    AND version = #{version}
+  </update>
+
+  <!--根据servicekey查询部门id-->
+  <select id="selectDepteIdByServiceKey" resultType="Integer" >
+    SELECT id
+    FROM t_dept
+    WHERE service_key IN
+    <foreach collection="list" separator="," open="(" close=")" item="serviceKey" >
+      #{serviceKey}
+    </foreach>
+    AND dept_status > -2
+  </select>
+
+
+</mapper>

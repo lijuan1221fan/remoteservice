@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.visionvera.remoteservice.dao.PhotoConfigDao">
+  <resultMap id="BaseResultMap" type="com.visionvera.remoteservice.bean.PhotoConfig">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="business_type" jdbcType="INTEGER" property="businessType" />
+    <result column="type" jdbcType="BIT" property="type" />
+    <result column="x" jdbcType="INTEGER" property="x" />
+    <result column="y" jdbcType="INTEGER" property="y" />
+    <result column="width" jdbcType="INTEGER" property="width" />
+    <result column="height" jdbcType="INTEGER" property="height" />
+  </resultMap>
+  <resultMap id="PhotoConfigResult" type="com.visionvera.remoteservice.bean.PhotoConfig">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="business_type" jdbcType="INTEGER" property="businessType" />
+    <result column="type" jdbcType="BIT" property="type" />
+    <result column="x" jdbcType="INTEGER" property="x" />
+    <result column="y" jdbcType="INTEGER" property="y" />
+    <result column="width" jdbcType="INTEGER" property="width" />
+    <result column="height" jdbcType="INTEGER" property="height" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, business_type, type, x, y, width, height
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_photo_config
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectByObject" parameterType="com.visionvera.remoteservice.bean.PhotoConfig" resultMap="BaseResultMap">
+    select
+      business_type, pc.type, x, y, width, height
+    from t_photo_config pc
+    <where>
+      <if test="businessType != null">
+        AND business_type = #{businessType,jdbcType=INTEGER}
+      </if>
+      <if test="type != null">
+        AND pc.type = #{type,jdbcType=BIT}
+      </if>
+      <if test="x != null">
+        AND x = #{x,jdbcType=INTEGER}
+      </if>
+      <if test="y != null">
+        AND y = #{y,jdbcType=INTEGER}
+      </if>
+      <if test="width != null">
+        AND width = #{width,jdbcType=INTEGER}
+      </if>
+      <if test="height != null">
+        AND height = #{height,jdbcType=INTEGER}
+      </if>
+    </where>
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_photo_config
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.visionvera.remoteservice.bean.PhotoConfig">
+    insert into t_photo_config (id, business_type, type,
+      x, y, width, height
+      )
+    values (#{id,jdbcType=INTEGER}, #{businessType,jdbcType=INTEGER}, #{type,jdbcType=BIT},
+      #{x,jdbcType=INTEGER}, #{y,jdbcType=INTEGER}, #{width,jdbcType=INTEGER}, #{height,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.visionvera.remoteservice.bean.PhotoConfig">
+    insert into t_photo_config
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="businessType != null">
+        business_type,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="x != null">
+        x,
+      </if>
+      <if test="y != null">
+        y,
+      </if>
+      <if test="width != null">
+        width,
+      </if>
+      <if test="height != null">
+        height,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="businessType != null">
+        #{businessType,jdbcType=INTEGER},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=BIT},
+      </if>
+      <if test="x != null">
+        #{x,jdbcType=INTEGER},
+      </if>
+      <if test="y != null">
+        #{y,jdbcType=INTEGER},
+      </if>
+      <if test="width != null">
+        #{width,jdbcType=INTEGER},
+      </if>
+      <if test="height != null">
+        #{height,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.visionvera.remoteservice.bean.PhotoConfig">
+    update t_photo_config
+    <set>
+      <if test="businessType != null">
+        business_type = #{businessType,jdbcType=INTEGER},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=BIT},
+      </if>
+      <if test="x != null">
+        x = #{x,jdbcType=INTEGER},
+      </if>
+      <if test="y != null">
+        y = #{y,jdbcType=INTEGER},
+      </if>
+      <if test="width != null">
+        width = #{width,jdbcType=INTEGER},
+      </if>
+      <if test="height != null">
+        height = #{height,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <update id="updateByPrimaryKey" parameterType="com.visionvera.remoteservice.bean.PhotoConfig">
+    update t_photo_config
+    set business_type = #{businessType,jdbcType=INTEGER},
+      type = #{type,jdbcType=BIT},
+      x = #{x,jdbcType=INTEGER},
+      y = #{y,jdbcType=INTEGER},
+      width = #{width,jdbcType=INTEGER},
+      height = #{height,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <!-- 根据BusinessType查询 -->
+  <select id="selectByBusinessType"  resultType="com.visionvera.remoteservice.bean.PhotoConfig">
+    select *
+    from t_photo_config
+    where business_type = #{businessType,jdbcType=INTEGER}
+    and type = #{type,jdbcType=BIT}
+  </select>
+  <select id="selectByBusinessDetailId" parameterType="Integer" resultMap="PhotoConfigResult">
+    select
+    <include refid="Base_Column_List"/>
+    from t_photo_config
+    WHERE business_type = #{id}
+  </select>
+</mapper>

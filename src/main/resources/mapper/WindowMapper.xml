@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.visionvera.remoteservice.dao.WindowDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, windowName, serviceKey, deptId, ip, state
+    </sql>
+
+    <!-- 通用查询条件 -->
+    <sql id="Where_Common">
+        <if test="null != id">
+            AND id = #{id}
+        </if>
+        <if test="null != windowName">
+            AND windowName = #{windowName}
+        </if>
+        <if test="null != serviceKey">
+            AND serviceKey = #{serviceKey}
+        </if>
+        <if test="null != deptId">
+            AND deptId = #{deptId}
+        </if>
+        AND state <![CDATA[ <> ]]> 0
+    </sql>
+
+    <!-- 添加窗口 -->
+    <insert id="addWindow" parameterType="com.visionvera.remoteservice.bean.WindowBean">
+        INSERT INTO
+        t_sys_window
+        (windowName, serviceKey, deptId, state)
+        VALUES
+        (#{windowName}, #{serviceKey}, #{deptId}, #{state})
+    </insert>
+
+    <!-- 删除窗口 -->
+    <update id="deleteWindow">
+        <foreach collection="array" item="id" separator=";">
+            update t_sys_window
+            set `state` = 0
+            where id = #{id}
+        </foreach>
+    </update>
+
+    <!-- 修改窗口 -->
+    <update id="updateWindow" parameterType="com.visionvera.remoteservice.bean.WindowBean">
+        update t_sys_window
+        <set>
+            <if test="windowName != null and windowName != '' ">
+                windowName = #{windowName} ,
+            </if>
+            <if test="serviceKey != null and serviceKey != '' ">
+                serviceKey = #{serviceKey} ,
+            </if>
+            <if test="deptId != null ">
+                deptId = #{deptId} ,
+            </if>
+            <if test="state != null  ">
+                state = #{state} ,
+            </if>
+            <if test="isUse != null">
+                isUse = #{isUse}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!-- 禁/启用窗口 -->
+    <update id="lockWindow" parameterType="Integer">
+        <if test="#{id} != null">
+            update t_sys_window
+            set state = #{status}
+            where id = #{id}
+        </if>
+    </update>
+
+    <!-- 分页查询窗口 -->
+    <select id="getWindow" resultType="com.visionvera.remoteservice.bean.WindowBean" parameterType="Map">
+        select
+        a.id, a.windowName, a.serviceKey, a.deptId, a.state, a.isUse,
+        case when a.serviceKey = c.serviceKey then c.serviceName else '' END AS serviceName,
+        case when a.deptId = d.id then d.dept_name else '' END AS deptName
+        from t_sys_window a
+        LEFT JOIN
+        t_service_center c
+        ON
+        a.serviceKey = c.serviceKey
+        LEFT JOIN
+        t_sys_dept d
+        ON
+        a.deptId = d.id
+        where 1=1
+        <if test=" windowName != null and windowName != '' ">
+            and a.windowName like '%' #{windowName} '%'
+        </if>
+        <if test="deptId != null">
+            and a.deptId = #{deptId}
+        </if>
+        <if test="serviceKey != null">
+            and a.serviceKey = #{serviceKey}
+        </if>
+        <if test="serviceKeys != null">
+            and a.serviceKey in
+            <foreach collection="serviceKeys" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        and (a.state <![CDATA[ <> ]]> 0) GROUP BY a.id
+    </select>
+
+    <select id="getWindowById" resultType="com.visionvera.remoteservice.bean.WindowBean"
+            parameterType="Integer">
+        select
+        a.id, a.windowName, a.serviceKey, a.deptId, a.state, a.isUse,
+        case when  a.serviceKey = c.serviceKey then c.serviceName else '' END AS serviceName,
+        case when  a.deptId = d.id then d.dept_name else '' END AS deptName
+        from t_sys_window a
+        LEFT JOIN
+        t_service_center c
+        ON
+        a.serviceKey = c.serviceKey
+        LEFT JOIN
+        t_sys_dept d
+        ON
+        a.deptId = d.id
+        where a.id = #{id}
+        AND a.state  <![CDATA[ <> ]]> 0
+    </select>
+
+    <select id="getListWindow" resultType="com.visionvera.remoteservice.bean.WindowBean" parameterType="Map">
+        select *
+        from t_sys_window
+        where serviceKey = #{serviceKey}
+        and deptId = #{deptId}
+        and state <![CDATA[ <> ]]> 0
+    </select>
+
+    <select id="getWindowByServiceKeys" resultType="com.visionvera.remoteservice.bean.WindowBean">
+        select *
+        from t_sys_window
+        where serviceKey in
+        <foreach item="serviceKey" collection="serviceKeys" open="(" separator="," close=")">
+            #{serviceKey}
+        </foreach>
+        and state <![CDATA[ <> ]]> 0
+    </select>
+
+    <select id="getWindowByServiceKeysAndDeptIds" parameterType="com.visionvera.app.pojo.AppWindowParaVo"
+            resultType="com.visionvera.remoteservice.bean.WindowBean">
+        select *
+        from t_sys_window
+        where serviceKey in
+        <foreach item="serviceKey" collection="serviceKeys" open="(" separator="," close=")">
+            #{serviceKey}
+        </foreach>
+        and deptId in
+        <foreach item="deptId" collection="deptIds" open="(" separator="," close=")">
+            #{deptId}
+        </foreach>
+        and state = 1
+    </select>
+    <!--根据部门id查询窗口-->
+    <select id="getWindowByDeptIds" resultType="com.visionvera.remoteservice.bean.WindowBean">
+        select *
+        from t_sys_window
+        where deptId in
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        and state <![CDATA[ <> ]]> 0
+    </select>
+    <!-- 根据窗口名，部门id,中心key查询窗口信息 -->
+    <select id="getWindowByServiceKeyAndDeptId"
+            parameterType="com.visionvera.remoteservice.bean.WindowBean"
+            resultType="com.visionvera.remoteservice.bean.WindowBean">
+        select *
+        from t_sys_window a
+        where 1=1
+        <if test=" deptId != null ">
+            and a.deptId = #{deptId}
+        </if>
+        <if test=" serviceKey != null and serviceKey != '' ">
+            and a.serviceKey = #{serviceKey}
+        </if>
+        <if test="windowName != null and windowName != '' ">
+            and a.windowName = #{windowName}
+        </if>
+        and (a.state <![CDATA[ <> ]]> 0)
+    </select>
+
+    <update id="setWindowFree" parameterType="Integer">
+        update t_sys_window
+        <set>
+            <if test="id != null">
+                isUse = 2
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <update id="setWindowFreeForAll">
+        update t_sys_window set  isUse = 2
+        where state = 1
+    </update>
+
+    <select id="getUserWindowByUserId" resultType="com.visionvera.remoteservice.bean.WindowBean">
+        SELECT
+        tsw.*
+        FROM
+        t_sys_user_window_rel tswr
+        LEFT JOIN
+        t_sys_window tsw
+        ON
+        tsw.id = tswr.window_id
+        WHERE
+        tswr.user_id = #{userId}
+    </select>
+
+    <select id="getWindowUserByWinowId" resultType="com.visionvera.remoteservice.bean.SysUserBean">
+        SELECT
+        tsu.*
+        FROM
+        t_sys_user_window_rel tswr
+        LEFT JOIN
+        t_sys_user tsu
+        ON
+        tsu.userId = tswr.user_id
+        WHERE
+        tswr.window_id = #{windowId}
+    </select>
+
+    <insert id="insertWindowAndUserRelation">
+        INSERT INTO
+        t_sys_user_window_rel (user_id,window_id)
+        VALUES (#{userId},#{windowId})
+    </insert>
+
+    <delete id="deleteWindowAndUserRelation">
+        DELETE FROM
+        t_sys_user_window_rel
+        WHERE
+        <if test="userId != null">
+            user_id = #{userId}
+        </if>
+        <if test="windowId != null">
+            window_id = #{windowId}
+        </if>
+    </delete>
+
+    <update id="updateWindowUseStatus">
+        update t_sys_window
+        set isUse = #{state}
+        where id = #{windowId}
+    </update>
+
+    <update id="updateWindowUseStatusByUserId">
+        update t_sys_window sw
+        LEFT JOIN t_sys_user_window_rel sr
+        ON sw.id = sr.window_id
+        set sw.isUse = 3
+        where sr.user_id = #{userId}
+    </update>
+
+    <select id="getListWorkingWindows" resultType="com.visionvera.remoteservice.bean.WindowBean">
+        SELECT
+        *
+        FROM
+        t_sys_window
+        WHERE
+        (isUse = 1 or isUse = 3) and state <![CDATA[ <> ]]> 0
+    </select>
+
+</mapper>

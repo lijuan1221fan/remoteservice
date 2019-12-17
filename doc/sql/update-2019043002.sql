@@ -1,0 +1,1 @@
+alter table t_sys_dept add stampUrl VARCHAR(255) default NULL;

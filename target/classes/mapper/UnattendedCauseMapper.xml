@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.visionvera.remoteservice.dao.UnattendedCauseDao">
+ 
+      <!-- 插入业务和未处理原因的关联  -->
+      <insert id="insertBusinessUnattendedRel" >
+           INSERT into t_business_unattended_rel(business_id,cause_id)
+           values
+           <foreach collection="array" item="causeId" separator=",">
+                (#{businessId},#{causeId})
+           </foreach>
+      </insert>
+      <select id="getCause" parameterType="java.lang.Integer" resultType="com.visionvera.remoteservice.bean.UnattendedCause">
+        select
+        tuc.causeName
+        from
+        t_unattended_cause tuc LEFT JOIN
+        t_business_unattended_rel tbur on tuc.causeId = tbur.cause_id
+        LEFT JOIN t_business_info tbi on tbur.business_id = tbi.id
+        where tbi.id = #{businessInfoId}
+      </select>
+  
+</mapper>

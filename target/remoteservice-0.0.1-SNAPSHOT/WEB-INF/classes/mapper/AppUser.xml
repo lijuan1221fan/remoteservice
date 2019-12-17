@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.visionvera.app.dao.AppUserDao">
+
+  <insert id="addUser" parameterType="com.visionvera.app.pojo.AppUserVo">
+    INSERT INTO
+    t_app_user (loginName, password, realName, idCardNo, serviceKey)
+    VALUES
+    (#{loginName},#{password},#{realName},#{idCardNo},#{serviceKey})
+  </insert>
+
+  <select id="getAppUserByName" resultType="com.visionvera.app.entity.AppUser">
+    SELECT
+    *
+    FROM
+    t_app_user
+    WHERE
+    loginName = #{loginName}
+    And
+    state = 1
+  </select>
+
+  <select id="getAppUserByAppUserId" resultType="com.visionvera.app.entity.AppUser">
+    SELECT
+    *
+    FROM
+    t_app_user
+    WHERE
+    appUserId = #{appUserId}
+    And
+    state = 1
+  </select>
+
+  <update id="updateUser" parameterType="com.visionvera.app.pojo.AppUserVo">
+    UPDATE
+    t_app_user
+    <set>
+      <if test="loginName != null and loginName != ''">
+        loginName = #{loginName},
+      </if>
+      <if test="password != null and password != ''">
+        password = #{password},
+      </if>
+      realName = #{realName},
+      idCardNo = #{idCardNo},
+      <if test="serviceKey != null and serviceKey != ''">
+        serviceKey = #{serviceKey},
+      </if>
+      <if test="updateTime != null">
+        updateTime = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    Where appUserId = #{appUserId}
+  </update>
+
+  <select id="getAppUserByCardNum" resultType="com.visionvera.app.entity.AppUser">
+    SELECT
+    *
+    FROM
+    t_app_user
+    WHERE
+    idCardNo = #{idCardNo}
+    And
+    state = 1
+  </select>
+
+  <update id="delUser" parameterType="Long">
+    UPDATE
+    t_app_user
+    <set>
+      state = 2
+    </set>
+    Where appUserId = #{appUserId}
+  </update>
+
+  <update id="updatePassword" parameterType="com.visionvera.app.pojo.AppUserVo">
+    UPDATE
+    t_app_user
+    <set>
+      <if test="password != null and password != ''">
+        password = #{password},
+      </if>
+    </set>
+    WHERE appUserId = #{appUserId}
+  </update>
+
+  <select id="getUsers" resultType="com.visionvera.app.entity.AppUser"
+    parameterType="com.visionvera.app.pojo.AppUserVo">
+    SELECT
+    a.appUserId,a.loginName,a.realName,a.idCardNo,a.serviceKey,a.createTime,a.updateTime,b.serviceName
+    AS serviceName
+    FROM
+    t_app_user AS a
+    LEFT JOIN
+    t_service_center AS b
+    ON
+    a.serviceKey = b.serviceKey
+    WHERE a.state = 1
+    <if test="loginName != null and loginName != ''">
+      and a.loginName LIKE '%' #{loginName,jdbcType=VARCHAR} '%'
+    </if>
+    <if test="realName != null and realName != ''">
+      and a.realName LIKE '%' #{realName,jdbcType=VARCHAR} '%'
+    </if>
+    <if test="idCardNo != null and idCardNo != ''">
+      and a.idCardNo = #{idCardNo}
+    </if>
+  </select>
+
+  <select id="getInfo" resultType="com.visionvera.app.entity.AppUser" parameterType="String">
+    SELECT realName,idCardNo
+    FROM
+    t_app_user
+    WHERE state = 1
+    AND loginName = #{loginName}
+  </select>
+
+  <select id="showInfo" resultType="com.visionvera.app.entity.AppUser">
+    SELECT
+    a.appUserId,a.loginName,a.realName,a.idCardNo,a.serviceKey,a.createTime,a.updateTime,b.serviceName
+    AS serviceName
+    FROM
+    t_app_user AS a
+    LEFT JOIN
+    t_service_center AS b
+    ON
+    a.serviceKey = b.serviceKey
+    WHERE a.state = 1 AND a.appUserId = #{appUserId}
+  </select>
+
+  <update id="updateAppUser" parameterType="com.visionvera.app.entity.AppUser">
+    UPDATE
+    t_app_user
+    <set>
+      <if test="loginName != null and loginName != ''">
+        loginName = #{loginName},
+      </if>
+      <if test="password != null and password != ''">
+        password = #{password},
+      </if>
+      <if test="realName != null and realName != ''">
+        realName = #{realName},
+      </if>
+      <if test="idCardNo != null and idCardNo != ''">
+        idCardNo = #{idCardNo},
+      </if>
+      <if test="serviceKey != null and serviceKey != ''">
+        serviceKey = #{serviceKey},
+      </if>
+      <if test="updateTime != null">
+        updateTime = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    Where appUserId = #{appUserId}
+  </update>
+
+</mapper>

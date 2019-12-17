@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.visionvera.remoteservice.dao.CertificateDao">
+ 
+      <!-- 插入业务和证件关联  -->
+      <insert id="insertBusinessCertificateRel" parameterType="Map">
+           INSERT IGNORE t_business_certificate_rel
+           values
+           <foreach collection="certificateIdArray" item="certificateId" separator=",">
+                (#{businessKey},#{certificateId})
+           </foreach>
+      </insert>
+      
+      <!-- 通过业务类型获取对应的证件类型 -->
+      <select id="getCertificateByBusinessType" parameterType="String" resultType="com.visionvera.remoteservice.bean.CertificateBean">
+			SELECT a.certificateId , a.certificateTitle 
+			FROM t_certificate_type a
+			INNER JOIN t_business_type_certificate_rel b 
+			ON a.certificateId = b.certificateId
+			WHERE b.businessType = #{businessType}
+      </select>
+      
+  
+	 
+</mapper>

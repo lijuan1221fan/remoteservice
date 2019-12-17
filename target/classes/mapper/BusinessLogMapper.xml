@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.visionvera.remoteservice.dao.BusinessLogDao" >
+    <resultMap id="BaseResultMap" type="com.visionvera.remoteservice.bean.BusinessLog" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="business_id" property="businessId" jdbcType="INTEGER" />
+        <result column="log_type" property="logType" jdbcType="INTEGER" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="remark" property="remark" jdbcType="VARCHAR" />
+        <result column="photo_id" property="photoId" jdbcType="INTEGER" />
+    </resultMap>
+    <resultMap id="BaseResultMapAndPhoto" type="com.visionvera.remoteservice.bean.BusinessLog" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="business_id" property="businessId" jdbcType="INTEGER" />
+        <result column="log_type" property="logType" jdbcType="INTEGER" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="remark" property="remark" jdbcType="VARCHAR" />
+        <result column="photo_id" property="photoId" jdbcType="INTEGER" />
+        <result column="icon_path" property="iconPath" jdbcType="VARCHAR" />
+        <result column="frame_path" property="framePath" jdbcType="VARCHAR" />
+    </resultMap>
+    <sql id="Base_Column_List" >
+        id, business_id, log_type, create_time, remark, photo_id
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+        select
+        <include refid="Base_Column_List" />
+        from t_business_log
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <select id="selectByBusinessId" resultMap="BaseResultMapAndPhoto" parameterType="java.lang.Integer" >
+      SELECT
+      p.id,
+      bl.business_id,
+      log_type,
+      bl.create_time,
+      bl.remark,
+      bl.photo_id,
+      p.icon_path,
+      p.frame_path
+      FROM
+      t_business_log bl
+      LEFT JOIN t_photo p ON bl.photo_id = p.id
+      WHERE
+      bl.business_id = #{businessId,jdbcType=INTEGER}
+      AND ( state <![CDATA[ <> ]]> 0 OR state IS NULL )
+      AND bl.log_type != 1
+      UNION
+      SELECT
+      p.id,
+      bl.business_id,
+      log_type,
+      min( bl.create_time ),
+      bl.remark,
+      bl.photo_id,
+      p.icon_path,
+      p.frame_path
+      FROM
+      t_business_log bl
+      LEFT JOIN t_photo p ON bl.photo_id = p.id
+      WHERE
+      bl.business_id = #{businessId,jdbcType=INTEGER}
+      AND ( state <![CDATA[ <> ]]> 0 OR state IS NULL )
+      AND bl.log_type =1
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+        delete from t_business_log
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <delete id="deleteByBusinessId" parameterType="java.lang.Integer" >
+        delete from t_business_log
+        where business_id = #{id,jdbcType=INTEGER} and photo_id IS NOT NULL and log_type <![CDATA[ <> ]]> 2
+    </delete>
+    <insert id="insert" parameterType="com.visionvera.remoteservice.bean.BusinessLog" >
+        insert into t_business_log (id, business_id, log_type,
+            create_time, remark, photo_id
+            )
+        values (#{id,jdbcType=INTEGER}, #{businessId,jdbcType=INTEGER}, #{logType,jdbcType=INTEGER},
+            #{createTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR}, #{photoId,jdbcType=INTEGER}
+            )
+    </insert>
+    <insert id="insertSelective" parameterType="com.visionvera.remoteservice.bean.BusinessLog" >
+        insert into t_business_log
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                id,
+            </if>
+            <if test="businessId != null" >
+                business_id,
+            </if>
+            <if test="logType != null" >
+                log_type,
+            </if>
+            <if test="createTime != null" >
+                create_time,
+            </if>
+            <if test="remark != null" >
+                remark,
+            </if>
+            <if test="photoId != null" >
+                photo_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="businessId != null" >
+                #{businessId,jdbcType=INTEGER},
+            </if>
+            <if test="logType != null" >
+                #{logType,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null" >
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="remark != null" >
+                #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="photoId != null" >
+                #{photoId,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.visionvera.remoteservice.bean.BusinessLog" >
+        update t_business_log
+        <set >
+            <if test="businessId != null" >
+                business_id = #{businessId,jdbcType=INTEGER},
+            </if>
+            <if test="logType != null" >
+                log_type = #{logType,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null" >
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="remark != null" >
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="photoId != null" >
+                photo_id = #{photoId,jdbcType=INTEGER},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.visionvera.remoteservice.bean.BusinessLog" >
+        update t_business_log
+        set business_id = #{businessId,jdbcType=INTEGER},
+            log_type = #{logType,jdbcType=INTEGER},
+            create_time = #{createTime,jdbcType=TIMESTAMP},
+            remark = #{remark,jdbcType=VARCHAR},
+            photo_id = #{photoId,jdbcType=INTEGER}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+</mapper>

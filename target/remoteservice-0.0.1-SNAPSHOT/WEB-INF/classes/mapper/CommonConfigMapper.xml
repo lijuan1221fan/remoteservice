@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.visionvera.remoteservice.dao.CommonConfigDao">
+	
+	<!-- 根据名称查询指定值 -->
+	<select id="getCommonConfigByName" parameterType="String" resultType="com.visionvera.remoteservice.bean.CommonConfigBean">
+		SELECT id,commonName, commonValue, state, version, modifyTime, createTime , `describes` from t_common_config
+		where commonName = #{commonName} and state <![CDATA[ <> ]]> 0
+	</select>
+	<!-- 根据名称查询指定值 -->
+	<select id="findCommonConfigByName" parameterType="String" resultType="com.visionvera.remoteservice.bean.CommonConfigBean">
+		SELECT id,commonName, commonValue, state, version, modifyTime, createTime , `describes` from t_common_config
+		where commonName = #{commonName} and state <![CDATA[ <> ]]> 0
+	</select>
+	<!-- 新增 -->
+	<insert id="add">
+	    insert into t_common_config 
+	    (commonName, commonValue,createTime)
+	    values
+	    (#{commonName},#{commonValue},now())
+	</insert>
+	<!-- 删除 -->
+	<update id="delete" parameterType="int">
+	   update t_common_config 
+	   set state = 0
+	   where id = #{id} 
+	</update>
+	<!-- 校验 -->
+	<select id="checkout" parameterType="Map" resultType="int">
+	    SELECT count(*) 
+	    from t_common_config
+	    <where>
+	      and commonName = #{commonName} 
+	      and state <![CDATA[ <> ]]> 0
+          <if test="id != null and id != '' ">
+              and id != #{id}
+          </if>	     
+	    </where>
+	</select>
+	<!-- 修改  -->
+	<update id="update" parameterType="com.visionvera.remoteservice.bean.CommonConfigBean" >
+	  update t_common_config
+	  <set>
+	     <if test="commonName != null and commonName != '' ">
+	         commonName = #{commonName},
+	     </if>
+	     <if test="commonValue != null and commonValue != '' ">
+	         commonValue = #{commonValue},
+	     </if>
+	       version = version +1
+	  </set>
+	    where id = #{id}
+	    and version = #{version}
+	</update>
+	
+	<!--根据可以 修改值  -->
+	<update id="updateValueByKey" parameterType = "Map">
+	    update t_common_config
+	    set  commonValue = #{commonValue}
+	    where commonName = #{commonName}
+	</update>
+	<!--根据可以 修改值  -->
+	<update id="updateValueByKeyAndVersion" parameterType = "Map">
+	    update t_common_config
+	    set  commonValue = #{commonValue}
+	    where commonName = #{commonName}
+	</update>
+	<!--查询列表  -->
+	<select id="getList" resultType="com.visionvera.remoteservice.bean.CommonConfigBean">
+	     SELECT id,commonName, commonValue, state, version, modifyTime, createTime, describes from t_common_config
+		 where state <![CDATA[ <> ]]> 0
+		 and commonName in ("version","meeting_url","meeting_login_name","meeting_login_password","cms_url","max_tasks","mainTitle","publicSubhead","socialSubhead","cms_image_uri","system_version")
+	</select>
+	
+	
+</mapper>

@@ -1,0 +1,1120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.visionvera.remoteservice.dao.BusinessInfoDao">
+  <resultMap id="BaseResultMap" type="com.visionvera.remoteservice.bean.BusinessInfo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="number" property="number" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="start_time" property="startTime" jdbcType="TIMESTAMP" />
+    <result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="state" property="state" jdbcType="INTEGER" />
+    <result column="service_key" property="serviceKey" jdbcType="VARCHAR" />
+    <result column="dept_id" property="deptId" jdbcType="INTEGER" />
+    <result column="business_type" property="businessType" jdbcType="INTEGER" />
+    <result column="business_type_name" property="businessTypeName" jdbcType="VARCHAR" />
+    <result column="operator_id" property="operatorId" jdbcType="INTEGER" />
+    <result column="operator_name" property="operatorName" jdbcType="VARCHAR" />
+    <result column="remarks" property="remarks" jdbcType="VARCHAR" />
+    <result column="version" property="version" jdbcType="INTEGER" />
+    <result column="terminal_number" property="terminalNumber" jdbcType="VARCHAR" />
+    <result column="final_state" property="finalState" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="appointment_id" property="appointmentId" jdbcType="INTEGER" />
+    <result column="idcard" property="idcard" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="describes" property="describes" jdbcType="VARCHAR" />
+    <result column="serviceName" property="serviceName" jdbcType="VARCHAR" />
+      <result column="handle_service_key" property="handleServiceKey" jdbcType="VARCHAR"/>
+      <result column="handle_window_id" property="handleWindowId" jdbcType="INTEGER"/>
+      <result column="vcDevType" property="vcDevType" jdbcType="INTEGER"/>
+  </resultMap>
+  <sql id="Base_Column_List" >
+        id, number, create_time, update_time, start_time, end_time, state, service_key, dept_id,
+        business_type, business_type_name, operator_id, operator_name, remarks, version,
+        terminal_number, final_state ,type, appointment_id,handle_service_key,handle_window_id
+    </sql>
+  <sql id="Base_where" >
+    <if test="number != null and number != ''">
+      AND tbi.number = #{number,jdbcType=INTEGER}
+    </if>
+    <if test="createTime != null and createTime != ''">
+      AND tbi.create_time = #{createTime,jdbcType=TIMESTAMP}
+    </if>
+    <if test="updateTime != null and updateTime != ''">
+      AND tbi.update_time = #{updateTime,jdbcType=TIMESTAMP}
+    </if>
+    <if test="startTime != null and startTime != ''">
+      <![CDATA[ AND DATE(tbi.start_time) >= DATE(#{startTime,jdbcType=TIMESTAMP}) ]]>
+    </if>
+    <if test="endTime != null and endTime != ''">
+      <![CDATA[ AND DATE(tbi.start_time) <= DATE(#{endTime,jdbcType=TIMESTAMP}) ]]>
+    </if>
+    <if test="state != null and state != ''">
+      AND tbi.state =#{state,jdbcType=INTEGER}
+    </if>
+    <if test="serviceKey != null and serviceKey != ''">
+      AND tbi.service_key = #{serviceKey,jdbcType=INTEGER}
+    </if>
+
+    <if test="businessType != null and businessType != ''">
+      AND tbi.business_type = #{businessType,jdbcType=INTEGER}
+    </if>
+    <if test="businessTypeName != null and businessTypeName != ''">
+      AND tbi.business_type_name = #{businessTypeName,jdbcType=VARCHAR}
+    </if>
+    <if test="operatorId != null and operatorId != ''">
+      AND tbi.operator_id = #{operatorId,jdbcType=INTEGER}
+    </if>
+    <if test="operatorName != null and operatorName != ''">
+      AND tbi.operator_name = #{operatorName,jdbcType=VARCHAR}
+    </if>
+    <if test="remarks != null and remarks != ''">
+      AND tbi.remarks = #{remarks,jdbcType=VARCHAR}
+    </if>
+    <if test="version != null and version != ''">
+      AND tbi.version = #{version,jdbcType=INTEGER}
+    </if>
+    <if test="finalState != null and finalState != ''" >
+      AND tbi.final_state = #{finalState,jdbcType=INTEGER}
+    </if>
+    <if test="type != null and type != ''" >
+      AND tbi.type = #{type,jdbcType=INTEGER}
+    </if>
+    <if test="appointmentId != null and appointmentId != ''" >
+      AND tbi.appointment_id = #{appointmentId,jdbcType=INTEGER}
+    </if>
+  </sql>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    a.id,
+    a.number,
+    a.create_time,
+    a.update_time,
+    a.start_time,
+    a.end_time,
+    a.state,
+    a.service_key,
+    a.dept_id,
+    a.business_type,
+    a.business_type_name,
+    a.operator_id,
+    a.operator_name,
+    a.remarks,
+    a.version,
+    a.terminal_number,
+    a.final_state,
+    a.type,
+    a.appointment_id,
+    b.is_custom
+    from t_business_info a
+    LEFT JOIN
+    t_business_type b
+    ON
+    a.business_type = b.id
+    where a.id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+        delete from t_business_info
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+  <insert id="insert" parameterType="com.visionvera.remoteservice.bean.BusinessInfo" keyProperty="id" useGeneratedKeys="true">
+        insert into t_business_info (id, number, create_time,
+      update_time, start_time, end_time,
+      state, service_key, dept_id,
+      business_type, business_type_name, operator_id,
+      operator_name, remarks, version,
+      terminal_number, final_state,type,appointment_id)
+        values (#{id,jdbcType=INTEGER}, #{number,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
+      #{updateTime,jdbcType=TIMESTAMP}, #{startTime,jdbcType=TIMESTAMP},
+      #{endTime,jdbcType=TIMESTAMP},
+      #{state,jdbcType=INTEGER}, #{serviceKey,jdbcType=VARCHAR}, #{deptId,jdbcType=INTEGER},
+      #{businessType,jdbcType=INTEGER}, #{businessTypeName,jdbcType=VARCHAR},
+      #{operatorId,jdbcType=INTEGER},
+      #{operatorName,jdbcType=VARCHAR}, #{remarks,jdbcType=VARCHAR}, #{version,jdbcType=INTEGER},
+      #{terminalNumber,jdbcType=VARCHAR}, #{finalState,jdbcType=INTEGER},#{type,jdbcType=INTEGER},#{appointmentId,jdbcType=INTEGER})
+    </insert>
+  <insert id="insertSelective" parameterType="com.visionvera.remoteservice.bean.BusinessInfo" keyProperty="id" useGeneratedKeys="true">
+    insert into t_business_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="number != null" >
+        number,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="startTime != null" >
+        start_time,
+      </if>
+      <if test="endTime != null" >
+        end_time,
+      </if>
+      <if test="state != null" >
+        state,
+      </if>
+      <if test="serviceKey != null" >
+        service_key,
+      </if>
+      <if test="deptId != null" >
+        dept_id,
+      </if>
+      <if test="businessType != null" >
+        business_type,
+      </if>
+      <if test="businessTypeName != null" >
+        business_type_name,
+      </if>
+      <if test="operatorId != null" >
+        operator_id,
+      </if>
+      <if test="operatorName != null" >
+        operator_name,
+      </if>
+      <if test="remarks != null" >
+        remarks,
+      </if>
+      <if test="version != null" >
+        version,
+      </if>
+      <if test="terminalNumber != null" >
+        terminal_number,
+      </if>
+      <if test="finalState != null" >
+        final_state,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="appointmentId != null" >
+        appointment_id,
+      </if>
+      <if test="handleServiceKey != null">
+        handle_service_key,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="number != null" >
+        #{number,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="startTime != null" >
+        #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="state != null" >
+        #{state,jdbcType=INTEGER},
+      </if>
+      <if test="serviceKey != null" >
+        #{serviceKey,jdbcType=VARCHAR},
+      </if>
+      <if test="deptId != null" >
+        #{deptId,jdbcType=INTEGER},
+      </if>
+      <if test="businessType != null" >
+        #{businessType,jdbcType=INTEGER},
+      </if>
+      <if test="businessTypeName != null" >
+        #{businessTypeName,jdbcType=VARCHAR},
+      </if>
+      <if test="operatorId != null" >
+        #{operatorId,jdbcType=INTEGER},
+      </if>
+      <if test="operatorName != null" >
+        #{operatorName,jdbcType=VARCHAR},
+      </if>
+      <if test="remarks != null" >
+        #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null" >
+        #{version,jdbcType=INTEGER},
+      </if>
+      <if test="terminalNumber != null" >
+        #{terminalNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="finalState != null" >
+        #{finalState,jdbcType=INTEGER},
+      </if>
+       <if test="type != null" >
+        #{type,jdbcType=INTEGER},
+      </if>
+       <if test="appointmentId != null" >
+        #{appointmentId,jdbcType=INTEGER},
+       </if>
+      <if test="handleServiceKey != null">
+        #{handleServiceKey,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.visionvera.remoteservice.bean.BusinessInfo" >
+    update t_business_info
+    <set >
+      <if test="number != null" >
+        number = #{number,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="startTime != null" >
+        start_time = #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        end_time = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="state != null" >
+        state = #{state,jdbcType=INTEGER},
+      </if>
+      <if test="serviceKey != null" >
+        service_key = #{serviceKey,jdbcType=VARCHAR},
+      </if>
+      <if test="deptId != null" >
+        dept_id = #{deptId,jdbcType=INTEGER},
+      </if>
+      <if test="businessType != null" >
+        business_type = #{businessType,jdbcType=INTEGER},
+      </if>
+      <if test="businessTypeName != null" >
+        business_type_name = #{businessTypeName,jdbcType=VARCHAR},
+      </if>
+      <if test="operatorId != null" >
+        operator_id = #{operatorId,jdbcType=INTEGER},
+      </if>
+      <if test="operatorName != null" >
+        operator_name = #{operatorName,jdbcType=VARCHAR},
+      </if>
+      <if test="remarks != null" >
+        remarks = #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null" >
+        version = #{version,jdbcType=INTEGER},
+      </if>
+      <if test="terminalNumber != null" >
+        terminal_number = #{terminalNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="finalState != null" >
+        final_state = #{finalState,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="appointmentId != null" >
+        appointment_id = #{appointmentId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.visionvera.remoteservice.bean.BusinessInfo" >
+        update t_business_info
+        set number = #{number,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      start_time = #{startTime,jdbcType=TIMESTAMP},
+      end_time = #{endTime,jdbcType=TIMESTAMP},
+      state = #{state,jdbcType=INTEGER},
+      service_key = #{serviceKey,jdbcType=VARCHAR},
+      dept_id = #{deptId,jdbcType=INTEGER},
+      business_type = #{businessType,jdbcType=INTEGER},
+      business_type_name = #{businessTypeName,jdbcType=VARCHAR},
+      operator_id = #{operatorId,jdbcType=INTEGER},
+      operator_name = #{operatorName,jdbcType=VARCHAR},
+      remarks = #{remarks,jdbcType=VARCHAR},
+      version = #{version,jdbcType=INTEGER},
+      terminal_number = #{terminalNumber,jdbcType=VARCHAR},
+      final_state = #{finalState,jdbcType=INTEGER},
+      type = #{type,jdbcType=INTEGER} ,
+      appointment_id = #{appointmentId,jdbcType=INTEGER}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+  <update id="passNumber" parameterType="com.visionvera.remoteservice.bean.BusinessInfo" >
+        update t_business_info
+        set state = 4,
+        start_time = create_time,
+        end_time = create_time
+        where state in (1,2)
+    </update>
+  <select id="selectByObject" resultMap="BaseResultMap" parameterType="com.visionvera.remoteservice.bean.BusinessInfo">
+    select
+    tbi.id, tbi.number, tbi.create_time, tbi.update_time, tbi.start_time, tbi.end_time, tbi.state, tbi.service_key, tbi.dept_id,
+    tbi.business_type, tbi.business_type_name, tbi.operator_id, tbi.operator_name, tbi.remarks, tbi.version,
+    tbi.terminal_number, tbi.final_state,tbi.type,tbi.appointment_id
+    from t_business_info tbi
+    left join t_service_center tsc on tbi.service_key = tsc.serviceKey
+    <where>                                                      
+      <include refid="Base_where"/>
+      <if test="deptId != null">
+        AND tbi.dept_id = #{deptId,jdbcType=INTEGER}
+      </if>
+      <if test="parentKey != null and parentKey != ''">
+        and tsc.parentKey = #{parentKey}
+      </if>
+      <if test="operatorId != null and operatorId != ''">
+        and tbi.operator_id = #{operatorId}
+      </if>
+    </where>
+  </select>
+  <select id="getBusinessList" resultMap="BaseResultMap" parameterType="com.visionvera.remoteservice.bean.BusinessInfo">
+    select  aa.*,bb.idcard from (
+    SELECT
+    bi.id, bi.number, DATE_FORMAT(bi.create_time,'%Y-%m-%d %H:%i:%s') AS create_time,
+    DATE_FORMAT(bi.update_time,'%Y-%m-%d %h:%i:%s') AS update_time,
+    DATE_FORMAT(bi.start_time,'%Y-%m-%d %H:%i:%s') as start_time,
+    DATE_FORMAT(bi.end_time,'%Y-%m-%d
+    %H:%i:%s') as end_time, bi.state, bi.service_key, bi.dept_id,
+    bi.business_type, bi.business_type_name, bi.operator_id, bi.operator_name, bi.remarks,
+    bi.terminal_number, bi.final_state
+    FROM t_business_info bi, t_business_type t ,t_sys_dept tsd
+    WHERE t.id = bi.business_type
+    and bi.dept_id = tsd.id
+    and tsd.state = 1
+    <if test="serviceKeys != null">
+    AND bi.handle_service_key in
+      <foreach collection="serviceKeys" item="serviceKey" open="(" close=")" separator="," >
+        #{serviceKey}
+      </foreach>
+    </if>
+    <if test="handleServiceKey != null">
+      AND bi.handle_service_key = #{handleServiceKey}
+    </if>
+    <if test="number != null">
+      AND bi.number = #{number,jdbcType=INTEGER}
+    </if>
+    <if test="createTime != null and createTime != ''">
+      AND bi.create_time = #{createTime,jdbcType=TIMESTAMP}
+    </if>
+    <if test="updateTime != null and updateTime != ''">
+      AND bi.update_time = #{updateTime,jdbcType=TIMESTAMP}
+    </if>
+    <if test="state != null">
+      AND bi.state =#{state,jdbcType=INTEGER}
+    </if>
+    <if test="serviceKey != null and serviceKey != ''">
+      AND bi.ervice_key = #{serviceKey,jdbcType=VARCHAR}
+    </if>
+
+    <if test="businessType != null">
+      AND bi.business_type = #{businessType,jdbcType=INTEGER}
+    </if>
+    <if test="businessTypeName != null and businessTypeName != ''">
+      AND bi.business_type_name = #{businessTypeName,jdbcType=VARCHAR}
+    </if>
+    <if test="operatorId != null">
+      AND bi.operator_id = #{operatorId,jdbcType=INTEGER}
+    </if>
+    <if test="operatorName != null and operatorName != ''">
+      AND bi.operator_name like '%' #{operatorName} '%'
+    </if>
+    <if test="remarks != null and remarks != ''">
+      AND bi.remarks = #{remarks,jdbcType=VARCHAR}
+    </if>
+    <if test="version != null">
+      AND bi.version = #{version,jdbcType=INTEGER}
+    </if>
+    <if test="finalState != null">
+      AND bi.final_state = #{finalState,jdbcType=INTEGER}
+    </if>
+    <if test="deptId != null">
+      AND bi.dept_id = #{deptId,jdbcType=INTEGER}
+    </if>
+    <if test="describes != null and describes != ''">
+      AND t.parent_id = #{describes,jdbcType=INTEGER}
+    </if>
+    <if test="startTime != null and startTime != '' and state != 1 and state != 2">
+      <![CDATA[ AND DATE(bi.end_time) >= DATE(#{startTime,jdbcType=TIMESTAMP}) ]]>
+    </if>
+    <if test="endTime != null and endTime != '' and state != 1 and state != 2">
+      <![CDATA[ AND DATE(bi.end_time) <= DATE(#{endTime,jdbcType=TIMESTAMP}) ]]>
+    </if>
+    <if test="startTime != null and startTime != '' and state == 1">
+      <![CDATA[ AND DATE(bi.create_time) >= DATE(#{startTime,jdbcType=TIMESTAMP}) ]]>
+    </if>
+    <if test="endTime != null and endTime != '' and state == 1 ">
+      <![CDATA[ AND DATE(bi.create_time) <= DATE(#{endTime,jdbcType=TIMESTAMP}) ]]>
+    </if>
+    <if test="startTime != null and startTime != '' and  state == 2">
+      <![CDATA[ AND DATE(bi.start_time) >= DATE(#{startTime,jdbcType=TIMESTAMP}) ]]>
+    </if>
+    <if test="endTime != null and endTime != '' and state == 2">
+      <![CDATA[ AND DATE(bi.start_time) <= DATE(#{endTime,jdbcType=TIMESTAMP}) ]]>
+    </if>
+    ORDER BY bi.create_time desc) aa LEFT JOIN  
+    (	select
+    ci.id_type,
+    bi.id ,
+    ci.idcard
+    FROM t_business_info  bi
+    LEFT JOIN t_business_client_rel tcr  on bi.id = tcr.business_id
+    LEFT JOIN t_client_info ci  on tcr.client_id = ci.id ) bb on aa.id = bb.id
+    ORDER BY aa.create_time desc
+  </select>
+
+  <select id="getBusinessInfoDetail" resultMap="BaseResultMap" parameterType="Integer">
+    SELECT bi.*, sc.serviceName
+    FROM t_business_info bi, t_service_center sc
+    where bi.id = #{id}
+    and bi.service_key = sc.serviceKey
+  </select>
+
+  <select id="getBusinessByStatesed" resultType="Integer">
+    SELECT count(bi.id)
+    FROM
+    t_business_info bi, t_business_type t ,t_sys_dept tsd WHERE t.id = bi.business_type
+    and bi.dept_id = tsd.id
+    and tsd.state <![CDATA[ <> ]]> 0
+    and bi.state = 3
+    <if test="serviceKeys != null">
+      AND bi.handle_service_key in
+      <foreach collection="serviceKeys" item="serviceKey" open="(" close=")" separator="," >
+        #{serviceKey}
+      </foreach>
+    </if>
+    <if test="handleServiceKey != null">
+      AND bi.handle_service_key = #{handleServiceKey}
+    </if>
+    <if test="operatorName != null and operatorName != ''">
+      AND bi.operator_name like '%' #{operatorName} '%'
+    </if>
+    <if test="deptId != null and deptId != ''">
+      AND bi.dept_id = #{deptId,jdbcType=INTEGER}
+    </if>
+    <if test="describes != null and describes != ''">
+      AND t.parent_id = #{describes,jdbcType=INTEGER}
+    </if>
+    <if test="startTime != null and startTime != ''">
+      <![CDATA[ AND DATE(bi.end_time) >= DATE(#{startTime,jdbcType=TIMESTAMP}) ]]>
+    </if>
+    <if test="endTime != null and endTime != ''">
+      <![CDATA[ AND DATE(bi.end_time) <= DATE(#{endTime,jdbcType=TIMESTAMP}) ]]>
+    </if>
+    ORDER BY bi.create_time desc
+
+  </select>
+
+  <select id="getBusinessByStatesedAndSuccess" resultType="Integer">
+    SELECT count(bi.id)
+    FROM
+      t_business_info bi, t_business_type t ,t_sys_dept tsd WHERE t.id =
+    bi.business_type
+    and bi.dept_id = tsd.id
+    and tsd.state <![CDATA[ <> ]]> 0
+    and bi.state = 3
+    and bi.final_state = 1
+    <if test="serviceKeys != null">
+      AND bi.handle_service_key IN
+      <foreach collection="serviceKeys" item="serviceKey" open="(" close=")" separator=",">
+        #{serviceKey}
+      </foreach>
+    </if>
+    <if test="handleServiceKey != null">
+      AND bi.handle_service_key = #{handleServiceKey}
+    </if>
+    <if test="operatorName != null and operatorName != ''">
+      AND bi.operator_name like '%' #{operatorName} '%'
+    </if>
+    <if test="deptId != null and deptId != ''">
+      AND bi.dept_id = #{deptId,jdbcType=INTEGER}
+    </if>
+    <if test="describes != null and describes != ''">
+      AND t.parent_id = #{describes,jdbcType=INTEGER}
+    </if>
+    <if test="startTime != null and startTime != ''">
+      <![CDATA[ AND DATE(bi.end_time) >= DATE(#{startTime,jdbcType=TIMESTAMP}) ]]>
+    </if>
+    <if test="endTime != null and endTime != ''">
+      <![CDATA[ AND DATE(bi.end_time) <= DATE(#{endTime,jdbcType=TIMESTAMP}) ]]>
+    </if>
+    ORDER BY bi.create_time desc
+
+  </select>
+
+  <select id="getBusinessListByserviceKey" resultType="Integer">
+    select count(id)
+    from t_business_info
+    where state in (1,2)
+    and service_key = #{serviceKey}
+  </select>
+  <select id="getBusinessListByHandleServiceKey" resultType="Integer">
+    select count(id)
+    from t_business_info
+    where state in (1,2)
+    and handle_service_key = #{handleServiceKey}
+  </select>
+
+  <select id="getBusinessByStatesBe" resultType="Integer">
+    SELECT count(bi.id)
+    FROM
+    t_business_info bi, t_business_type t ,t_business_type bt
+      ,t_sys_dept tsd WHERE t.id = bi.business_type
+    and bt.id = t.parent_id
+    and bi.dept_id = tsd.id
+    and tsd.state <![CDATA[<>]]> 0
+    and bi.state = 1
+    <if test="serviceKeys != null">
+        AND bi.handle_service_key IN
+      <foreach collection="serviceKeys" item="serviceKey" open="(" close=")" separator="," >
+        #{serviceKey}
+      </foreach>
+    </if>
+    <if test="handleServiceKey != null">
+      AND bi.handle_service_key = #{handleServiceKey}
+    </if>
+    <if test="operatorName != null and operatorName != ''">
+      AND bi.operator_name like '%' #{operatorName} '%'
+    </if>
+    <if test="deptId != null and deptId != ''">
+      AND bi.dept_id = #{deptId,jdbcType=INTEGER}
+    </if>
+    <if test="describes != null and describes != ''">
+      AND t.parent_id = #{describes,jdbcType=INTEGER}
+    </if>
+    <if test="startTime != null and startTime != ''">
+        <![CDATA[ AND DATE(bi.update_time) >= DATE(#{startTime,jdbcType=TIMESTAMP}) ]]>
+    </if>
+    <if test="endTime != null and endTime != ''">
+      <![CDATA[ AND DATE(bi.update_time) <= DATE(#{endTime,jdbcType=TIMESTAMP}) ]]>
+    </if>
+    ORDER BY bi.create_time desc
+
+  </select>
+
+  <select id="getBusinessByStatesIng" resultType="Integer">
+    SELECT count(bi.id)
+    FROM
+    t_business_info bi, t_business_type t ,t_business_type bt
+    ,t_sys_dept tsd  WHERE t.id = bi.business_type
+    and bt.id = t.parent_id
+    and bi.dept_id = tsd.id
+    and tsd.state <![CDATA[ <> ]]> 0
+    and bi.state = 2
+    <if test="serviceKeys != null">
+      AND bi.handle_service_key IN
+      <foreach collection="serviceKeys" item="serviceKey" open="(" close=")" separator="," >
+        #{serviceKey}
+      </foreach>
+    </if>
+    <if test="handleServiceKey != null">
+      AND bi.handle_service_key = #{handleServiceKey}
+    </if>
+    <if test="operatorName != null and operatorName != ''">
+      AND bi.operator_name like '%' #{operatorName} '%'
+    </if>
+    <if test="deptId != null and deptId != ''">
+      AND bi.dept_id = #{deptId,jdbcType=INTEGER}
+    </if>
+    <if test="describes != null and describes != ''">
+      AND t.parent_id = #{describes,jdbcType=INTEGER}
+    </if>
+    <if test="startTime != null and startTime != ''">
+      <![CDATA[ AND DATE(bi.update_time) >= DATE(#{startTime,jdbcType=TIMESTAMP}) ]]>
+    </if>
+    <if test="endTime != null and endTime != ''">
+      <![CDATA[ AND DATE(bi.update_time) <= DATE(#{endTime,jdbcType=TIMESTAMP}) ]]>
+    </if>
+    ORDER BY bi.create_time desc
+
+    </select>
+    <select id="getBusinessByUserId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from t_business_info
+        where operator_id = #{userId,jdbcType=INTEGER}
+        AND state = 2
+        ORDER BY id DESC
+        LIMIT 1
+    </select>
+
+    <!--根据业务类型 id 查询未完成的业务-->
+    <select id="getUnfinishedBusinessByTypeIds" resultType="int" >
+        select count(id)
+        from t_business_info
+        where state <![CDATA[  <  ]]> 3
+        and business_type in
+        <foreach collection="array" item="typeId" open="(" close=")" separator="," >
+          #{typeId}
+        </foreach>
+    </select>
+
+    <!--根据部门 id 查询未完成的业务-->
+    <select id="getUnfinishedBusinessByDeptIds" resultType="int" >
+        select count(id)
+        from t_business_info
+        where state <![CDATA[  <  ]]> 3
+        and dept_id in
+        <foreach collection="array" item="deptId" open="(" close=")" separator="," >
+            #{deptId}
+        </foreach>
+    </select>
+
+    <!--根据部门，servicekey，查询状态为处理中的业务-->
+    <select id="getBusinessesByCondition" resultType="com.visionvera.remoteservice.bean.BusinessInfo">
+        select
+        <include refid="Base_Column_List"/>
+        from t_business_info
+        where dept_id = #{deptId} and service_key = #{serviceKey} and state = #{state}
+        order by create_time
+    </select>
+
+    <select id="getBusinessListByCondition" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from t_business_info
+    <where>
+      <if test="serviceKey != null">
+        and service_key = #{serviceKey}
+      </if>
+      <if test="state != null">
+        and state = #{state}
+      </if>
+    </where>
+    order by create_time
+  </select>
+                                                  
+  <!--发送短信提醒-->
+    <select id="checkUserState" resultType="com.visionvera.remoteservice.bean.SendSmsBean">
+      select
+      DISTINCT
+      count(tbi.id) num,
+      tsu.mobilePhone mobilePhone,
+      tsu.userName userName,
+      tbi.business_type_name businessTypeName
+      from t_sys_user tsu
+      LEFT JOIN t_business_info tbi on tbi.operator_id = tsu.userId and tbi.state = 2
+      LEFT JOIN t_meeting_operation tmo on tsu.userId = tmo.user_id and tmo.business_id is NULL
+      WHERE tsu.state = 1
+      and tsu.workState = 1
+      and tsu.type = 3
+      and tsu.mobilePhone IS NOT NULL
+      GROUP BY tsu.userName
+    </select>
+
+    <select id="getBusinessesByUserId" parameterType="Integer" resultType="com.visionvera.remoteservice.bean.BusinessInfo">
+        select id from t_business_info where state = 2 and operator_id = #{userId}
+    </select>
+  <select id="businessesInfoByType" parameterType="com.visionvera.remoteservice.bean.BusinessInfo" resultType="com.visionvera.remoteservice.bean.BusinessInfo">
+    SELECT
+    *
+    FROM
+    t_business_info tbi
+    <where>
+    <if test="serviceKey != null">
+     and  tbi.service_key = #{serviceKey}
+    </if>
+    <if test="type != null">
+    and tbi.type = #{type}
+    </if>
+    <if test="deptId != null">
+    and tbi.dept_id = #{deptId}
+    </if>
+    </where>
+    and tbi.state = 1
+    ORDER BY tbi.create_time
+  </select>
+
+    <select id="getTodoBusiness" resultMap="BaseResultMap">
+      SELECT
+      id, number, create_time, update_time, start_time, end_time, state, service_key, dept_id,
+      business_type, business_type_name,  operator_id,  operator_name, remarks, version,
+      terminal_number, final_state,type,appointment_id,name
+      FROM
+      ( SELECT  id, number, create_time, update_time, start_time, end_time, state, service_key, dept_id,
+      business_type, business_type_name,  operator_id,  operator_name, remarks, version,
+      terminal_number, final_state,type,appointment_id,name FROM t_business_info WHERE `state` = 1 AND service_key IN
+      <foreach collection="serviceList" item="service" open="(" close=")" separator="," >
+        #{service.serviceKey}
+      </foreach>
+      AND service_key NOT IN (SELECT serviceKey FROM vc_dev WHERE state = 2 ) ORDER BY create_time ASC ) a
+      GROUP BY service_key
+    </select>
+  <select id="getWaitProcessBusinessInfo" resultMap="BaseResultMap" parameterType="com.visionvera.remoteservice.bean.BusinessInfo" >
+    SELECT
+    tbi.id, tbi.number, tbi.create_time, tbi.update_time, tbi.start_time, tbi.end_time, tbi.state, tbi.service_key, tbi.dept_id,
+    tbi.business_type, tbi.business_type_name, tbi.operator_id, tbi.operator_name, tbi.remarks, tbi.version,
+    tbi.terminal_number, tbi.final_state ,tbi.type, tbi.appointment_id,tbi.name
+    FROM
+    t_business_info tbi
+    LEFT JOIN t_sys_dept td on tbi.dept_id = td.id
+    <where>
+      <if test="serviceKeys != null">
+        AND tbi.service_key in
+        <foreach collection="serviceKeys" item="serviceKey" open="(" close=")" separator="," >
+          #{serviceKey}
+        </foreach>
+      </if>
+      <if test="serviceKey != null">
+        and tbi.service_key = #{serviceKey}
+      </if>
+      <if test="deptId != null">
+        and tbi.dept_id = #{deptId}
+      </if>
+      <if test="state != null">
+        and tbi.state = #{state}
+      </if>
+      <if test="deptType != null">
+        and td.type = #{deptType}
+      </if>
+    </where>
+    ORDER BY tbi.type DESC,tbi.create_time
+  </select>
+  <select id="getProcessingBusinessInfo" resultMap="BaseResultMap" parameterType="com.visionvera.remoteservice.bean.BusinessInfo" >
+    SELECT
+    tbi.id, tbi.number, tbi.create_time, tbi.update_time, tbi.start_time, tbi.end_time, tbi.state, tbi.service_key, tbi.dept_id,
+    tbi.business_type, tbi.business_type_name, tbi.operator_id, tbi.operator_name, tbi.remarks, tbi.version,
+    tbi.terminal_number, tbi.final_state ,tbi.type, tbi.appointment_id,tbi.name
+    FROM
+    t_business_info tbi
+    LEFT JOIN t_sys_dept td on tbi.dept_id = td.id
+    <where>
+      <if test="serviceKeys != null">
+        AND tbi.service_key in
+        <foreach collection="serviceKeys" item="serviceKey" open="(" close=")" separator="," >
+          #{serviceKey}
+        </foreach>
+      </if>
+      <if test="serviceKey != null">
+        and tbi.service_key = #{serviceKey}
+      </if>
+      <if test="deptId != null">
+        and tbi.dept_id = #{deptId}
+      </if>
+      <if test="state != null">
+        and tbi.state = #{state}
+      </if>
+      <if test="deptType != null">
+        and td.type = #{deptType}
+      </if>
+    </where>
+    ORDER BY tbi.update_time desc
+  </select>
+
+  <select id="getUntreated" resultType="java.lang.Integer">
+	SELECT count(tbi.id)
+	FROM t_business_info tbi WHERE tbi.state = 1
+  </select>
+  <!--根据所有的村中心取得每个村中的第一个可以办理的业务-->
+  <select id="getBusinessInfoOfWaitingByServiceKey" resultMap="BaseResultMap">
+    select
+      tbi.*,
+      vd.type as vcDevType
+    FROM t_business_info tbi
+    LEFT JOIN t_service_center tsc on tbi.service_key = tsc.serviceKey
+    LEFT JOIN vc_dev vd on tbi.service_key = vd.serviceKey
+    WHERE tbi.state = 1
+    and vd.state = 1
+    <if test="serviceKeyList != null">
+    and tsc.serviceKey IN
+    <foreach collection="serviceKeyList" item="serviceKey" open="(" close=")" separator="," >
+      #{serviceKey}
+    </foreach>
+    </if>
+    ORDER BY tbi.create_time
+  </select>
+  <!--当获取待办业务时，更新业务员ID不为空的业务-->
+  <update id="updateBusinessInfoById" parameterType="com.visionvera.remoteservice.bean.BusinessInfo" >
+    update t_business_info
+    <set >
+      <if test="number != null" >
+        number = #{number,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="startTime != null" >
+        start_time = #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        end_time = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="state != null" >
+        state = #{state,jdbcType=INTEGER},
+      </if>
+      <if test="serviceKey != null" >
+        service_key = #{serviceKey,jdbcType=VARCHAR},
+      </if>
+      <if test="deptId != null" >
+        dept_id = #{deptId,jdbcType=INTEGER},
+      </if>
+      <if test="businessType != null" >
+        business_type = #{businessType,jdbcType=INTEGER},
+      </if>
+      <if test="businessTypeName != null" >
+        business_type_name = #{businessTypeName,jdbcType=VARCHAR},
+      </if>
+      <if test="operatorId != null" >
+        operator_id = #{operatorId,jdbcType=INTEGER},
+      </if>
+      <if test="operatorName != null" >
+        operator_name = #{operatorName,jdbcType=VARCHAR},
+      </if>
+      <if test="remarks != null" >
+        remarks = #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null" >
+        version = #{version,jdbcType=INTEGER},
+      </if>
+      <if test="terminalNumber != null" >
+        terminal_number = #{terminalNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="finalState != null" >
+        final_state = #{finalState,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="appointmentId != null" >
+        appointment_id = #{appointmentId,jdbcType=INTEGER},
+      </if>
+      <if test="handleServiceKey != null">
+        handle_service_key = #{handleServiceKey,jdbcType=VARCHAR},
+      </if>
+        <if test="handleWindowId != null">
+            handle_window_id = #{handleWindowId,jdbcType=INTEGER},
+        </if>
+    </set>
+    <where>
+      <if test="id !=null">
+        id = #{id,jdbcType=INTEGER}
+      </if>
+      <if test="operatorId != null" >
+        and operator_id is null
+      </if>
+    </where>
+  </update>
+
+  <select id="getBusinessInfoOfTerminalNumber" resultMap="BaseResultMap" parameterType="String">
+    select
+    <include refid="Base_Column_List"/>
+    from t_business_info
+    where terminal_number = #{terminalNumber,jdbcType=VARCHAR}
+    AND state = 2
+    ORDER BY id DESC
+    LIMIT 1
+  </select>
+
+    <select id="getTotalAmountHandledByCheck" resultType="java.lang.Integer">
+        SELECT
+      COUNT(tb.id)
+        FROM
+      t_business_info tb
+      LEFT JOIN
+      t_sys_dept sd
+      ON
+      tb.dept_id = sd.id
+      WHERE tb.state = 3 and sd.state = 1
+        <if test="deptId != null">
+          AND tb.dept_id = #{deptId}
+        </if>
+        <if test="handleServiceKey != null">
+          AND tb.handle_service_key = #{handleServiceKey}
+        </if>
+    </select>
+
+    <select id="getTotalAmountHandledByAdmin" resultType="java.lang.Integer">
+        SELECT
+      COUNT(tb.id)
+        FROM
+      t_business_info tb
+      LEFT JOIN
+      t_sys_dept sd
+      ON
+      tb.dept_id = sd.id
+      WHERE tb.state = 3 and sd.state = 1
+        <if test="deptId != null">
+          AND tb.dept_id = #{deptId}
+        </if>
+        <if test="serviceKeyList != null">
+          AND tb.handle_service_key in
+            <foreach collection="serviceKeyList" item="serviceKey" open="(" close=")" separator=",">
+                #{serviceKey}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="getTotalAmountHandled" resultType="java.lang.Integer">
+        SELECT
+      COUNT(tb.id)
+        FROM
+      t_business_info tb
+      LEFT JOIN
+      t_sys_dept sd
+      ON
+      tb.dept_id = sd.id
+      WHERE tb.state = 3 and sd.state = 1
+        <if test="deptId != null">
+          AND tb.dept_id = #{deptId}
+        </if>
+    </select>
+  <insert id="insertCallInfomation" parameterType="com.visionvera.remoteservice.bean.BusinessInfo" keyProperty="id" useGeneratedKeys="true">
+    insert into t_business_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="number != null" >
+        number,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="startTime != null" >
+        start_time,
+      </if>
+      <if test="endTime != null" >
+        end_time,
+      </if>
+      <if test="state != null" >
+        state,
+      </if>
+      <if test="serviceKey != null" >
+        service_key,
+      </if>
+      <if test="deptId != null" >
+        dept_id,
+      </if>
+      <if test="businessType != null" >
+        business_type,
+      </if>
+      <if test="businessTypeName != null" >
+        business_type_name,
+      </if>
+      <if test="operatorId != null" >
+        operator_id,
+      </if>
+      <if test="operatorName != null" >
+        operator_name,
+      </if>
+      <if test="remarks != null" >
+        remarks,
+      </if>
+      <if test="version != null" >
+        version,
+      </if>
+      <if test="terminalNumber != null" >
+        terminal_number,
+      </if>
+      <if test="finalState != null" >
+        final_state,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="appointmentId != null" >
+        appointment_id,
+      </if>
+      <if test="handleServiceKey != null">
+        handle_service_key,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="idcard != null">
+        idcard,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="number != null" >
+        #{number,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="startTime != null" >
+        #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="state != null" >
+        #{state,jdbcType=INTEGER},
+      </if>
+      <if test="serviceKey != null" >
+        #{serviceKey,jdbcType=VARCHAR},
+      </if>
+      <if test="deptId != null" >
+        #{deptId,jdbcType=INTEGER},
+      </if>
+      <if test="businessType != null" >
+        #{businessType,jdbcType=INTEGER},
+      </if>
+      <if test="businessTypeName != null" >
+        #{businessTypeName,jdbcType=VARCHAR},
+      </if>
+      <if test="operatorId != null" >
+        #{operatorId,jdbcType=INTEGER},
+      </if>
+      <if test="operatorName != null" >
+        #{operatorName,jdbcType=VARCHAR},
+      </if>
+      <if test="remarks != null" >
+        #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null" >
+        #{version,jdbcType=INTEGER},
+      </if>
+      <if test="terminalNumber != null" >
+        #{terminalNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="finalState != null" >
+        #{finalState,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="appointmentId != null" >
+        #{appointmentId,jdbcType=INTEGER},
+      </if>
+      <if test="handleServiceKey != null">
+        #{handleServiceKey,jdbcType=INTEGER},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="idcard != null">
+        #{idcard,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="searchBusinessInfo" parameterType="String" resultMap="BaseResultMap">
+        select * from t_business_info where idcard=#{idcard} and state=1
+    </select>
+  <select id="getBusinessInfoList" resultType="com.visionvera.remoteservice.bean.BusinessInfo">
+      SELECT id FROM t_business_info WHERE state = 1 or state = 2
+    </select>
+
+  <select id="getAllWaitingAndDoingBusiness" resultMap="BaseResultMap" parameterType="com.visionvera.remoteservice.bean.BusinessInfo">
+    select
+    service_key,dept_id
+    FROM t_business_info
+    WHERE state in (1,2)
+  </select>
+</mapper>

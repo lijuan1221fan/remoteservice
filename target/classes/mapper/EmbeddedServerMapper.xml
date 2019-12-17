@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.visionvera.remoteservice.dao.EmbeddedServerDao">
+    <insert id="insertEmbeddedServer">
+      INSERT INTO  t_embedded_server(vc_dev_id, session_id,scu_state) VALUES
+      (#{vcDevId}, #{sessionId},1);
+    </insert>
+    <delete id="deleteEmbeddedServer">
+        delete from t_embedded_server
+        where session_id = #{sessionId}
+    </delete>
+    <delete id="deleteAllEmbeddedServer">
+        delete from t_embedded_server
+    </delete>
+
+    <select id="getEmbeddedServer" resultType="com.visionvera.remoteservice.bean.EmbeddedServerInfo">
+        select id,vc_dev_id AS vcDevId,session_id AS sessionId,version,scu_state as scuState
+        from t_embedded_server
+        where session_id = #{sessionId}
+    </select>
+
+    <select id="getAllEmbeddedServer" resultType="com.visionvera.remoteservice.bean.EmbeddedServerInfo">
+        select id,vc_dev_id AS vcDevId,session_id AS sessionId,create_time AS createTime,
+        scu_state as scuState
+        from t_embedded_server
+        where user_id is NULL
+    </select>
+
+    <select id="getValidEmbeddedServer" resultType="com.visionvera.remoteservice.bean.EmbeddedServerInfo">
+        select id,vc_dev_id AS vcDevId,session_id AS sessionId,create_time AS createTime
+        from t_embedded_server
+        where user_id is NULL and
+        UNIX_TIMESTAMP( STR_TO_DATE( NOW( ), '%Y-%m-%d %H:%i:%s' ) ) - UNIX_TIMESTAMP( STR_TO_DATE( create_time, '%Y-%m-%d %H:%i:%s' ) )
+        <![CDATA[ > ]]> 120
+    </select>
+
+    <insert id="insertCallDeviceEmbeddedServerInfo">
+        insert into
+          t_embedded_server (session_id, user_id)
+        value ( #{sessionId}, #{userId})
+    </insert>
+
+    <select id="getCallDeviceEmbeddedServer" resultType="com.visionvera.remoteservice.bean.EmbeddedServerInfo">
+        select id,vc_dev_id AS vcDevId,session_id AS sessionId,user_id AS userId
+        from t_embedded_server
+        where vc_dev_id = #{vcDevId} and user_id IS NOT NULL
+    </select>
+    <!--X86更新终端号-->
+    <update id="updateCallDeviceEmbeddedServer">
+        update t_embedded_server
+        set session_id = #{sessionId} where vc_dev_id = #{vcDevId}
+    </update>
+    <!--前端更新终端号-->
+    <update id="updateEmbeddedServerByVcDevId">
+        update t_embedded_server
+        set session_id = #{sessionId} where user_id = #{userId}
+    </update>
+    <!--查询是否已建立关系-->
+    <select id="getCallDeviceEmbeddedServerByUserId" resultType="com.visionvera.remoteservice.bean.EmbeddedServerInfo">
+        select id,vc_dev_id AS vcDevId,session_id AS sessionId,user_id AS userId from t_embedded_server
+        where user_id = #{userId}
+    </select>
+
+    <update id="updateEmbededeServerBySessionId">
+        update t_embedded_server
+        set create_time = #{createTime,jdbcType=TIMESTAMP},scu_state=1
+        where session_id = #{sessionId}
+    </update>
+
+    <select id="getEmbeddedServerByVcDevId" resultType="com.visionvera.remoteservice.bean.EmbeddedServerInfo">
+        select id,vc_dev_id AS vcDevId,session_id AS sessionId,user_id AS userId,version
+        from t_embedded_server
+        where vc_dev_id = #{vcDevId} and user_id IS NUll
+    </select>
+    <update id="updateEmbeddedServerOfsessionIdByUserId">
+        update t_embedded_server
+        set session_id = #{sessionId} where user_id = #{userId}
+   </update>
+    <select id="getCallDeviceEmbeddedServerRelationBusinessByUserId"
+            resultType="com.visionvera.remoteservice.bean.EmbeddedServerInfo">
+        select id,vc_dev_id AS vcDevId,session_id AS sessionId,user_id AS userId
+        from t_embedded_server
+        where user_id = #{userId}
+    </select>
+    <!--根据sessionId 取得用户信息-->
+    <select id="getEmbeddedServerBySessionId" resultType="com.visionvera.remoteservice.bean.EmbeddedServerInfo">
+        select id,vc_dev_id AS vcDevId,session_id AS sessionId,user_id AS userId
+        from t_embedded_server
+        where session_id = #{sessionId}
+    </select>
+    <!--根据返回的设备状态进行更新-->
+    <update id="updateEmbeddedServerByUserId">
+        update t_embedded_server
+        set id_card_state=#{idCardStatus},
+        high_photo_state=#{highPhotoStatus},
+        signature_state=#{signatureStatus},
+        fingerprint_state=#{fingerPrintStatus},
+        printer_state=#{printerStatus} where vc_dev_id =#{vcDevId};
+   </update>
+    <!--根据返回的版本号进行更新-->
+    <update id="updateVersionrByUSerId">
+        update t_embedded_server
+        set scu_state =0,version=#{version}  where session_id = #{sessionId};
+   </update>
+
+    <insert id="insertEmbeddedServerBackUp" parameterType="com.visionvera.remoteservice.bean.EmbededServerBackUpBean">
+        insert into t_embedded_backup(vc_dev_id,scu_state,version) values(#{vcDevId},0,#{version}) on duplicate key update version=#{version};
+   </insert>
+
+    <select id="selectEmbeddedServerBackUp" resultType="com.visionvera.remoteservice.bean.EmbededServerBackUpBean">
+     select vc_dev_id as vcDevId,scu_state as scuState,version from t_embedded_backup where vc_dev_id=#{vcDevId};
+    </select>
+
+    <select id="getOtherStatus" resultType="com.visionvera.remoteservice.bean.EmbeddedServerInfo">
+        select
+        vc_dev_id as vcDevId, id_card_state as idcardstate,high_photo_state as highphotostatus,
+        signature_state as signaturestate,printer_state as printerstate,
+        fingerprint_state as fingerPrintStatus
+        FROM t_embedded_server
+        where vc_dev_id = #{vcDevId}
+    </select>
+
+    <delete id="deleteEmbeddedServerBackUp">
+        delete from t_embedded_backup
+        where vc_dev_id = #{vcDevId}
+    </delete>
+
+  <update id="clearEmbeddedServerStatus">
+        update t_embedded_server
+        set id_card_state=null ,
+        high_photo_state=null,
+        signature_state=null,
+        fingerprint_state=null,
+        printer_state=null where vc_dev_id =#{vcDevId} and user_id=null;
+   </update>
+
+</mapper>

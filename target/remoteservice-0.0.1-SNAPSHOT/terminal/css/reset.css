@@ -1,0 +1,234 @@
+* {
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: rgba(255, 0, 0, 0);
+    tap-highlight-color: rgba(255, 0, 0, 0);
+    outline: none;
+}
+
+body {
+    font-family: "微软雅黑";
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Chrome/Safari/Opera */
+    -khtml-user-select: none; /* Konqueror */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently not supported by any browser */
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+strong,
+b {
+    font-weight: normal;
+}
+
+a {
+    cursor: pointer;
+    text-decoration: none;
+}
+
+i {
+    font-style: normal;
+}
+
+li {
+    list-style: none;
+}
+
+button,
+input,
+textarea {
+    font-size: 0.14rem;
+    outline: none;
+}
+
+/***布局样式***/
+
+.fl {
+    float: left;
+}
+
+.fr {
+    float: right;
+}
+
+.cl:after {
+    content: '';
+    display: block;
+    clear: both;
+}
+
+.oh {
+    overflow: hidden
+}
+
+.dn {
+    display: none;
+}
+
+.db {
+    display: block;
+}
+
+/***按钮组件***/
+
+.sham-btn {
+    display: inline-block;
+    font-size: 0.16rem;
+    text-align: center;
+    color: #141414;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+.sham-btn:hover {
+    opacity: 0.7;
+}
+
+.sham-btn:active {
+    opacity: 0.9;
+}
+
+.sham-btn.success {
+    color: #fff;
+    background-color: #449d44;
+    border-color: #398439;
+}
+
+.sham-btn.primary {
+    color: #fff;
+    background-color: #337ab7;
+    border-color: #2e6da4;
+}
+
+.sham-btn.danger {
+    color: #fff;
+    background-color: #d9534f;
+    border-color: #d43f3a;
+}
+
+/*****公用css*****/
+body {
+    /* min-width: 1280px;
+    min-height: 720px; */
+    color: #141414;
+    background-color: #F2F5FA;
+    /*font-size: 16px!important;*/
+}
+
+/****最外层的父级100vh****/
+
+.main-box {
+    height: 100vh;
+    overflow: hidden;
+    color: #141414;
+}
+
+/****最外层的父级100vh-end****/
+
+/**header**/
+
+.header {
+    position: relative;
+    width: 100%;
+    height: 1.32rem;
+    overflow: hidden;
+    background: url(../img/heaer_bg.png) no-repeat;
+    background-size: 100% 100%;
+}
+
+.header h1 {
+    margin-top: 0.4rem;
+    height: 0.42rem;
+    font-size: 0.4rem;
+    text-align: center;
+    color: #fff;
+}
+
+.header-back {
+    position: absolute;
+    left: 0.5rem;
+    top: 0.3rem;
+    /* font-size: 0; */
+    width:5rem;
+    line-height: 0.3rem;
+}
+
+.back-icon {
+    /* margin-top: 0.5rem; */
+    margin-bottom: 0.05rem;
+    display: inline-block;
+    border-left: 0.03rem solid #fff;
+    border-bottom: 0.03rem solid #fff;
+    width: 0.25rem;
+    height: 0.25rem;
+    transform: rotate(45deg);
+    vertical-align: middle;
+}
+
+.header-back span {
+    vertical-align: middle;
+    /* font-size: 0.2rem; */
+    color: #fff;
+}
+
+/**header-end**/
+
+/**content**/
+
+.content {
+    margin: 0 auto;
+    width: 10.7rem;
+    height: calc(100% - 1.32rem);
+}
+
+/*zhanghao*/
+.go-back-box{
+    display: block;
+    float: left;
+}
+.header-back .go-home{
+    display: block;
+    /*position: absolute;*/
+    /*left: 1.2rem;*/
+    /*top: 0.3rem;*/
+    float: left;
+    width: 0.42rem;
+    height: 0.42rem;
+    color: #000000;
+    /*background-color: #00B83F;*/
+    font-size: 0.24rem;
+    background: url("../img/shouye.png") no-repeat;
+    background-size: 0.42rem 0.42rem;
+    /* margin-bottom: 0.8rem; */
+    margin-left: 0.2rem;
+    margin-right: 0.2rem;
+    vertical-align: middle;
+}
+.header-back span.timer-back{
+    /*position: absolute;*/
+    /*left: 1.6rem;*/
+    /*top: 0.26rem;*/
+    /* margin-top: 0.5rem; */
+    padding-top: 0.03rem;
+    color: #fff;
+    font-size: 0.4rem;
+    margin-top: 0.03rem;
+    float: left;
+    vertical-align: middle;
+}
+.home-timer-back{
+    margin: 0.23rem .15rem 0 0;
+    color: #fff;
+    font-size: 0.4rem;
+    float: left;
+    vertical-align: middle;
+}
+/*/zhanghao*/

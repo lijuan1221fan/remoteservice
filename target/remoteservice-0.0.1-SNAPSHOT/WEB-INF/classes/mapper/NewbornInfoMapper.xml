@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.visionvera.remoteservice.dao.NewbornInfoDao" >
+    <resultMap id="BaseResultMap" type="com.visionvera.remoteservice.bean.NewbornInfo" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="base_id" property="baseId" jdbcType="INTEGER" />
+        <result column="birth_date" property="birthDate" jdbcType="VARCHAR" />
+        <result column="relation" property="relation" jdbcType="VARCHAR" />
+        <result column="phone" property="phone" jdbcType="VARCHAR" />
+        <result column="full_name" property="fullName" jdbcType="VARCHAR" />
+    </resultMap>
+    <sql id="Base_Column_List" >
+        id, base_id, birth_date, relation, phone, full_name
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_newborn_info
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+        delete from t_newborn_info
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <delete id="deleteByPrimaryBaseId" parameterType="java.lang.Integer" >
+        delete from t_newborn_info
+        where base_id = #{baseId,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="com.visionvera.remoteservice.bean.NewbornInfo" >
+        insert into t_newborn_info (id, base_id, birth_date, 
+            relation, phone, full_name
+            )
+        values (#{id,jdbcType=INTEGER}, #{baseId,jdbcType=INTEGER}, #{birthDate,jdbcType=VARCHAR},
+            #{relation,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{fullName,jdbcType=VARCHAR}
+            )
+    </insert>
+    <insert id="insertBatch" parameterType="com.visionvera.remoteservice.bean.NewbornInfo" >
+        insert into t_newborn_info ( base_id, birth_date,
+        relation, phone, full_name)
+        values
+        <foreach collection="newbornInfos" item="item" index="index" separator=",">
+            (#{baseId,jdbcType=INTEGER}, #{item.birthDate,jdbcType=VARCHAR},
+            #{item.relation,jdbcType=VARCHAR}, #{item.phone,jdbcType=VARCHAR}, #{item.fullName,jdbcType=VARCHAR})
+        </foreach>
+    </insert>
+    <insert id="insertSelective" parameterType="com.visionvera.remoteservice.bean.NewbornInfo" >
+        insert into t_newborn_info
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                id,
+            </if>
+            <if test="baseId != null" >
+                base_id,
+            </if>
+            <if test="birthDate != null" >
+                birth_date,
+            </if>
+            <if test="relation != null" >
+                relation,
+            </if>
+            <if test="phone != null" >
+                phone,
+            </if>
+            <if test="fullName != null" >
+                full_name,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="baseId != null" >
+                #{baseId,jdbcType=INTEGER},
+            </if>
+            <if test="birthDate != null" >
+                #{birthDate,jdbcType=VARCHAR},
+            </if>
+            <if test="relation != null" >
+                #{relation,jdbcType=VARCHAR},
+            </if>
+            <if test="phone != null" >
+                #{phone,jdbcType=VARCHAR},
+            </if>
+            <if test="fullName != null" >
+                #{fullName,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.visionvera.remoteservice.bean.NewbornInfo" >
+        update t_newborn_info
+        <set >
+            <if test="baseId != null" >
+                base_id = #{baseId,jdbcType=INTEGER},
+            </if>
+            <if test="birthDate != null" >
+                birth_date = #{birthDate,jdbcType=VARCHAR},
+            </if>
+            <if test="relation != null" >
+                relation = #{relation,jdbcType=VARCHAR},
+            </if>
+            <if test="phone != null" >
+                phone = #{phone,jdbcType=VARCHAR},
+            </if>
+            <if test="fullName != null" >
+                full_name = #{fullName,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.visionvera.remoteservice.bean.NewbornInfo" >
+        update t_newborn_info
+        set base_id = #{baseId,jdbcType=INTEGER},
+            birth_date = #{birthDate,jdbcType=VARCHAR},
+            relation = #{relation,jdbcType=VARCHAR},
+            phone = #{phone,jdbcType=VARCHAR},
+            full_name = #{fullName,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+</mapper>

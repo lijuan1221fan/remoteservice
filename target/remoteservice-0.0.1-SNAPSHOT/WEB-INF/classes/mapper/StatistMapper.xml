@@ -1,0 +1,1558 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.visionvera.remoteservice.dao.StatistDao">
+
+	<!-- 区域统计 -->
+	<select id="getRangeStatisticsData" resultType="com.visionvera.remoteservice.bean.StatistBasics">
+		SELECT tsc.serviceName  as `name` ,COUNT(c.id) as `value`,c.dept_name as `deptName`
+		FROM t_business_info b
+		LEFT JOIN t_service_center tsc
+		ON tsc.serviceKey = b.service_key and tsc.state  = 1
+		left join t_sys_user tsu on tsu.userId = b.operator_id
+		LEFT JOIN t_sys_dept c
+		ON b.dept_id = c.id
+		and c.dept_name is not null
+		AND c.state <![CDATA[ <> ]]> 0
+		WHERE  b.state = 3
+    AND c.state = 1
+		and tsc.type = 3
+		<if test="deptId != null">
+		AND c.id = #{deptId}
+		</if>
+		<if test="serviceKeys != null">
+      AND tsu.serviceKey IN
+			<foreach collection="serviceKeys" item="serviceKey" open="(" close=")" separator="," >
+				#{serviceKey}
+			</foreach>
+		</if>
+		<if test="startDate != null">
+			AND b.end_time <![CDATA[  >=  ]]> #{startDate}
+		</if>
+		<if test="endDate != null">
+			AND b.end_time <![CDATA[  <=  ]]> #{endDate}
+		</if>
+		<if test="deptId != null ">
+			AND b.dept_id = #{deptId}
+		</if>
+		GROUP BY tsc.serviceName
+	</select>
+
+	<!-- 办理趋势统计 -->
+	<select id="getHandleTheTrend" resultType="com.visionvera.remoteservice.bean.StatistBasics">
+		SELECT DATE(a.create_time) as `name` ,COUNT(a.id) as `value`
+		FROM t_business_info a , t_sys_dept b,t_service_center tsc,t_service_center tsc1,	t_sys_user tsu
+		<where>
+			AND a.dept_id = b.id
+			and tsc.serviceKey = a.service_key
+			and tsc.parentKey = tsc1.serviceKey
+			and tsc.`state` =1
+			AND b.state <![CDATA[ <> ]]> 0
+			and a.state = 3
+      AND tsu.userId = a.operator_id
+      AND b.state = 1
+			and b.dept_name is not null
+			AND DATE_SUB(CURDATE(),INTERVAL 15 Day) <![CDATA[  <=  ]]> DATE(a.create_time)
+			AND b.create_time <![CDATA[  <  ]]> CURDATE()
+			<if test="serviceKeys != null">
+        AND tsu.serviceKey IN
+			<foreach collection="serviceKeys" item="serviceKey" open="(" close=")" separator="," >
+				#{serviceKey}
+			</foreach>
+			</if>
+			<if test="state != null">
+				AND a.state = #{state}
+			</if>
+			<if test="deptId != null ">
+				AND b.id = #{deptId}
+			</if>
+		</where>
+		GROUP BY DATE(a.create_time)
+		ORDER BY DATE(a.create_time)
+	</select>
+
+    <!-- 业务办结占比 -->
+	<select id="getHandleProportion" resultType="com.visionvera.remoteservice.bean.StatistBasics">
+		SELECT DATE(a.create_time) as `name` ,COUNT(a.id) as `value`
+        FROM t_business_info a , t_sys_dept b,t_service_center tsc
+		<where>
+			AND a.dept_id = b.id
+			and tsc.serviceKey = a.service_key
+            and tsc.state = 1
+			AND b.state <![CDATA[ <> ]]> 0
+			and a.state = 3
+            AND DATE_SUB(CURDATE(),INTERVAL 7 Day) <![CDATA[  <=  ]]> DATE(a.create_time)
+			AND a.create_time <![CDATA[  <  ]]> CURDATE()
+			<if test="serviceKeys != null">
+                AND a.service_key in
+				<foreach collection="serviceKeys" item="serviceKey" open="(" close=")" separator=",">
+					#{serviceKey}
+				</foreach>
+			</if>
+			<if test="finalState != null">
+				AND a.final_state = #{finalState}
+			</if>
+			<if test="deptId != null and deptId !=0 ">
+                AND a.dept_id = #{deptId}
+			</if>
+		</where>
+		GROUP BY DATE(a.create_time)
+		ORDER BY DATE(a.create_time)
+	</select>
+
+	<!-- 业务办理趋势 -->
+	<select id="getBusinessHandleTheTrend" resultType="com.visionvera.remoteservice.bean.StatistBasics">
+		SELECT DATE(a.create_time) as `name` ,COUNT(a.id) as `value`
+		FROM t_business_info a , t_sys_dept b,t_service_center tsc
+		<where>
+			AND a.dept_id = b.id
+			and tsc.serviceKey = a.service_key
+			and tsc.state = 1
+			AND b.state <![CDATA[ <> ]]> 0
+			and a.state = 3
+			AND DATE_SUB(CURDATE(),INTERVAL 15 Day) <![CDATA[  <=  ]]> DATE(a.create_time)
+			AND a.create_time <![CDATA[  <  ]]> CURDATE()
+			<if test="serviceKeys != null">
+				AND a.service_key in
+				<foreach collection="serviceKeys" item="serviceKey" open="(" close=")" separator=",">
+					#{serviceKey}
+				</foreach>
+			</if>
+			<if test="finalState != null">
+				AND a.final_state = #{finalState}
+			</if>
+			<if test="deptId != null and deptId !=0 ">
+				AND a.dept_id = #{deptId}
+			</if>
+		</where>
+		GROUP BY DATE(a.create_time)
+		ORDER BY DATE(a.create_time)
+	</select>
+
+	<!-- 业务分类统计 -->
+	<select id="getBusinessClassification" resultType="com.visionvera.remoteservice.bean.StatistBasicsForBusinessType" >
+		select
+		tbtb.describes AS `name`,
+		count(tbi.id) as value ,
+		tbtb.id as id
+		from t_business_info tbi
+		LEFT JOIN t_business_type tbta on tbi.business_type = tbta.id and tbta.is_leaf = 1
+		LEFT JOIN t_business_type tbtb on tbta.parent_id = tbtb.id and tbtb.is_leaf = 0
+		LEFT JOIN t_sys_dept b ON tbi.dept_id = b.id
+		left join t_service_center tsc on tsc.serviceKey = tbi.service_key
+		LEFT JOIN t_service_center tsc1 on tsc.parentKey = tsc1.serviceKey
+		left join t_sys_user tsu on tsu.userId = tbi.operator_id
+		WHERE tbi.state = 3
+		AND tbta.state = 1
+		AND b.state = 1
+		and tsc.state = 1
+		<if test="deptId != null ">
+			AND tbi.dept_id = #{deptId}
+		</if>
+		<if test="serviceKeys != null">
+      AND tsu.serviceKey IN
+			<foreach collection="serviceKeys" item="serviceKey" open="(" close=")" separator="," >
+			#{serviceKey}
+			</foreach>
+		</if>
+		<if test="startDate != null">
+			AND tbi.end_time <![CDATA[  >=  ]]> #{startDate}
+		</if>
+		<if test="endDate != null">
+			AND tbi.end_time <![CDATA[  <=  ]]> #{endDate}
+		</if>
+		GROUP BY tbtb.id
+		ORDER BY COUNT(tbi.id) DESC
+	</select>
+
+	<!-- 处理中业务统计 -->
+	<select id="getProcessing" resultType="com.visionvera.remoteservice.bean.StatistBasics" >
+		SELECT
+		CASE WHEN tbi.state = 2 THEN '正在处理' ELSE '正在处理' END as `name` ,
+		count(tbi.id) AS `value`
+		from t_business_info tbi, t_sys_dept td ,t_service_center tsc,t_service_center tsc1,t_sys_user tsu WHERE tbi.dept_id = td.id and td.state <![CDATA[ <> ]]> 0 and tsc.serviceKey = tbi.service_key
+		and tsc.parentKey = tsc1.serviceKey AND tsu.userId = tbi.operator_id
+		and tbi.state = 2
+		<if test="deptId != null">
+			and tbi.dept_id = #{deptId}
+		</if>
+		<if test="serviceKeys != null">
+      AND tsu.serviceKey IN
+			<foreach collection="serviceKeys" item="serviceKey" open="(" close=")" separator="," >
+			#{serviceKey}
+		</foreach>
+		</if>
+		<if test="startDate != null">
+			AND tbi.update_time <![CDATA[  >=  ]]> #{startDate}
+		</if>
+		<if test="endDate != null">
+			AND tbi.update_time <![CDATA[   <=  ]]> #{endDate}
+		</if>
+	</select>
+
+	<!-- 已处理业务统计 -->
+	<select id="getProcessed" resultType="com.visionvera.remoteservice.bean.StatistBasics" >
+		SELECT
+		CASE WHEN tbi.state = 3 THEN '已处理' ELSE '已处理' END as `name`,
+		count(tbi.id) AS `value`
+		from t_business_info tbi, t_business_type t,t_sys_dept td ,t_service_center tsc,t_service_center tsc1,t_sys_user tsu  WHERE tbi.dept_id = td.id and
+		td.state <![CDATA[ <> ]]> 0  and tsc.serviceKey = tbi.service_key
+		and tsc.parentKey = tsc1.serviceKey
+		and tbi.business_type = t.id
+		and tbi.state = 3
+    AND tsu.userId = tbi.operator_id
+		<if test="deptId != null">
+			and tbi.dept_id = #{deptId}
+		</if>
+		<if test="startDate != null">
+			AND tbi.end_time <![CDATA[  >=  ]]> #{startDate}
+		</if>
+		<if test="endDate != null">
+			AND tbi.end_time <![CDATA[   <=  ]]> #{endDate}
+		</if>
+		<if test="serviceKeys != null">
+      AND tsu.serviceKey in
+			<foreach collection="serviceKeys" item="serviceKey" open="(" close=")" separator="," >
+			#{serviceKey}
+			</foreach>
+		</if>
+	</select>
+	<!-- 未处理业务统计 -->
+	<select id="getUntreated" resultType="com.visionvera.remoteservice.bean.StatistBasics" >
+		SELECT
+		CASE WHEN tbi.state = 1 THEN '排队中' ELSE '排队中' END as `name`,
+		count(tbi.id) AS `value`
+		from t_business_info tbi, t_sys_dept td,t_service_center tsc,t_service_center tsc1,t_sys_user tsu  WHERE tbi.dept_id = td.id and td.state <![CDATA[ <> ]]> 0 and tsc.serviceKey = tbi.service_key
+		and tsc.parentKey = tsc1.serviceKey
+    AND tsu.userId = tbi.operator_id
+		and tbi.state = 1
+		<if test="deptId != null">
+			and tbi.dept_id = #{deptId}
+		</if>
+		<if test="startDate != null">
+			AND tbi.update_time <![CDATA[  >=  ]]> #{startDate}
+		</if>
+		<if test="endDate != null">
+			AND tbi.update_time <![CDATA[   <=  ]]> #{endDate}
+		</if>
+		<if test="serviceKeys != null">
+      AND tsu.serviceKey IN
+			<foreach collection="serviceKeys" item="serviceKey" open="(" close=")" separator="," >
+			#{serviceKey}
+		</foreach>
+		</if>
+	</select>
+
+	<!--业务分类统计 按照第二类型 统计-->
+	<select id="getBusinessClassificationBySecondTypes" resultType="com.visionvera.remoteservice.bean.StatistBasics" >
+		SELECT
+		a.`describes` AS `name` , COUNT(c.id) AS `value`
+		FROM
+		t_business_info c
+		LEFT JOIN t_business_type a ON c.business_Type = a.id  and a.is_leaf = 1
+		LEFT JOIN t_business_type tbtb on a.parent_id = tbtb.id and tbtb.is_leaf = 0
+		LEFT JOIN t_sys_dept b ON c.dept_id = b.id
+		left join t_service_center tsc on tsc.serviceKey = c.service_key
+		LEFT JOIN t_service_center tsc1 on tsc.parentKey = tsc1.serviceKey
+    left join t_sys_user tsu on tsu.userId = c.operator_id
+		WHERE a.is_leaf = 1
+		AND c.state = 3
+		and b.state = 1
+		and a.state = 1
+		and tsc.state = 1
+		and a.parent_id = #{businessTypeId}
+		<if test="startDate != null">
+			AND c.end_time <![CDATA[  >=  ]]> #{startDate}
+		</if>
+		<if test="endDate != null">
+			AND c.end_time <![CDATA[   <=  ]]> #{endDate}
+		</if>
+		<if test="serviceKeys != null">
+      AND tsu.serviceKey in
+			<foreach collection="serviceKeys" item="serviceKey" open="(" close=")" separator="," >
+			#{serviceKey}
+			</foreach>
+		</if>
+		GROUP BY a.id
+	</select>
+
+    <!--
+    &lt;!&ndash; 办理状态统计 &ndash;&gt;
+    <select id="getHandleTheState"  resultType="com.visionvera.remoteservice.bean.StatistBasics">
+      SELECT CASE WHEN statu = 0 THEN '排队中'
+      WHEN statu = 1 THEN '正在处理'
+      WHEN statu = 2 THEN '已处理' END as `name` ,COUNT(businessId) as `value`
+      FROM t_business_info
+      <where>
+        <if test="startDate != null">
+          AND numberGenerationTime <![CDATA[  >=  ]]> #{startDate}
+        </if>
+        <if test="endDate != null">
+          AND numberGenerationTime <![CDATA[   <=  ]]> #{endDate}
+        </if>
+        &lt;!&ndash; AND IFNULL(businessCompletionTime,DATE(numberGenerationTime) = DATE(NOW()) )  &ndash;&gt;
+        <choose>
+          <when test="type == '1000' or type == '2000' ">
+            and type = #{type}
+          </when>
+          <otherwise>
+          </otherwise>
+        </choose>
+      </where>
+      GROUP BY businessState
+    </select>-->
+
+	<!-- 年龄分布统计 -->
+	<select id="getAgeDistributionStatistics" resultType="com.visionvera.remoteservice.bean.StatistBasics">
+		SELECT x.`name` ,ifnull(y.`value`,0) AS `value`
+		FROM (
+		SELECT '0-15' AS `name` UNION ALL
+		SELECT '16-24' UNION ALL
+		SELECT '25-34' UNION ALL
+		SELECT '35-44' UNION ALL
+		SELECT '45-59' UNION ALL
+		SELECT '60+' ) x
+		LEFT JOIN (
+		SELECT ELT(INTERVAL(YEAR (c.end_time) - YEAR (a.birth_date),0,15,25,35,45,60),'0-15','16-24','25-34','35-44','45-59','60+') AS `name` ,
+		COUNT(b.business_id) AS 'value'
+		FROM t_client_info a ,
+		t_business_client_rel b ,
+		t_business_info c ,
+		t_sys_dept d ,t_service_center tsc,t_service_center tsc1 ,t_sys_user tsu
+		WHERE a.id = b.client_id
+		AND b.business_id = c.id
+		AND c.dept_id = d.id
+    AND tsu.userId = c.operator_id
+		AND d.state <![CDATA[ <> ]]> 0
+		AND c.state = 3
+		and tsc.serviceKey = c.service_key
+		and tsc.parentKey = tsc1.serviceKey
+		AND DATE_SUB(CURDATE(),INTERVAL 30 Day) <![CDATA[  <=  ]]> DATE(c.create_time)
+		AND c.create_time <![CDATA[  <  ]]> CURDATE()
+		<if test="deptId != null and deptId !=0">
+			AND d.id = #{deptId}
+		</if>
+		<if test="serviceKeys != null">
+			AND c.service_key in
+			<foreach collection="serviceKeys" item="serviceKey" open="(" close=")" separator="," >
+			#{serviceKey}
+			</foreach>
+		</if>
+		GROUP BY ELT(INTERVAL(YEAR (c.end_time) - YEAR (birth_date),0,16,25,35,45,60),'0-15','16-24','25-34','35-44','45-59','60+')
+		) y
+		ON x.`name` = y.`name`
+		ORDER BY x.`name`
+	</select>
+
+	<!-- 文化程度统计 -->
+	<select id="getCultureStandardStatistics" resultType="com.visionvera.remoteservice.bean.StatistBasics">
+		select z.`name`,z.`value`
+		from (
+		SELECT
+		x.`name`,
+		ifnull( y.`value`, 0 ) AS `value`
+		FROM
+		( SELECT '小学' AS `name` UNION ALL
+		SELECT '初中' UNION ALL
+		SELECT '高中' UNION ALL
+		SELECT '专科' UNION
+		ALL SELECT '本科' UNION ALL
+		SELECT '硕士' UNION ALL
+		SELECT '博士' ) x
+		LEFT JOIN (
+		SELECT
+		CASE
+		a.educationHierarchy
+		WHEN '小学' THEN
+		'小学'
+		WHEN '初中' THEN
+		'初中'
+		WHEN '高中' THEN
+		'高中'
+		WHEN '专科' THEN
+		'专科'
+		WHEN '本科' THEN
+		'本科'
+		WHEN '硕士' THEN
+		'硕士'
+		WHEN '博士' THEN
+		'博士'
+		END AS `name` ,COUNT( c.id ) AS `value`
+		FROM
+		t_education_type a
+		LEFT JOIN t_business_client_rel b ON b.education_id = a.educationId
+		AND DATE_SUB(CURDATE(),INTERVAL 30 Day) <![CDATA[  <=  ]]> DATE(b.create_time)
+		AND b.create_time <![CDATA[  <  ]]> CURDATE()
+		LEFT JOIN t_client_info tci ON tci.id = b.client_id
+		LEFT JOIN t_business_info c ON b.business_id = c.id
+		AND c.state = 3
+		LEFT JOIN t_sys_dept d ON d.id = c.dept_id
+		AND d.state <![CDATA[  <>  ]]> 0
+		LEFT JOIN t_service_center tsc ON tsc.serviceKey = c.service_Key
+		LEFT JOIN t_service_center tsc1 ON tsc.parentKey = tsc1.serviceKey
+		AND tsc.state <![CDATA[  <>  ]]> 0
+		<where>
+			<if test="deptId != null and deptId !=0">
+				AND d.id = #{deptId}
+			</if>
+			<if test="serviceKeys != null">
+				AND c.service_key IN
+				<foreach collection="serviceKeys" item="serviceKey" open="(" close=")" separator="," >
+					#{serviceKey}
+				</foreach>
+			</if>
+		</where>
+		GROUP BY a.educationId
+		) y ON x.`name` = y.`name`) z
+		LEFT JOIN t_education_type tet on z.name = tet.educationHierarchy
+		GROUP BY tet.educationId
+
+    </select>
+
+	<!-- 时间段统计 -->
+	<select id="getBusinessTimeStatistics"  resultType="com.visionvera.remoteservice.bean.StatistBasics" >
+		SELECT x.`name` ,ifnull(y.`value`,0) AS `value`
+		FROM (
+		SELECT '8-10' AS `name` UNION ALL
+		SELECT '10-12' UNION ALL
+		SELECT '12-14' UNION ALL
+		SELECT '14-16' UNION ALL
+		SELECT '16-18') x
+		LEFT JOIN (
+		SELECT ELT(INTERVAL(DATE_FORMAT(a.create_time,'%k'),8,10,12,14,16),'8-10','10-12','12-14','14-16','16-18') AS `name` , COUNT(a.id) AS `value`
+		FROM t_business_info a , t_sys_dept b,t_service_center tsc,t_service_center tsc1,t_sys_user tsu
+		WHERE a.dept_id = b.id
+		and a.state = 3
+		and tsc.serviceKey = a.service_key
+    AND tsu.userId = a.operator_id
+		and tsc.parentKey = tsc1.serviceKey
+		<if test="deptId != null ">
+			AND b.id = #{deptId}
+		</if>
+		<if test="serviceKey != null">
+      AND tsu.serviceKey  in
+			<foreach collection="serviceKeys" item="serviceKey" open="(" close=")" separator="," >
+			#{serviceKey}
+		</foreach>
+		</if>
+		AND b.state <![CDATA[ <> ]]> 0
+		<if test="startDate != null">
+			AND a.end_time <![CDATA[  >=  ]]> #{startDate}
+		</if>
+		<if test="endDate != null">
+			AND a.end_time <![CDATA[  <=  ]]> #{endDate}
+		</if>
+		GROUP BY ELT(INTERVAL(DATE_FORMAT(a.create_time,'%k'),8,10,12,14,16),'8-10','10-12','12-14','14-16','16-18')
+		) y
+		ON x.`name` = y.`name`
+	</select>
+	<select id="businessClassification" resultType="com.visionvera.remoteservice.bean.StatistBasics">
+		select
+		DISTINCT
+		tbi.business_type_name as name,
+		count(tbi.id) as value
+		FROM t_business_info tbi ,t_business_type tbt ,t_sys_dept tsd,t_service_center tsc,t_service_center tsc1,t_sys_user tsu  WHERE tbt.id = tbi.business_type
+		and tbt.is_leaf = 1 and tbt.`state`
+		<![CDATA[ <> ]]>0 and tbi.dept_id = tsd.id
+		and tbi.state = 3
+		and tsd.state <![CDATA[ <> ]]> 0
+		AND tsu.userId = tbi.operator_id
+		and tsc.serviceKey = tbi.service_key
+		and tsc.parentKey = tsc1.serviceKey
+		<if test="deptId != null ">
+			and tbi.dept_id = #{deptId}
+		</if>
+		<if test="startDate != null">
+			and tbi.end_time <![CDATA[  >=  ]]> #{startDate}
+		</if>
+		<if test="endDate != null">
+			AND tbi.end_time <![CDATA[  <=  ]]> #{endDate}
+		</if>
+		<if test="serviceKeys != null">
+      AND tsu.serviceKey IN
+			<foreach collection="serviceKeys" item="serviceKey" open="(" close=")" separator="," >
+			#{serviceKey}
+			</foreach>
+		</if>
+		GROUP BY tbi.business_type ORDER BY count(tbi.id) DESC
+
+    </select>
+    <!-- 审批中心查询热门业务 -->
+    <select id="getHotBusinessTopFiveByCheck" resultType="com.visionvera.remoteservice.bean.StatistBasics">
+        SELECT
+        a.business_type_name AS name,
+        COUNT( a.business_type_name ) AS value
+        FROM
+        t_business_info a
+        LEFT JOIN
+        t_sys_dept b
+        ON a.dept_id = b.id
+        WHERE
+        a.start_time <![CDATA[  >=  ]]> DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY)
+        AND a.start_time <![CDATA[  <  ]]> (CURRENT_DATE)
+        AND a.final_state = 1
+        AND b.state = 1
+        <if test="serviceKey != null">
+            AND a.handle_service_key = #{serviceKey}
+        </if>
+        <if test="deptId != null">
+            AND a.dept_id = #{deptId}
+        </if>
+        GROUP BY
+        a.business_type_name
+        ORDER BY
+        COUNT( a.business_type_name ) DESC
+        LIMIT 0,5;
+    </select>
+    <!-- 统筹中心查询热门业务 -->
+    <select id="getHotBusinessTopFiveByAdmin" resultType="com.visionvera.remoteservice.bean.StatistBasics">
+        SELECT
+        a.business_type_name AS name,
+        COUNT( a.business_type_name ) AS value
+        FROM
+        t_business_info a
+        LEFT JOIN
+        t_sys_dept b
+        ON a.dept_id = b.id
+        WHERE
+        a.start_time <![CDATA[  >=  ]]> DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY)
+        AND a.start_time <![CDATA[  <  ]]> (CURRENT_DATE)
+        AND a.final_state = 1
+        AND b.state = 1
+        <if test="serviceKeyList != null">
+            AND a.handle_service_key in
+            <foreach collection="serviceKeyList" item="serviceKey" open="(" close=")" separator=",">
+                #{serviceKey}
+            </foreach>
+        </if>
+        <if test="deptId != null">
+            AND a.dept_id = #{deptId}
+        </if>
+        GROUP BY
+        a.business_type_name
+        ORDER BY
+        COUNT( a.business_type_name ) DESC
+        LIMIT 0,5;
+    </select>
+    <!-- 全部中心查询热门业务 -->
+    <select id="getHotBusinessTopFive" resultType="com.visionvera.remoteservice.bean.StatistBasics">
+        SELECT
+        a.business_type_name AS name,
+        COUNT( a.business_type_name ) AS value
+        FROM
+        t_business_info a
+        LEFT JOIN
+        t_sys_dept b
+        ON a.dept_id = b.id
+        WHERE
+        a.start_time <![CDATA[  >=  ]]> DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY)
+        AND a.start_time <![CDATA[  <  ]]> (CURRENT_DATE)
+        AND a.final_state = 1
+        AND b.state = 1
+        <if test="deptId != null">
+            AND a.dept_id = #{deptId}
+        </if>
+        GROUP BY
+        a.business_type_name
+        ORDER BY
+        COUNT( a.business_type_name ) DESC
+        LIMIT 0,5;
+    </select>
+    <!-- 审批中心获取时段业务量 -->
+    <select id="getHandlingTimeStatisticsByCheck" resultType="com.visionvera.remoteservice.bean.StatistBasicsForCount">
+        SELECT
+        HOUR( a.start_time ) as name,
+        COUNT( * ) as value
+        FROM
+        t_business_info a
+        LEFT JOIN
+        t_sys_dept b
+        ON a.dept_id = b.id
+        WHERE
+        a.start_time <![CDATA[  >=  ]]> DATE_SUB(CURRENT_DATE , INTERVAL 7 DAY)
+        AND a.start_time <![CDATA[  <  ]]> (CURRENT_DATE)
+        AND a.state = 3
+        AND b.state = 1
+        <if test="deptId != null">
+            AND a.dept_id = #{deptId}
+        </if>
+        <if test="handleServiceKey != null">
+            AND a.handle_service_key = #{handleServiceKey}
+        </if>
+        GROUP BY
+        HOUR ( a.start_time )
+        ORDER BY
+        HOUR ( a.start_time );
+    </select>
+    <!-- 统筹中心获取时段业务量 -->
+    <select id="getHandlingTimeStatisticsByAdmin" resultType="com.visionvera.remoteservice.bean.StatistBasicsForCount">
+        SELECT
+        HOUR( a.start_time ) as name,
+        COUNT( * ) as value
+        FROM
+        t_business_info a
+        LEFT JOIN
+        t_sys_dept b
+        ON a.dept_id = b.id
+        WHERE
+        a.start_time <![CDATA[  >=  ]]> DATE_SUB(CURRENT_DATE , INTERVAL 7 DAY)
+        AND a.start_time <![CDATA[  <  ]]> (CURRENT_DATE)
+        AND a.state = 3
+        AND b.state = 1
+        <if test="deptId != null">
+            AND a.dept_id = #{deptId}
+        </if>
+        <if test="serviceKeyList != null">
+            AND a.handle_service_key in
+            <foreach collection="serviceKeyList" item="serviceKey" open="(" close=")" separator=",">
+                #{serviceKey}
+            </foreach>
+        </if>
+        GROUP BY
+        HOUR ( a.start_time )
+        ORDER BY
+        HOUR ( a.start_time );
+    </select>
+    <!-- 全部中心获取时段业务量 -->
+    <select id="getHandlingTimeStatistics" resultType="com.visionvera.remoteservice.bean.StatistBasicsForCount">
+        SELECT
+        HOUR( a.start_time ) as name,
+        COUNT( * ) as value
+        FROM
+        t_business_info a
+        LEFT JOIN
+        t_sys_dept b
+        ON a.dept_id = b.id
+        WHERE
+        a.start_time <![CDATA[  >=  ]]> DATE_SUB(CURRENT_DATE , INTERVAL 7 DAY)
+        AND a.start_time <![CDATA[  <  ]]> (CURRENT_DATE)
+        AND a.state = 3
+        AND b.state = 1
+        <if test="deptId != null">
+            AND a.dept_id = #{deptId}
+        </if>
+        GROUP BY
+        HOUR ( a.start_time )
+        ORDER BY
+        HOUR ( a.start_time );
+    </select>
+    <!-- 审批中心平均办理时长 -->
+    <select id="getAverageHandlingTimeByCheck" resultType="com.visionvera.remoteservice.bean.HandlingTimeCountBean">
+        SELECT
+        count( CASE WHEN TIMESTAMPDIFF( MINUTE, a.start_time, a.end_time ) BETWEEN 0 AND 5 THEN 1 END ) AS zeroToFive,
+        count( CASE WHEN TIMESTAMPDIFF( MINUTE, a.start_time, a.end_time ) BETWEEN 6 AND 10 THEN 1 END ) AS fiveToTen,
+        count( CASE WHEN TIMESTAMPDIFF( MINUTE, a.start_time, a.end_time ) BETWEEN 11 AND 15 THEN 1 END ) AS
+        tenToFifteen,
+        count( CASE WHEN TIMESTAMPDIFF( MINUTE, a.start_time, a.end_time ) BETWEEN 16 AND 20 THEN 1 END ) AS
+        fifTeenToTwenty,
+        count( CASE WHEN TIMESTAMPDIFF( MINUTE, a.start_time, a.end_time ) BETWEEN 21 AND 25 THEN 1 END ) AS
+        twentyToTwentyFive,
+        count( CASE WHEN TIMESTAMPDIFF( MINUTE, a.start_time, a.end_time ) BETWEEN 26 AND 30 THEN 1 END ) AS
+        twentyFiveToThirty,
+        count( CASE WHEN TIMESTAMPDIFF( MINUTE, a.start_time, a.end_time ) > 30 THEN 1 END ) AS moreThanThirty
+        FROM
+        t_business_info a
+        LEFT JOIN
+        t_sys_dept b
+        ON a.dept_id = b.id
+        WHERE
+        a.start_time <![CDATA[  >=  ]]> DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY)
+        AND a.start_time <![CDATA[  <  ]]> CURRENT_DATE
+        AND a.state = 3
+        AND b.state = 1
+        <if test="deptId != null">
+            AND a.dept_id = #{deptId}
+        </if>
+        <if test="handleServiceKey != null">
+            AND a.handle_service_key = #{handleServiceKey}
+        </if>
+    </select>
+    <!-- 统筹中心平均办理时长 -->
+    <select id="getAverageHandlingTimeByAdmin" resultType="com.visionvera.remoteservice.bean.HandlingTimeCountBean">
+        SELECT
+        count( CASE WHEN TIMESTAMPDIFF( MINUTE, a.start_time, a.end_time ) BETWEEN 0 AND 5 THEN 1 END ) AS zeroToFive,
+        count( CASE WHEN TIMESTAMPDIFF( MINUTE, a.start_time, a.end_time ) BETWEEN 6 AND 10 THEN 1 END ) AS fiveToTen,
+        count( CASE WHEN TIMESTAMPDIFF( MINUTE, a.start_time, a.end_time ) BETWEEN 11 AND 15 THEN 1 END ) AS
+        tenToFifteen,
+        count( CASE WHEN TIMESTAMPDIFF( MINUTE, a.start_time, a.end_time ) BETWEEN 16 AND 20 THEN 1 END ) AS
+        fifTeenToTwenty,
+        count( CASE WHEN TIMESTAMPDIFF( MINUTE, a.start_time, a.end_time ) BETWEEN 21 AND 25 THEN 1 END ) AS
+        twentyToTwentyFive,
+        count( CASE WHEN TIMESTAMPDIFF( MINUTE, a.start_time, a.end_time ) BETWEEN 26 AND 30 THEN 1 END ) AS
+        twentyFiveToThirty,
+        count( CASE WHEN TIMESTAMPDIFF( MINUTE, a.start_time, a.end_time ) > 30 THEN 1 END ) AS moreThanThirty
+        FROM
+        t_business_info a
+        LEFT JOIN
+        t_sys_dept b
+        ON a.dept_id = b.id
+        WHERE
+        a.start_time <![CDATA[  >=  ]]> DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY)
+        AND a.start_time <![CDATA[  <  ]]> CURRENT_DATE
+        AND a.state = 3
+        AND b.state = 1
+        <if test="deptId != null">
+            AND a.dept_id = #{deptId}
+        </if>
+        <if test="serviceKeyList != null">
+            AND a.handle_service_key in
+            <foreach collection="serviceKeyList" item="serviceKey" open="(" close=")" separator=",">
+                #{serviceKey}
+            </foreach>
+        </if>
+    </select>
+    <!-- 全部中心的平均办理时长 -->
+    <select id="getAverageHandlingTime" resultType="com.visionvera.remoteservice.bean.HandlingTimeCountBean">
+        SELECT
+        count( CASE WHEN TIMESTAMPDIFF( MINUTE, a.start_time, a.end_time ) BETWEEN 0 AND 5 THEN 1 END ) AS zeroToFive,
+        count( CASE WHEN TIMESTAMPDIFF( MINUTE, a.start_time, a.end_time ) BETWEEN 6 AND 10 THEN 1 END ) AS fiveToTen,
+        count( CASE WHEN TIMESTAMPDIFF( MINUTE, a.start_time, a.end_time ) BETWEEN 11 AND 15 THEN 1 END ) AS
+        tenToFifteen,
+        count( CASE WHEN TIMESTAMPDIFF( MINUTE, a.start_time, a.end_time ) BETWEEN 16 AND 20 THEN 1 END ) AS
+        fifTeenToTwenty,
+        count( CASE WHEN TIMESTAMPDIFF( MINUTE, a.start_time, a.end_time ) BETWEEN 21 AND 25 THEN 1 END ) AS
+        twentyToTwentyFive,
+        count( CASE WHEN TIMESTAMPDIFF( MINUTE, a.start_time, a.end_time ) BETWEEN 26 AND 30 THEN 1 END ) AS
+        twentyFiveToThirty,
+        count( CASE WHEN TIMESTAMPDIFF( MINUTE, a.start_time, a.end_time ) > 30 THEN 1 END ) AS moreThanThirty
+        FROM
+        t_business_info a
+        LEFT JOIN
+        t_sys_dept b
+        ON a.dept_id = b.id
+        WHERE
+        a.start_time <![CDATA[  >=  ]]> DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY)
+        AND a.start_time <![CDATA[  <  ]]> CURRENT_DATE
+        AND a.state = 3
+        AND b.state = 1
+        <if test="deptId != null">
+            AND a.dept_id = #{deptId}
+        </if>
+    </select>
+    <!-- 审批中心当天业务量 -->
+    <select id="getToDayHandingCountByCheck" resultType="com.visionvera.remoteservice.bean.StatistBasicsForCount">
+        SELECT
+        h.hour as name,
+        IFNULL(a.ac,0) as value
+        FROM
+        t_hours as h
+        LEFT JOIN (
+        SELECT HOUR( tb.start_time ) as ah,
+        COUNT( * ) as ac
+        FROM
+        t_business_info tb
+        LEFT JOIN
+        t_sys_dept sd
+        ON
+        tb.dept_id = sd.id
+        WHERE
+        TO_DAYS(tb.start_time) = TO_DAYS(NOW())
+        AND tb.state = 3
+        AND sd.state = 1
+        <if test="deptId != null">
+            AND tb.dept_id = #{deptId}
+        </if>
+        <if test="handleServiceKey != null">
+            AND tb.handle_service_key = #{handleServiceKey}
+        </if>
+        GROUP BY
+        HOUR ( tb.start_time )
+        ORDER BY
+        HOUR ( tb.start_time )
+        ) a on a.ah = h.hour ORDER BY h.hour
+    </select>
+    <!-- 统筹及其下审批中心当天业务量 -->
+    <select id="getToDayHandingCountByAdmin" resultType="com.visionvera.remoteservice.bean.StatistBasicsForCount">
+        SELECT
+        h.hour as name,
+        IFNULL(a.ac,0) as value
+        FROM
+        t_hours as h
+        LEFT JOIN (
+        SELECT HOUR( tb.start_time ) as ah,
+        COUNT( * ) as ac
+        FROM
+        t_business_info tb
+        LEFT JOIN
+        t_sys_dept sd
+        ON
+        tb.dept_id = sd.id
+        WHERE
+        TO_DAYS(tb.start_time) = TO_DAYS(NOW())
+        AND tb.state = 3
+        AND sd.state = 1
+        <if test="deptId != null">
+            AND tb.dept_id = #{deptId}
+        </if>
+        <if test="serviceKeyList != null">
+            AND tb.handle_service_key in
+            <foreach collection="serviceKeyList" item="serviceKey" open="(" close=")" separator=",">
+                #{serviceKey}
+            </foreach>
+        </if>
+        GROUP BY
+        HOUR ( tb.start_time )
+        ORDER BY
+        HOUR ( tb.start_time )
+        ) a on a.ah = h.hour ORDER BY h.hour
+    </select>
+    <!-- 所有中心当天业务量 -->
+    <select id="getToDayHandingCount" resultType="com.visionvera.remoteservice.bean.StatistBasicsForCount">
+        SELECT
+        h.hour as name,
+        IFNULL(a.ac,0) as value
+        FROM
+        t_hours as h
+        LEFT JOIN (
+        SELECT HOUR( tb.start_time ) as ah,
+        COUNT( * ) as ac
+        FROM
+        t_business_info tb
+        LEFT JOIN
+        t_sys_dept sd
+        ON
+        tb.dept_id = sd.id
+        WHERE
+        TO_DAYS(tb.start_time) = TO_DAYS(NOW())
+        AND tb.state = 3
+        AND sd.state = 1
+        <if test="deptId != null">
+            AND dept_id = #{deptId}
+        </if>
+        GROUP BY
+        HOUR ( tb.start_time )
+        ORDER BY
+        HOUR ( tb.start_time )
+        ) a on a.ah = h.hour ORDER BY h.hour
+    </select>
+    <!-- 审批中心昨天业务量 -->
+    <select id="getYesterDayHandingCountByCheck" resultType="com.visionvera.remoteservice.bean.StatistBasicsForCount">
+        SELECT
+        h.hour as name,
+        IFNULL(a.ac,0) as value
+        FROM
+        t_hours as h
+        LEFT JOIN (
+        SELECT HOUR( tb.start_time ) as ah,
+        COUNT( * ) as ac
+        FROM
+        t_business_info tb
+        LEFT JOIN
+        t_sys_dept sd
+        ON
+        tb.dept_id = sd.id
+        WHERE
+        tb.start_time <![CDATA[  >=  ]]> DATE_SUB( CURRENT_DATE, INTERVAL 1 DAY )
+        AND tb.start_time <![CDATA[  <  ]]> (CURRENT_DATE)
+        AND tb.state = 3
+        AND sd.state = 1
+        <if test="deptId != null">
+            AND tb.dept_id = #{deptId}
+        </if>
+        <if test="handleServiceKey != null">
+            AND tb.handle_service_key = #{handleServiceKey}
+        </if>
+        GROUP BY
+        HOUR ( tb.start_time )
+        ORDER BY
+        HOUR ( tb.start_time )
+        ) a on a.ah = h.hour ORDER BY h.hour
+    </select>
+    <!-- 统筹及其下审批中心昨天业务量 -->
+    <select id="getYesterDayHandingCountByAdmin" resultType="com.visionvera.remoteservice.bean.StatistBasicsForCount">
+        SELECT
+        h.hour as name,
+        IFNULL(a.ac,0) as value
+        FROM
+        t_hours as h
+        LEFT JOIN (
+        SELECT HOUR( tb.start_time ) as ah,
+        COUNT( * ) as ac
+        FROM
+        t_business_info tb
+        LEFT JOIN
+        t_sys_dept sd
+        ON
+        tb.dept_id = sd.id
+        WHERE
+        tb.start_time <![CDATA[  >=  ]]> DATE_SUB( CURRENT_DATE, INTERVAL 1 DAY )
+        AND tb.start_time <![CDATA[  <  ]]> (CURRENT_DATE)
+        AND tb.state = 3
+        AND sd.state = 1
+        <if test="deptId != null">
+            AND tb.dept_id = #{deptId}
+        </if>
+        <if test="serviceKeyList != null">
+            AND tb.handle_service_key in
+            <foreach collection="serviceKeyList" item="serviceKey" open="(" close=")" separator=",">
+                #{serviceKey}
+            </foreach>
+        </if>
+        GROUP BY
+        HOUR ( tb.start_time )
+        ORDER BY
+        HOUR ( tb.start_time )
+        ) a on a.ah = h.hour ORDER BY h.hour
+    </select>
+    <!-- 所有中心昨天业务量 -->
+    <select id="getYesterDayHandingCount" resultType="com.visionvera.remoteservice.bean.StatistBasicsForCount">
+        SELECT
+        h.hour as name,
+        IFNULL(a.ac,0) as value
+        FROM
+        t_hours as h
+        LEFT JOIN (
+        SELECT HOUR( tb.start_time ) as ah,
+        COUNT( * ) as ac
+        FROM
+        t_business_info tb
+        LEFT JOIN
+        t_sys_dept sd
+        ON
+        tb.dept_id = sd.id
+        WHERE
+        tb.start_time <![CDATA[  >=  ]]> DATE_SUB( CURRENT_DATE, INTERVAL 1 DAY )
+        AND tb.start_time <![CDATA[  <  ]]> (CURRENT_DATE)
+        AND tb.state = 3
+        AND sd.state = 1
+        <if test="deptId != null">
+            AND tb.dept_id = #{deptId}
+        </if>
+        GROUP BY
+        HOUR ( tb.start_time )
+        ORDER BY
+        HOUR ( tb.start_time )
+        ) a on a.ah = h.hour ORDER BY h.hour
+    </select>
+    <!-- 审批中心上周业务量 -->
+    <select id="getLastWeekHandlingCountByCheck" resultType="com.visionvera.remoteservice.bean.StatistBasics">
+        SELECT
+        w.week_name AS name,
+        IFNULL( t.value, 0 ) as value
+        FROM
+        t_week AS w
+        LEFT JOIN (
+        SELECT
+        DAYNAME( tb.start_time ) as tname,
+        COUNT( * ) as value
+        FROM
+        t_business_info tb
+        LEFT JOIN
+        t_sys_dept sd
+        ON
+        tb.dept_id = sd.id
+        WHERE
+        YEARWEEK( date_format( tb.start_time, '%Y-%m-%d' ), 1 ) = YEARWEEK( now( ), 1 ) - 1
+        AND tb.state = 3
+        AND sd.state = 1
+        <if test="deptId != null">
+            AND tb.dept_id = #{deptId}
+        </if>
+        <if test="handleServiceKey != null">
+            AND tb.handle_service_key = #{handleServiceKey}
+        </if>
+        GROUP BY
+        DAYNAME( tb.start_time )
+        ORDER BY
+        WEEKDAY( tb.start_time )
+        ) t ON w.week_name = t.tname;
+    </select>
+    <!-- 统筹中心上周业务量 -->
+    <select id="getLastWeekHandlingCountByAdmin" resultType="com.visionvera.remoteservice.bean.StatistBasics">
+        SELECT
+        w.week_name AS name,
+        IFNULL( t.value, 0 ) as value
+        FROM
+        t_week AS w
+        LEFT JOIN (
+        SELECT
+        DAYNAME( tb.start_time ) as tname,
+        COUNT( * ) as value
+        FROM
+        t_business_info tb
+        LEFT JOIN
+        t_sys_dept sd
+        ON
+        tb.dept_id = sd.id
+        WHERE
+        YEARWEEK( date_format( tb.start_time, '%Y-%m-%d' ), 1 ) = YEARWEEK( now( ), 1 ) - 1
+        AND tb.state = 3
+        AND sd.state = 1
+        <if test="deptId != null">
+            AND tb.dept_id = #{deptId}
+        </if>
+        <if test="serviceKeyList != null">
+            AND tb.handle_service_key in
+            <foreach collection="serviceKeyList" item="serviceKey" open="(" close=")" separator=",">
+                #{serviceKey}
+            </foreach>
+        </if>
+        GROUP BY
+        DAYNAME( tb.start_time )
+        ORDER BY
+        WEEKDAY( tb.start_time )
+        ) t ON w.week_name = t.tname;
+    </select>
+    <!-- 全部中心上周业务量 -->
+    <select id="getLastWeekHandlingCount" resultType="com.visionvera.remoteservice.bean.StatistBasics">
+        SELECT
+        w.week_name AS name,
+        IFNULL( t.value, 0 ) as value
+        FROM
+        t_week AS w
+        LEFT JOIN (
+        SELECT
+        DAYNAME( tb.start_time ) as tname,
+        COUNT( * ) as value
+        FROM
+        t_business_info tb
+        LEFT JOIN
+        t_sys_dept sd
+        ON
+        tb.dept_id = sd.id
+        WHERE
+        YEARWEEK( date_format( tb.start_time, '%Y-%m-%d' ), 1 ) = YEARWEEK( now( ), 1 ) - 1
+        AND tb.state = 3
+        AND sd.state = 1
+        <if test="deptId != null">
+            AND tb.dept_id = #{deptId}
+        </if>
+        GROUP BY
+        DAYNAME( tb.start_time )
+        ORDER BY
+        WEEKDAY( tb.start_time )
+        ) t ON w.week_name = t.tname;
+    </select>
+
+
+    <!-- 审批中心本周业务量 -->
+    <select id="getThisWeekHandlingCountByCheck" resultType="com.visionvera.remoteservice.bean.StatistBasics">
+        SELECT
+        w.week_name AS name,
+        IFNULL( t.value, 0 ) as value
+        FROM
+        t_week AS w
+        LEFT JOIN (
+        SELECT
+        DAYNAME( tb.start_time ) as tname,
+        COUNT( * ) as value
+        FROM
+        t_business_info tb
+        LEFT JOIN
+        t_sys_dept sd
+        ON
+        tb.dept_id = sd.id
+        WHERE
+        YEARWEEK( date_format( tb.start_time, '%Y-%m-%d' ), 1 ) = YEARWEEK( now( ), 1 )
+        AND tb.state = 3
+        AND sd.state = 1
+        <if test="deptId != null">
+            AND tb.dept_id = #{deptId}
+        </if>
+        <if test="handleServiceKey != null">
+            AND tb.handle_service_key = #{handleServiceKey}
+        </if>
+        GROUP BY
+        DAYNAME( tb.start_time )
+        ORDER BY
+        WEEKDAY( tb.start_time )
+        ) t ON w.week_name = t.tname;
+    </select>
+    <!-- 统筹中心本周业务量 -->
+    <select id="getThisWeekHandlingCountByAdmin" resultType="com.visionvera.remoteservice.bean.StatistBasics">
+        SELECT
+        w.week_name AS name,
+        IFNULL( t.value, 0 ) as value
+        FROM
+        t_week AS w
+        LEFT JOIN (
+        SELECT
+        DAYNAME( tb.start_time ) as tname,
+        COUNT( * ) as value
+        FROM
+        t_business_info tb
+        LEFT JOIN
+        t_sys_dept sd
+        ON
+        tb.dept_id = sd.id
+        WHERE
+        YEARWEEK( date_format( tb.start_time, '%Y-%m-%d' ), 1 ) = YEARWEEK( now( ), 1 )
+        AND tb.state = 3
+        AND sd.state = 1
+        <if test="deptId != null">
+            AND tb.dept_id = #{deptId}
+        </if>
+        <if test="serviceKeyList != null">
+            AND tb.handle_service_key in
+            <foreach collection="serviceKeyList" item="serviceKey" open="(" close=")" separator=",">
+                #{serviceKey}
+            </foreach>
+        </if>
+        GROUP BY
+        DAYNAME( tb.start_time )
+        ORDER BY
+        WEEKDAY( tb.start_time )
+        ) t ON w.week_name = t.tname;
+    </select>
+    <!-- 全部中心本周业务量 -->
+    <select id="getThisWeekHandlingCount" resultType="com.visionvera.remoteservice.bean.StatistBasics">
+        SELECT
+        w.week_name AS name,
+        IFNULL( t.value, 0 ) as value
+        FROM
+        t_week AS w
+        LEFT JOIN (
+        SELECT
+        DAYNAME( tb.start_time ) as tname,
+        COUNT( * ) as value
+        FROM
+        t_business_info tb
+        LEFT JOIN
+        t_sys_dept sd
+        ON
+        tb.dept_id = sd.id
+        WHERE
+        YEARWEEK( date_format( tb.start_time, '%Y-%m-%d' ), 1 ) = YEARWEEK( now( ), 1 )
+        AND tb.state = 3
+        AND sd.state = 1
+        <if test="deptId != null">
+            AND tb.dept_id = #{deptId}
+        </if>
+        GROUP BY
+        DAYNAME( tb.start_time )
+        ORDER BY
+        WEEKDAY( tb.start_time )
+        ) t ON w.week_name = t.tname;
+    </select>
+
+    <select id="getPeopleCountByCheck" resultType="java.lang.Integer">
+        SELECT
+        COUNT( a.client_id )
+        FROM
+        (
+        SELECT
+        b.id,
+        c.client_id,
+        b.service_key
+        FROM
+        t_business_info b
+        LEFT JOIN
+        ( SELECT business_id, client_id FROM t_business_client_rel ORDER BY client_id ) c
+        ON c.business_id = b.id
+        LEFT JOIN
+        t_sys_dept sd
+        ON b.dept_id = sd.id
+        WHERE sd.state = 1
+        <if test="deptId != null">
+            AND b.dept_id = #{deptId}
+        </if>
+            <if test="handleServiceKey != null">
+                AND b.handle_service_key = #{handleServiceKey}
+        </if>
+        GROUP BY
+        c.client_id
+        ) a
+    </select>
+
+    <select id="getPeopleCountByAdmin" resultType="java.lang.Integer">
+        SELECT
+        COUNT( a.client_id )
+        FROM
+        (
+        SELECT
+        b.id,
+        c.client_id,
+        b.service_key
+        FROM
+        t_business_info b
+        LEFT JOIN
+        ( SELECT business_id, client_id FROM t_business_client_rel ORDER BY client_id ) c
+        ON c.business_id = b.id
+        LEFT JOIN
+        t_sys_dept sd
+        ON b.dept_id = sd.id
+        WHERE sd.state = 1
+        <if test="deptId != null">
+            AND b.dept_id = #{deptId}
+        </if>
+        <if test="serviceKeyList != null">
+            AND b.handle_service_key in
+            <foreach collection="serviceKeyList" item="serviceKey" open="(" close=")" separator=",">
+                #{serviceKey}
+            </foreach>
+        </if>
+        GROUP BY
+        c.client_id
+        ) a
+    </select>
+
+    <select id="getPeopleCount" resultType="java.lang.Integer">
+        SELECT
+        COUNT( a.client_id )
+        FROM
+        (
+        SELECT
+        b.id,
+        c.client_id,
+        b.service_key
+        FROM
+        t_business_info b
+        LEFT JOIN
+        ( SELECT business_id, client_id FROM t_business_client_rel ORDER BY client_id ) c
+        ON c.business_id = b.id
+        LEFT JOIN
+        t_sys_dept sd
+        ON b.dept_id = sd.id
+        WHERE sd.state = 1
+        <if test="deptId != null">
+            AND b.dept_id = #{deptId}
+        </if>
+        GROUP BY
+        c.client_id
+        ) AS a
+    </select>
+
+    <!-- 审批中心实时业务监控 -->
+    <select id="getRealtimeMonitoringDataByCheck" resultType="java.lang.Integer">
+        SELECT
+        COUNT(*)
+        FROM t_business_info
+        WHERE
+        TO_DAYS(start_time) = TO_DAYS(NOW())
+        AND state = 2
+        <if test="deptId != null">
+            AND dept_id = #{deptId}
+        </if>
+        <if test="handleServiceKey != null">
+            AND handle_service_key = #{handleServiceKey}
+        </if>
+    </select>
+    <!-- 统筹中心实时业务监控 -->
+    <select id="getRealtimeMonitoringDataByAdmin" resultType="java.lang.Integer">
+        SELECT
+        COUNT(*)
+        FROM t_business_info
+        WHERE
+        TO_DAYS(start_time) = TO_DAYS(NOW())
+        AND state = 2
+        <if test="deptId != null">
+            AND dept_id = #{deptId}
+        </if>
+        <if test="serviceKeyList != null">
+            AND handle_service_key in
+            <foreach collection="serviceKeyList" item="serviceKey" open="(" close=")" separator=",">
+                #{serviceKey}
+            </foreach>
+        </if>
+    </select>
+    <!-- 全部中心实时业务监控 -->
+    <select id="getRealtimeMonitoringData" resultType="java.lang.Integer">
+        SELECT
+        COUNT(*)
+        FROM t_business_info
+        WHERE
+        TO_DAYS(start_time) = TO_DAYS(NOW())
+        AND state = 2
+        <if test="deptId != null">
+            AND dept_id = #{deptId}
+        </if>
+    </select>
+
+    <!-- 审批中心排队实时业务监控 -->
+    <select id="getRealtimeMonitoringLineUpDataByCheck" resultType="java.lang.Integer">
+        SELECT
+        COUNT(*)
+        FROM t_business_info
+        WHERE
+        TO_DAYS(create_time) = TO_DAYS(NOW())
+        AND state = 1
+        <if test="deptId != null">
+            AND dept_id = #{deptId}
+        </if>
+        <if test="handleServiceKey != null">
+            AND handle_service_key = #{handleServiceKey}
+        </if>
+    </select>
+    <!-- 统筹中心排队实时业务监控 -->
+    <select id="getRealtimeMonitoringLineUpDataByAdmin" resultType="java.lang.Integer">
+        SELECT
+        COUNT(*)
+        FROM t_business_info
+        WHERE
+        TO_DAYS(create_time) = TO_DAYS(NOW())
+        AND state = 1
+        <if test="deptId != null">
+            AND dept_id = #{deptId}
+        </if>
+        <if test="serviceKeyList != null">
+            AND handle_service_key in
+            <foreach collection="serviceKeyList" item="serviceKey" open="(" close=")" separator=",">
+                #{serviceKey}
+            </foreach>
+        </if>
+    </select>
+    <!-- 全部中心排队实时业务监控 -->
+    <select id="getRealtimeMonitoringLineUpData" resultType="java.lang.Integer">
+        SELECT
+        COUNT(*)
+        FROM t_business_info
+        WHERE
+        TO_DAYS(create_time) = TO_DAYS(NOW())
+        AND state = 1
+        <if test="deptId != null">
+            AND dept_id = #{deptId}
+        </if>
+    </select>
+
+    <select id="getTodayCount" resultType="java.lang.Integer">
+        SELECT
+        COUNT(*)
+        FROM t_business_info tb
+        LEFT JOIN
+        t_sys_dept sd
+        ON tb.dept_id = sd.id
+        WHERE
+        TO_DAYS(tb.start_time) = TO_DAYS(NOW())
+        AND tb.state = 3
+        AND sd.state = 1
+        <if test="deptId != null">
+            AND tb.dept_id = #{deptId}
+        </if>
+        <if test="serviceKeyList != null">
+            AND tb.handle_service_key in
+            <foreach collection="serviceKeyList" item="serviceKey" open="(" close=")" separator=",">
+                #{serviceKey}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="getYesterDayCount" resultType="java.lang.Integer">
+        SELECT
+        COUNT(*)
+        FROM t_business_info tb
+        LEFT JOIN
+        t_sys_dept sd
+        ON tb.dept_id = sd.id
+        WHERE
+        tb.start_time <![CDATA[  >=  ]]> DATE_SUB( CURRENT_DATE, INTERVAL 1 DAY )
+        AND tb.start_time <![CDATA[  <  ]]> (CURRENT_DATE)
+        AND tb.state = 3
+        AND sd.state = 1
+        <if test="deptId != null">
+            AND tb.dept_id = #{deptId}
+        </if>
+        <if test="serviceKeyList != null">
+            AND tb.handle_service_key in
+            <foreach collection="serviceKeyList" item="serviceKey" open="(" close=")" separator=",">
+                #{serviceKey}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="getLastMonthCount" resultType="java.lang.Integer">
+        SELECT
+        COUNT(*)
+        FROM t_business_info tb
+        LEFT JOIN
+        t_sys_dept sd
+        ON tb.dept_id = sd.id
+        WHERE
+        PERIOD_DIFF( date_format( now( ) , '%Y%m' ) , date_format( tb.start_time, '%Y%m' ) ) =1
+        AND tb.state = 3
+        AND sd.state = 1
+        <if test="deptId != null">
+            AND tb.dept_id = #{deptId}
+        </if>
+        <if test="serviceKeyList != null">
+            AND tb.handle_service_key in
+            <foreach collection="serviceKeyList" item="serviceKey" open="(" close=")" separator=",">
+                #{serviceKey}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="getThisMonthCount" resultType="java.lang.Integer">
+        SELECT
+        COUNT(*)
+        FROM t_business_info tb
+        LEFT JOIN
+        t_sys_dept sd
+        ON tb.dept_id = sd.id
+        WHERE
+        DATE_FORMAT( tb.start_time, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' )
+        AND tb.state = 3
+        AND sd.state = 1
+        <if test="deptId != null">
+            AND tb.dept_id = #{deptId}
+        </if>
+        <if test="serviceKeyList != null">
+            AND tb.handle_service_key in
+            <foreach collection="serviceKeyList" item="serviceKey" open="(" close=")" separator=",">
+                #{serviceKey}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="getSevenDayAverageCount" resultType="java.lang.Integer">
+        SELECT
+        COUNT(*)
+        FROM t_business_info tb
+        LEFT JOIN
+        t_sys_dept sd
+        ON tb.dept_id = sd.id
+        WHERE
+        tb.start_time <![CDATA[  >=  ]]> DATE_SUB(CURRENT_DATE , INTERVAL 7 DAY)
+        AND tb.start_time <![CDATA[  <  ]]> (CURRENT_DATE)
+        AND tb.state = 3
+        AND sd.state = 1
+        <if test="deptId != null">
+            AND tb.dept_id = #{deptId}
+        </if>
+        <if test="serviceKeyList != null">
+            AND tb.handle_service_key in
+            <foreach collection="serviceKeyList" item="serviceKey" open="(" close=")" separator=",">
+                #{serviceKey}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="getThirtyDayCount" resultType="java.lang.Integer">
+        SELECT
+        COUNT(*)
+        FROM t_business_info tb
+        LEFT JOIN
+        t_sys_dept sd
+        ON tb.dept_id = sd.id
+        WHERE
+        tb.start_time <![CDATA[  >=  ]]> DATE_SUB(CURRENT_DATE , INTERVAL 30 DAY)
+        AND tb.start_time <![CDATA[  <  ]]> (CURRENT_DATE)
+        AND tb.state = 3
+        AND sd.state = 1
+        <if test="deptId != null">
+            AND tb.dept_id = #{deptId}
+        </if>
+        <if test="serviceKeyList != null">
+            AND tb.handle_service_key in
+            <foreach collection="serviceKeyList" item="serviceKey" open="(" close=")" separator=",">
+                #{serviceKey}
+            </foreach>
+        </if>
+    </select>
+
+	<select id="getAreaRanking" resultType="com.visionvera.remoteservice.bean.StatistBasics">
+		SELECT
+        tb.handle_service_key AS name,
+        COUNT( tb.handle_service_key ) AS value
+		FROM
+        t_business_info tb
+        LEFT JOIN t_service_center tsc on tb.service_key = tsc.serviceKey
+		LEFT JOIN t_sys_dept td on tb.dept_id = td.id
+		WHERE
+        tb.start_time <![CDATA[  >=  ]]> DATE_SUB(DATE_SUB( CURRENT_DATE, INTERVAL 1 DAY ) , INTERVAL 30 DAY)
+        AND tb.start_time <![CDATA[  <  ]]> (CURRENT_DATE)
+		AND tb.final_state IN (1,2)
+		AND tsc.state = 1
+        AND td.state = 1
+		<if test="handleServiceKeyList != null">
+            AND tb.handle_service_key in
+			<foreach collection="handleServiceKeyList" item="serviceKey" open="(" close=")" separator=",">
+				#{serviceKey}
+			</foreach>
+		</if>
+		<if test="deptId != null and deptId !=0">
+            AND tb.dept_id = #{deptId}
+		</if>
+		GROUP BY
+        tb.handle_service_key
+		ORDER BY
+		COUNT( tb.handle_service_key ) DESC,tsc.type DESC
+		LIMIT 0,5;
+	</select>
+
+	<select id="getAreaRankingOfServer" resultType="com.visionvera.remoteservice.bean.StatistBasics">
+		SELECT
+        tb.service_key AS name,
+        COUNT( tb.service_key ) AS value
+		FROM
+        t_business_info tb
+        LEFT JOIN t_service_center tsc on tb.service_key = tsc.serviceKey
+		LEFT JOIN t_sys_dept td on tb.dept_id = td.id
+		WHERE
+        tb.start_time <![CDATA[  >=  ]]> DATE_SUB(DATE_SUB( CURRENT_DATE, INTERVAL 1 DAY ) , INTERVAL 30 DAY)
+        AND tb.start_time <![CDATA[  <  ]]> (CURRENT_DATE)
+		AND tb.final_state IN (1,2)
+        AND tsc.state = 1
+        AND td.state = 1
+		<if test="serviceKeyList != null">
+            AND tb.service_key in
+			<foreach collection="serviceKeyList" item="serviceKey" open="(" close=")" separator=",">
+				#{serviceKey}
+			</foreach>
+		</if>
+		<if test="deptId != null and deptId !=0">
+            AND tb.dept_id = #{deptId}
+		</if>
+		GROUP BY
+        tb.service_key
+		ORDER BY
+        COUNT( tb.service_key ) DESC
+		LIMIT 0,5;
+	</select>
+
+	<select id="getDeptBusinessProportion" resultType="com.visionvera.remoteservice.bean.StatistBasics">
+		SELECT
+		sd.dept_name AS NAME,
+		count(sd.dept_name) AS VALUE
+		FROM
+		t_business_info bi
+		LEFT JOIN t_sys_dept sd ON sd.id = bi.dept_id
+		WHERE
+		start_time <![CDATA[  >=  ]]> DATE_SUB(DATE_SUB( CURRENT_DATE, INTERVAL 1 DAY ) , INTERVAL 30 DAY)
+		AND start_time <![CDATA[  <  ]]> (CURRENT_DATE)
+		<if test="deptIdList != null">
+			AND bi.dept_id in
+			<foreach collection="deptIdList" item="deptId" open="(" close=")" separator=",">
+				#{deptId}
+			</foreach>
+		</if>
+		<if test="serviceKeyList != null and serviceKeyList.size > 0">
+			AND bi.service_key in
+			<foreach collection="serviceKeyList" item="serviceKey" open="(" close=")" separator=",">
+				#{serviceKey}
+			</foreach>
+		</if>
+		GROUP BY
+		sd.dept_name
+		ORDER BY
+		COUNT( sd.dept_name ) DESC
+	</select>
+
+	<select id="getBusinessTypeProportion" resultType="com.visionvera.remoteservice.bean.StatistBasics">
+		SELECT
+		tbt.describes AS NAME,
+		count(tbt.describes) AS VALUE
+		FROM
+		t_business_info bi
+		LEFT JOIN t_business_type sd ON sd.id = bi.business_type
+		LEFT JOIN t_business_type tbt
+		on sd.parent_id =tbt.id
+		WHERE
+		start_time <![CDATA[  >=  ]]> DATE_SUB(DATE_SUB( CURRENT_DATE, INTERVAL 1 DAY ) , INTERVAL 30 DAY)
+		AND start_time <![CDATA[  <  ]]> (CURRENT_DATE)
+		<if test="serviceKeyList != null  and serviceKeyList.size > 0">
+			AND bi.service_key in
+			<foreach collection="serviceKeyList" item="serviceKey" open="(" close=")" separator=",">
+				#{serviceKey}
+			</foreach>
+		</if>
+		<if test="deptId != null">
+			AND bi.dept_id = #{deptId}
+		</if>
+		GROUP BY
+		tbt.describes
+		ORDER BY
+		COUNT( tbt.describes ) DESC
+	</select>
+
+</mapper>

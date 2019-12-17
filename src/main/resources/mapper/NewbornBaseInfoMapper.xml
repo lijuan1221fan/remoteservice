@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.visionvera.remoteservice.dao.NewbornBaseInfoDao" >
+    <resultMap id="BaseResultMap" type="com.visionvera.remoteservice.bean.NewbornBaseInfo" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="business_key" property="businessKey" jdbcType="VARCHAR" />
+        <result column="pre_address" property="preAddress" jdbcType="VARCHAR" />
+        <result column="pre_police_station" property="prePoliceStation" jdbcType="VARCHAR" />
+        <result column="address" property="address" jdbcType="VARCHAR" />
+        <result column="police_station" property="policeStation" jdbcType="VARCHAR" />
+        <result column="excuse" property="excuse" jdbcType="VARCHAR" />
+        <result column="comment" property="comment" jdbcType="VARCHAR" />
+        <result column="address_information" property="addressInformation" jdbcType="VARCHAR" />
+    </resultMap>
+    <resultMap id="PrintBaseResultMap" type="com.visionvera.remoteservice.bean.NewbornInfoPrintVo" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="business_key" property="businessKey" jdbcType="VARCHAR" />
+        <result column="pre_address" property="preAddress" jdbcType="VARCHAR" />
+        <result column="pre_police_station" property="prePoliceStation" jdbcType="VARCHAR" />
+        <result column="address" property="address" jdbcType="VARCHAR" />
+        <result column="police_station" property="policeStation" jdbcType="VARCHAR" />
+        <result column="excuse" property="excuse" jdbcType="VARCHAR" />
+        <result column="comment" property="comment" jdbcType="VARCHAR" />
+        <result column="address_information" property="addressInformation" jdbcType="VARCHAR" />
+        <result column="applicantName" property="applicantName" jdbcType="VARCHAR" />
+        <result column="IDNumber" property="IDNumber" jdbcType="VARCHAR" />
+        <result column="businessHandlingTime" property="businessHandlingTime" />
+        <result column="phone" property="phone" jdbcType="VARCHAR" />
+        <result column="userName" property="userName" jdbcType="VARCHAR" />
+        <result column="affiliation" property="affiliation" jdbcType="VARCHAR" />
+        <collection property="newbornInfos" select="selectNewbornInfo" column="id" ofType="com.visionvera.remoteservice.bean.NewbornInfo">
+        </collection>
+    </resultMap>
+    <resultMap id="newbornInfosResultMap" type="com.visionvera.remoteservice.bean.NewbornInfo">
+        <result column="birth_date" property="birthDate" jdbcType="VARCHAR" />
+        <result column="relation" property="relation" jdbcType="VARCHAR" />
+        <result column="phone" property="phone" jdbcType="VARCHAR" />
+        <result column="full_name" property="fullName" jdbcType="VARCHAR" />
+    </resultMap>
+    <sql id="Base_Column_List" >
+        id, business_key, pre_address, pre_police_station, address, police_station, excuse, 
+        comment, address_information
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_newborn_base_info
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <select id="getNewbornPrint" resultMap="PrintBaseResultMap" parameterType="java.lang.String" >
+        SELECT
+             nb.id,pre_address,pre_police_station,u.affiliation,
+            address,police_station,excuse,`comment`,address_information,
+            c.applicantName,c.IDNumber,c.phone,b.businessHandlingTime,u.userName
+        FROM t_newborn_base_info nb
+        LEFT JOIN t_business_info b ON b.businessKey = nb.business_key
+        LEFT JOIN t_business_client_rel r ON r.businessKey = nb.business_key
+        LEFT JOIN t_client_info c ON c.IDNumber = r.IDNumber
+        LEFT JOIN t_user u on u.userId=b.businessOperatorId
+        WHERE
+            nb.business_key = #{businessKey,jdbcType=VARCHAR}
+    </select>
+    <select id="selectNewbornInfo" resultMap="newbornInfosResultMap" parameterType="java.lang.Integer">
+      select full_name,birth_date,relation,phone
+       from t_newborn_info
+       where base_id=#{id,jdbcType=INTEGER}
+    </select>
+    <select id="selectByPrimaryBusinessKey" resultType="java.lang.Integer" parameterType="java.lang.String" >
+        select
+        id
+        from t_newborn_base_info
+        where business_key = #{businessKey,jdbcType=VARCHAR}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+        delete from t_newborn_base_info
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="com.visionvera.remoteservice.bean.NewbornBaseInfo" >
+        insert into t_newborn_base_info (id, business_key, pre_address, 
+            pre_police_station, address, police_station, 
+            excuse, comment, address_information
+            )
+        values (#{id,jdbcType=INTEGER}, #{businessKey,jdbcType=VARCHAR}, #{preAddress,jdbcType=VARCHAR}, 
+            #{prePoliceStation,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, #{policeStation,jdbcType=VARCHAR}, 
+            #{excuse,jdbcType=VARCHAR}, #{comment,jdbcType=VARCHAR}, #{addressInformation,jdbcType=VARCHAR}
+            )
+    </insert>
+    <insert id="insertSelective" parameterType="com.visionvera.remoteservice.bean.NewbornBaseInfo" keyProperty="id" useGeneratedKeys="true" >
+        insert into t_newborn_base_info
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                id,
+            </if>
+            <if test="businessKey != null" >
+                business_key,
+            </if>
+            <if test="preAddress != null" >
+                pre_address,
+            </if>
+            <if test="prePoliceStation != null" >
+                pre_police_station,
+            </if>
+            <if test="address != null" >
+                address,
+            </if>
+            <if test="policeStation != null" >
+                police_station,
+            </if>
+            <if test="excuse != null" >
+                excuse,
+            </if>
+            <if test="comment != null" >
+                comment,
+            </if>
+            <if test="addressInformation != null" >
+                address_information,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="businessKey != null" >
+                #{businessKey,jdbcType=VARCHAR},
+            </if>
+            <if test="preAddress != null" >
+                #{preAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="prePoliceStation != null" >
+                #{prePoliceStation,jdbcType=VARCHAR},
+            </if>
+            <if test="address != null" >
+                #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="policeStation != null" >
+                #{policeStation,jdbcType=VARCHAR},
+            </if>
+            <if test="excuse != null" >
+                #{excuse,jdbcType=VARCHAR},
+            </if>
+            <if test="comment != null" >
+                #{comment,jdbcType=VARCHAR},
+            </if>
+            <if test="addressInformation != null" >
+                #{addressInformation,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.visionvera.remoteservice.bean.NewbornBaseInfo" >
+        update t_newborn_base_info
+        <set >
+            <if test="businessKey != null" >
+                business_key = #{businessKey,jdbcType=VARCHAR},
+            </if>
+            <if test="preAddress != null" >
+                pre_address = #{preAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="prePoliceStation != null" >
+                pre_police_station = #{prePoliceStation,jdbcType=VARCHAR},
+            </if>
+            <if test="address != null" >
+                address = #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="policeStation != null" >
+                police_station = #{policeStation,jdbcType=VARCHAR},
+            </if>
+            <if test="excuse != null" >
+                excuse = #{excuse,jdbcType=VARCHAR},
+            </if>
+            <if test="comment != null" >
+                comment = #{comment,jdbcType=VARCHAR},
+            </if>
+            <if test="addressInformation != null" >
+                address_information = #{addressInformation,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.visionvera.remoteservice.bean.NewbornBaseInfo" >
+        update t_newborn_base_info
+        set business_key = #{businessKey,jdbcType=VARCHAR},
+            pre_address = #{preAddress,jdbcType=VARCHAR},
+            pre_police_station = #{prePoliceStation,jdbcType=VARCHAR},
+            address = #{address,jdbcType=VARCHAR},
+            police_station = #{policeStation,jdbcType=VARCHAR},
+            excuse = #{excuse,jdbcType=VARCHAR},
+            comment = #{comment,jdbcType=VARCHAR},
+            address_information = #{addressInformation,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+</mapper>

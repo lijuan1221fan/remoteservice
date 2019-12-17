@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.visionvera.app.dao.AppointmentMaterialsDao">
+
+  <insert id="insertSelective" parameterType="com.visionvera.app.entity.AppointmentMaterials"
+    useGeneratedKeys="true" keyProperty="id">
+    insert into t_appointment_materials
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="appointmentId != null">
+         appointment_id,
+      </if>
+      <if test="materialsName != null">
+        materials_name,
+      </if>
+      <if test="materialsType != null">
+        materials_type,
+      </if>
+      <if test="filePath != null">
+        file_path,
+      </if>
+      <if test="state != null">
+        state,
+      </if>
+      <if test="fileId != null">
+        fileId,
+      </if>
+      <if test="materialsId != null">
+        materialsId,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="appointmentId != null">
+        #{appointmentId,jdbcType=INTEGER},
+      </if>
+      <if test="materialsName != null">
+        #{materialsName,jdbcType=VARCHAR},
+      </if>
+      <if test="materialsType != null">
+        #{materialsType,jdbcType=INTEGER},
+      </if>
+      <if test="filePath != null">
+        #{filePath,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null">
+        #{state,jdbcType=INTEGER},
+      </if>
+      <if test="fileId != null">
+        #{fileId,jdbcType=INTEGER},
+      </if>
+      <if test="materialsId != null">
+        #{materialsId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateByPrimaryKey" parameterType="Integer">
+    update
+      t_appointment_materials
+    set
+      state = 0
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <select id="selectByAppointmenId" resultType="com.visionvera.app.entity.AppointmentMaterials">
+    select
+      id,appointment_id,materials_name,materials_type,file_path,materialsId,fileId
+    from
+      t_appointment_materials
+    where state = 1
+    and appointment_id = #{appointId,jdbcType=INTEGER}
+  </select>
+
+</mapper>

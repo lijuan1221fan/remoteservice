@@ -1,0 +1,43 @@
+.page2-content-box li {
+    display: flex;
+    align-items: center;
+    width: 32%;
+    height: 1.2rem;
+    text-align: center;
+    overflow: hidden;
+    border-radius: 6px;
+    background-color: #4F8BBF;
+    cursor: pointer;
+    margin: 0.12rem 0.65% 0.12rem 0.65%;
+    flex-direction: column;
+    justify-content: center;
+}
+.page2-content-box .pink {
+    background-color: #F36861;
+}
+
+.page2-content-box .blue {
+    background-color: #4F8BBF;
+}
+
+.page2-content-box .yellow {
+    background-color: #F98700;
+}
+
+.page2-content-box .green {
+    background-color: #32B16C;
+}
+.page2-content-box {
+    height: calc(100% - 1rem - 1.86rem);
+    border-radius: 10px;
+    background-color: #fff;
+    /*width: 100%;*/
+    overflow: hidden;
+    padding: 50px 60px;
+}
+.page2-content-box ul {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    overflow: hidden;
+}

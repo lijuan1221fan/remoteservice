@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.visionvera.remoteservice.dao.RegionbDao">
+
+		<!-- 行政区域列表 -->	
+		<select id="getList" parameterType="String" resultType="com.visionvera.remoteservice.bean.RegionbBean">
+		   SELECT id , pid , `name` ,gradeid ,isleaf ,updatetime 
+		   FROM t_regionb  
+		   WHERE pid = #{pid}
+		   order by id
+		</select>
+		<!--通过行政区域名称获取行政区域id-->
+	 <select id="getId" parameterType="String" resultType="String">
+	SELECT a.id
+	FROM
+	t_regionb a
+	WHERE
+	a.`name`= #{name}
+	 </select>
+	 
+	 
+</mapper>

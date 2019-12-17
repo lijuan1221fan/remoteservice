@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.visionvera.remoteservice.dao.AreaDao">
+    <resultMap id="ResultMap" type="com.visionvera.remoteservice.bean.AreaBean">
+        <result property="id" column="id"/>
+        <result property="pid" column="pid"/>
+        <result property="name" column="name"/>
+        <result property="gradeId" column="grade_id"/>
+        <result property="detail" column="detail"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <select id="getArea" resultMap="ResultMap" parameterType="String">
+        SELECT
+        id,
+        pid,
+        name,
+        grade_id
+        FROM
+        t_area
+        WHERE
+        <if test="id == null || id == ''">
+            grade_id = 1
+        </if>
+        <if test="id != null">
+            pid = #{id}
+        </if>
+
+    </select>
+
+    <select id="getAreaName" resultMap="ResultMap" parameterType="String">
+        SELECT
+        id,
+        pid,
+        name,
+        grade_id
+        FROM
+        t_area
+        WHERE
+        id IN
+        <foreach collection="idList" separator="," open="(" close=")" item="id">
+            #{id}
+        </foreach>
+    </select>
+
+</mapper>

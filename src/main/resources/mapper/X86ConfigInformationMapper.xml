@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.visionvera.remoteservice.dao.X86ConfigInformationDao">
+	<resultMap id="ResultMap" type="com.visionvera.remoteservice.bean.X86ConfigInformationBean">
+		<result property="id" column="id"/>
+		<result property="columnNameEn" column="column_name_en"/>
+		<result property="columnNameCn" column="column_name_cn"/>
+		<result property="columnValue" column="column_value"/>
+		<result property="updateTime" column="update_time"/>
+		<result property="createTime" column="create_time"/>
+		<result property="state" column="state"/>
+		<result property="describes" column="describes"/>
+		<result property="dataType" column="data_type"/>
+		<result property="configType" column="config_type"/>
+		<result property="regex" column="regex"/>
+	</resultMap>
+
+	<select id="getList" resultMap="ResultMap" parameterType="com.visionvera.remoteservice.bean.X86ConfigInformationBean" >
+		select 
+			id,
+      column_name_en ,
+      column_name_cn ,
+      column_value ,
+      update_time ,
+      create_time ,
+			state,
+			describes,
+      data_type ,
+      config_type ,
+      regex
+		from t_x86_config_information
+		<where>
+		<if test="id!=null">
+				and id=#{id}
+		</if>
+		<if test="columnNameEn!=null">
+				and column_name_en=#{columnNameEn}
+		</if>
+		<if test="columnNameCn!=null">
+				and column_name_cn=#{columnNameCn}
+		</if>
+		<if test="columnValue!=null">
+				and column_value=#{columnValue}
+		</if>
+		<if test="updateTime!=null">
+				and update_time=#{updateTime}
+		</if>
+		<if test="createTime!=null">
+				and create_time=#{createTime}
+		</if>
+		<if test="state!=null">
+				and state=#{state}
+		</if>
+		<if test="describes!=null">
+				and describes=#{describes}
+		</if>
+    <if test="dataType!=null">
+				and data_type=#{dataType}
+		</if>
+    <if test="configType!=null">
+				and config_type=#{configType}
+		</if>
+    <if test="regex!=null">
+				and regex=#{regex}
+		</if>
+		</where>
+	</select>
+	<insert id="create" parameterType="com.visionvera.remoteservice.bean.X86ConfigInformationBean">
+		insert into t_x86_config_information(
+			id,
+			column_name_en,
+			column_name_cn,
+			column_value,
+			update_time,
+			create_time,
+			state,
+			describes,
+			data_type,
+      config_type,
+      regex
+		) values (
+			#{id},
+			#{columnNameEn},
+			#{columnNameCn},
+			#{columnValue},
+			#{updateTime},
+			#{createTime},
+			#{state},
+			#{describes}
+			#{dataType},
+			#{configType},
+			#{regex}
+		)
+	</insert>
+
+	<update id="update">
+    <foreach separator=";" collection="tX86ConfigInformationBeanList" item="bean" index="index">
+		update t_x86_config_information 
+			<set>
+			<if test="bean.columnValue!=null">
+        column_value=#{bean.columnValue},
+			</if>
+			<if test="bean.updateTime!=null">
+        update_time=#{bean.updateTime},
+			</if>
+			<if test="bean.describes!=null ">
+				describes=#{bean.describes},
+		</if>
+			</set>
+      <where>
+        <if test="bean.columnNameEn!=null">
+          and column_name_en=#{bean.columnNameEn}
+        </if>
+        <if test="bean.state!=null">
+          and state=#{bean.state}
+        </if>
+      </where>
+    </foreach>
+	</update>
+<!--x86执行升级，-->
+	<update id="updatescuState">
+		UPDATE t_embedded_server
+		SET scu_state = 2
+	</update>
+<!--	<select id="selectx86bean" resultType="com.visionvera.remoteservice.bean.X86ConfigInformationBean">
+		select column_value  as columnValue from t_x86_config_information where id=9;
+	</select>-->
+</mapper>

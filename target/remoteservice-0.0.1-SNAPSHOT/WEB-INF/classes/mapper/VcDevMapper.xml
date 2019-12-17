@@ -1,0 +1,739 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.visionvera.remoteservice.dao.VcDevDao">
+
+	<!-- 是否有终端在工作中 -->
+	<select id="isDeviceWorking" resultType="Integer">
+		SELECT COUNT(id)
+		FROM vc_dev
+		WHERE state > 1
+	</select>
+
+     <!-- 查询终端列表 -->
+    <select id="getDeviceList" resultType="com.visionvera.remoteservice.bean.VcDevBean">
+		SELECT
+			a.id,
+			a.`name`,
+			a.mac,
+			a.ip,
+			a.type as typeId,
+			a.description,
+			a.alias,
+			a.role AS roleId,
+			a.p_x AS pX,
+			a.p_y AS pY,
+			a.p_z AS pZ,
+			a.p_layer AS pLayer,
+			a.svrid,
+			a.updatetime,
+			a.svr_region_id AS regionId,
+			a.address,
+			a.state,
+			a.serviceKey,
+			a.deptId,
+			a.windowId,
+			a.userId,
+			a.associated,
+			a.is_single_camera as isSingleCamera
+		FROM
+			vc_dev AS a
+    </select>
+
+    <!-- 删除终端  -->
+    <delete id="deleteDevice" parameterType="List">
+    	delete from vc_dev
+    	<where>
+    		<if test="list != null ">
+	    		and id in
+		    	<foreach collection="list" item="id" separator="," open="(" close=")">
+		    	    #{id}
+		    	</foreach>
+    		</if>
+    	</where>
+    </delete>
+
+    <delete id="deleteAll">
+        delete from vc_dev
+    </delete>
+
+    <!-- 添加终端 -->
+    <insert id="addDeviceList" parameterType="List">
+        replace into vc_dev
+        (id,name,mac,ip,type,description,alias,role,p_x,p_y,p_z,p_layer,svrid,updatetime,svr_region_id,
+        address,serviceKey,deptId,windowId,associated,is_single_camera)
+        <foreach collection="list" open="VALUES" item="item" separator=",">
+            (#{item.id},#{item.name},#{item.mac},#{item.ip},#{item.typeId},#{item.description},#{item.alias},
+            #{item.roleId},#{item.pX},#{item.pY},#{item.pZ},#{item.pLayer},#{item.svrid},#{item.updatetime},
+            #{item.regionId},#{item.address},#{item.serviceKey},#{item.deptId},#{item.windowId},#{item.associated},#{item.isSingleCamera})
+        </foreach>
+    </insert>
+
+
+    <!-- 根据形态查询 终端id（终端号）  -->
+    <select id="getDeviceIdListByForm" resultType="String" parameterType="Integer">
+		SELECT id
+		FROM  vc_dev
+		WHERE form = #{form}
+ 	</select>
+
+    <!-- 根据用户查询对应的终端 -->
+    <select id="getDeviceByUserId" resultType="com.visionvera.remoteservice.bean.VcDevBean" parameterType="Integer">
+	  SELECT
+			a.id,
+			a.`name`,
+			a.mac,
+			a.ip,
+			a.type as typeId,
+			a.description,
+			a.alias,
+			a.role AS roleId,
+			a.p_x AS pX,
+			a.p_y AS pY,
+			a.p_z AS pZ,
+			a.p_layer AS pLayer,
+			a.svrid,
+			a.updatetime,
+			a.svr_region_id AS regionId,
+			a.address,
+			a.state,
+			a.serviceKey,
+			a.deptId,
+			a.windowId,
+			a.userId
+		FROM
+			vc_dev AS a
+		WHERE
+			a.userId = #{userId}
+    </select>
+
+    <!-- 修改终端本地属性  -->
+    <update id="updateVcDecvice" parameterType="Map">
+        UPDATE vc_dev
+        <set>
+            <if test="state != null ">
+                state = #{state},
+            </if>
+            <if test="serviceKey != null ">
+                serviceKey = #{serviceKey},
+            </if>
+            <if test="deptId != null ">
+                deptId = #{deptId},
+            </if>
+            <if test="windowId != null ">
+                windowId = #{windowId},
+            </if>
+            <if test="userId != null ">
+                userId = #{userId},
+            </if>
+            <if test="associated != null ">
+                associated = #{associated},
+            </if>
+            <if test="deptId != null ">
+                deptId = #{deptId},
+            </if>
+            <if test="isSingleCamera != null">
+                is_single_camera = #{isSingleCamera},
+            </if>
+            updatetime = now()
+        </set>
+        WHERE id = #{id}
+        <if test="state == 2 ">
+            AND state = 1
+        </if>
+    </update>
+
+
+    <!-- 根据id 获取终端 -->
+    <select id="getDeviceById" parameterType="String" resultType="com.visionvera.remoteservice.bean.VcDevBean">
+	  SELECT
+			a.id,
+			a.`name`,
+			a.mac,
+			a.ip,
+			a.type as typeId,
+			a.description,
+			a.alias,
+			a.role AS roleId,
+			a.p_x AS pX,
+			a.p_y AS pY,
+			a.p_z AS pZ,
+			a.p_layer AS pLayer,
+			a.svrid,
+			a.updatetime,
+			a.svr_region_id AS regionId,
+			a.address,
+			a.state,
+			a.serviceKey,
+			a.deptId,
+			a.windowId,
+			a.userId,
+			a.associated,
+			a.is_single_camera as isSingleCamera,
+      c.serviceName AS serviceName,
+      c.type AS centerType,
+      b.windowName AS windowName,
+      te.scu_state AS scuState,
+		te.id_card_state AS idCardState,
+		te.signature_state AS signatureState,
+		te.high_photo_state AS highPhotoState,
+		te.fingerprint_state AS fingerprintState,
+		te.printer_state AS  printerState,
+		te.version,
+      (case when d.dept_name is not null then d.dept_name
+      when a.deptId = 0 then '全部'
+      else d.dept_name end )AS deptName
+      FROM
+      vc_dev AS a
+      LEFT JOIN
+      t_sys_window b
+      ON
+      a.windowId = b.id
+      LEFT JOIN
+      t_service_center c
+      ON
+      a.serviceKey = c.serviceKey
+      LEFT JOIN
+			t_sys_dept d
+			ON
+			a.deptId = d.id
+			LEFT JOIN
+			t_embedded_server te ON te.vc_dev_id=a.id
+		WHERE
+			a.id = #{id}
+	</select>
+
+    <!-- 解绑终端  -->
+    <update id="unbindDeviceAndModify" parameterType="String">
+        UPDATE vc_dev
+        <set>
+            state = 1,
+            serviceKey = null,
+            deptId = null,
+            windowId = null,
+            userId = null,
+            associated = null ,
+            is_single_camera = null,
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <!-- 解绑终端(多个) -->
+    <update id="unbindDeviceList" parameterType="String">
+        UPDATE vc_dev
+        <set>
+            state = 1,
+            serviceKey = null,
+            deptId = null,
+            windowId = null,
+            userId = null,
+            associated = null ,
+            is_single_camera = null,
+        </set>
+        WHERE id in
+        <foreach collection="list" open="(" close=")" item="id" separator=",">
+            #{id}
+        </foreach>
+    </update>
+
+
+    <!-- 根据服务中心key查询终端列表  -->
+    <select id="getDeviceByServiceKey" resultType="com.visionvera.remoteservice.bean.VcDevBean" parameterType="String">
+		SELECT
+			a.id,
+			a.`name`,
+			a.mac,
+			a.ip,
+			a.type as typeId,
+			a.description,
+			a.alias,
+			a.role AS roleId,
+			a.p_x AS pX,
+			a.p_y AS pY,
+			a.p_z AS pZ,
+			a.p_layer AS pLayer,
+			a.svrid,
+			a.updatetime,
+			a.svr_region_id AS regionId,
+			a.address,
+			a.state,
+			a.serviceKey,
+			a.deptId,
+			a.windowId,
+			a.userId
+		FROM
+			vc_dev AS a
+		WHERE
+			a.serviceKey = #{serviceKey}
+	</select>
+
+    <!-- 根据中心key和部门查询终端 -->
+    <select id="getDeviceByServiceKeyAndDeptId"
+            resultType="com.visionvera.remoteservice.bean.VcDevBean" parameterType="Map">
+		SELECT
+			*
+		FROM
+			vc_dev AS a
+		WHERE
+			a.serviceKey = #{serviceKey}
+			and
+			a.deptId = #{deptId}
+	</select>
+
+<!--    &lt;!&ndash; 查询终端列表  当终端设备绑定村服务中心时，判断X86是否在线（X86心跳5秒执行一次，当create_time在5秒内更新时，为在线状态，否则为离线状态）&ndash;&gt;-->
+<!--    <select id="getDeviceListByMap" resultType="com.visionvera.remoteservice.bean.VcDevBean" parameterType="Map">-->
+<!--        SELECT-->
+<!--        a.id,-->
+<!--        a.`name`,-->
+<!--        a.mac,-->
+<!--        a.ip,-->
+<!--        a.type AS typeId,-->
+<!--        a.description,-->
+<!--        a.alias,-->
+<!--        a.role AS roleId,-->
+<!--        a.p_x AS pX,-->
+<!--        a.p_y AS pY,-->
+<!--        a.p_z AS pZ,-->
+<!--        a.p_layer AS pLayer,-->
+<!--        a.svrid,-->
+<!--        a.updatetime,-->
+<!--        a.svr_region_id AS regionId,-->
+<!--        a.address,-->
+<!--        a.state,-->
+<!--        a.serviceKey,-->
+<!--        a.deptId,-->
+<!--        a.windowId,-->
+<!--        a.userId,-->
+<!--        a.associated,-->
+<!--        a.is_single_camera AS isSingleCamera,-->
+<!--        c.serviceName AS serviceName,-->
+<!--        c.type AS centerType,-->
+<!--        b.windowName AS windowName,-->
+<!--        (case when d.dept_name is not null then d.dept_name-->
+<!--        when a.deptId = 0 then '全部'-->
+<!--        else d.dept_name end )AS deptName,-->
+<!--        (CASE-->
+<!--        WHEN te.create_time IS NOT null THEN 1-->
+<!--        ELSE-->
+<!--        0-->
+<!--        END) AS x86State-->
+<!--        FROM-->
+<!--        vc_dev AS a-->
+<!--        LEFT JOIN-->
+<!--        t_sys_window b-->
+<!--        ON-->
+<!--        a.windowId = b.id-->
+<!--        LEFT JOIN-->
+<!--        t_service_center c-->
+<!--        ON-->
+<!--        a.serviceKey = c.serviceKey-->
+<!--        LEFT JOIN-->
+<!--        t_sys_dept d-->
+<!--        ON-->
+<!--        a.deptId = d.id-->
+<!--        LEFT JOIN t_embedded_server te ON te.vc_dev_id = a.id AND te.user_id is NULL-->
+<!--        WHERE-->
+<!--        1 = 1-->
+<!--        <if test="deptId != null and deptId != '' ">-->
+<!--            and (a.deptId =#{deptId} or a.deptId is null)-->
+<!--        </if>-->
+<!--        <if test="state != null and state != '' ">-->
+<!--            and a.state =#{state}-->
+<!--        </if>-->
+<!--        <if test="name != null and name != '' ">-->
+<!--            and a.name like concat('%',#{name},'%')-->
+<!--        </if>-->
+<!--        <if test="x86State != null and x86State == 1 ">-->
+<!--            and te.create_time is not null-->
+<!--            and c.type <![CDATA[ = ]]> 3-->
+<!--        </if>-->
+<!--        <if test="x86State != null and x86State == 0 ">-->
+<!--            and te.create_time is NULL-->
+<!--            and a.serviceKey is not null-->
+<!--            and c.type <![CDATA[ = ]]> 3-->
+<!--        </if>-->
+<!--        <if test="serviceKey != null and serviceKey.size > 0 and (x86State == 1 or x86State == 0)">-->
+<!--            and a.serviceKey in-->
+<!--            <foreach collection="serviceKey" item="item" open="(" close=")" separator=",">-->
+<!--                #{item}-->
+<!--            </foreach>-->
+<!--        </if>-->
+<!--        &lt;!&ndash;<if test="serviceKey != null and serviceKey.size > 0 and x86State == 0">-->
+<!--          and a.serviceKey in-->
+<!--          <foreach collection="serviceKey" item="item" open="(" close=")" separator=",">-->
+<!--            #{item}-->
+<!--          </foreach>-->
+<!--        </if>&ndash;&gt;-->
+<!--        <if test="serviceKey != null and serviceKey.size > 0 and x86State == null">-->
+<!--            and ( a.serviceKey in-->
+<!--            <foreach collection="serviceKey" item="item" open="(" close=")" separator=",">-->
+<!--                #{item}-->
+<!--            </foreach>-->
+<!--            or a.serviceKey is null )-->
+<!--        </if>-->
+<!--        GROUP BY a.id-->
+<!--    </select>-->
+	<!-- 查询终端列表  当终端设备绑定村服务中心时，判断X86是否在线（X86心跳5秒执行一次，当create_time在5秒内更新时，为在线状态，否则为离线状态）-->
+	<select id="getDeviceListByMap" resultType="com.visionvera.remoteservice.bean.VcDevBean" parameterType="Map">
+    SELECT
+    a.id,
+    a.`name`,
+    a.mac,
+    a.ip,
+    a.type AS typeId,
+    a.description,
+    a.alias,
+    a.role AS roleId,
+    a.p_x AS pX,
+    a.p_y AS pY,
+    a.p_z AS pZ,
+    a.p_layer AS pLayer,
+    a.svrid,
+    a.updatetime,
+    a.svr_region_id AS regionId,
+    a.address,
+    a.state,
+    a.serviceKey,
+    a.deptId,
+    a.windowId,
+    a.userId,
+    a.associated,
+    c.serviceName AS serviceName,
+    c.type AS centerType,
+    a.form,
+    b.windowName AS windowName,
+    (case when d.dept_name is not null then d.dept_name
+    when a.deptId = 0 then '全部'
+        else d.dept_name end )AS deptName
+    FROM
+    vc_dev AS a
+    LEFT JOIN t_sys_window b ON a.windowId = b.id
+    LEFT JOIN t_service_center c ON a.serviceKey = c.serviceKey
+    LEFT JOIN t_sys_dept d ON a.deptId = d.id
+    WHERE
+    1 = 1
+        <if test="name != null and name != '' ">
+            and a.name like concat('%',#{name},'%')
+        </if>
+        <if test="serviceKey != null and serviceKey.size > 0">
+      and ( a.serviceKey in
+      <foreach collection="serviceKey" item="item" open="(" close=")" separator=",">
+        #{item}
+      </foreach> or a.serviceKey is null )
+        </if>
+        <if test="vcDevIds != null">
+            and a.id IN
+            <foreach collection="vcDevIds" open="(" close=")" item="vcDevId" separator=",">
+                #{vcDevId}
+            </foreach>
+        </if>
+	GROUP BY a.id
+	</select>
+
+    <!-- 根据村key查询可用终端  -->
+    <select id="getAvailableDevice" resultType="com.visionvera.remoteservice.bean.VcDevBean">
+		SELECT
+        a.id,
+        a.`name`,
+        a.mac,
+        a.ip,
+        a.type as typeId,
+        a.description,
+        a.alias,
+        a.role AS roleId,
+        a.p_x AS pX,
+        a.p_y AS pY,
+        a.p_z AS pZ,
+        a.p_layer AS pLayer,
+        a.svrid,
+        a.updatetime,
+        a.svr_region_id AS regionId,
+        a.address,
+        a.state,
+        a.serviceKey,
+        a.deptId,
+        a.windowId,
+        a.userId,
+        a.is_single_camera AS isSingleCamera
+		FROM
+		vc_dev AS a
+		WHERE
+		a.serviceKey = #{serviceKey}
+		AND
+		a.state = 1
+	</select>
+
+    <!-- 重置状态    -->
+    <update id="resetTheState">
+		UPDATE vc_dev
+		SET state = 1
+		WHERE NOT ISNULL(state)
+	</update>
+
+    <!-- 查询关联终端 -->
+    <select id="getAssociatedDev" resultType="com.visionvera.remoteservice.bean.VcDevBean">
+        SELECT
+        a.id,
+        a.`name`,
+        a.mac,
+        a.ip,
+        a.type as typeId,
+        a.description,
+        a.alias,
+        a.role AS roleId,
+        a.p_x AS pX,
+        a.p_y AS pY,
+        a.p_z AS pZ,
+        a.p_layer AS pLayer,
+        a.svrid,
+        a.updatetime,
+        a.svr_region_id AS regionId,
+        a.address,
+        a.state,
+        a.serviceKey,
+        a.deptId,
+        a.windowId,
+        a.userId,
+        a.associated
+        FROM
+        vc_dev AS a
+        <where>
+            <if test="associated != null ">
+                and a.associated = #{associated}
+            </if>
+            and 1 = 1
+        </where>
+        limit 0 ,1
+    </select>
+
+    <!-- 查询用户对应得终端id -->
+    <select id="getIdsByUsers" resultType="Integer">
+        SELECT
+        a.id
+        FROM
+        vc_dev AS a
+        WHERE
+        a.userId IN
+        <foreach collection="array" open="(" close=")" item="userId" separator=",">
+            #{userId}
+        </foreach>
+    </select>
+
+    <!-- 查询终端工作状态  -->
+    <select id="getStateByIds" resultType="Integer">
+        SELECT
+        a.state
+        FROM
+        vc_dev AS a
+        WHERE
+        a.id IN
+        <foreach collection="devIdList" open="(" close=")" item="id" separator=",">
+            #{id}
+        </foreach>
+    </select>
+
+    <!--  根据服务中心key 查询终端id -->
+    <select id="getIdsByServices" resultType="String">
+        SELECT
+        a.id
+        FROM
+        vc_dev AS a
+        WHERE
+        a.serviceKey IN
+        <foreach collection="serviceKeys" open="(" close=")" item="serviceKey" separator=",">
+            #{serviceKey}
+        </foreach>
+    </select>
+
+    <!-- 根据窗口查询对应的终端 -->
+    <select id="getDeviceByWindowId" resultType="com.visionvera.remoteservice.bean.VcDevBean" parameterType="Integer">
+	  SELECT
+			a.id,
+			a.`name`,
+			a.mac,
+			a.ip,
+			a.type as typeId,
+			a.description,
+			a.alias,
+			a.role AS roleId,
+			a.p_x AS pX,
+			a.p_y AS pY,
+			a.p_z AS pZ,
+			a.p_layer AS pLayer,
+			a.svrid,
+			a.updatetime,
+			a.svr_region_id AS regionId,
+			a.address,
+			a.state,
+			a.serviceKey,
+			a.deptId,
+			a.windowId,
+			a.userId,
+			a.is_single_camera AS isSingleCamera
+		FROM
+			vc_dev AS a
+		WHERE
+			a.windowId= #{windowId}
+    </select>
+
+    <!-- 超管获取终端列表 当终端设备绑定村服务中心时，判断X86是否在线（X86心跳5秒执行一次，当create_time在5秒内更新时，为在线状态，否则为离线状态）-->
+    <select id="superGetDevList" resultType="com.visionvera.remoteservice.bean.VcDevBean" parameterType="Map">
+        SELECT
+        a.id,
+        a.`name`,
+        a.mac,
+        a.ip,
+        a.type as typeId,
+        a.description,
+        a.alias,
+        a.role AS roleId,
+        a.p_x AS pX,
+        a.p_y AS pY,
+        a.p_z AS pZ,
+        a.p_layer AS pLayer,
+        a.svrid,
+        a.updatetime,
+        a.svr_region_id AS regionId,
+        a.address,
+        a.state,
+        a.serviceKey,
+        a.deptId,
+        a.windowId,
+        a.userId,
+        a.associated,
+        a.form,
+        a.is_single_camera AS isSingleCamera,
+        c.serviceName AS serviceName,
+        c.type AS centerType,
+        b.windowName AS windowName,
+        (case when d.dept_name is not null then d.dept_name
+        when a.deptId = 0 then '全部'
+        else d.dept_name end )AS deptName
+      FROM
+        vc_dev AS a
+        LEFT JOIN
+        t_sys_window b
+        ON
+        a.windowId = b.id
+        LEFT JOIN
+        t_service_center c
+        ON
+        a.serviceKey = c.serviceKey
+        LEFT JOIN
+        t_sys_dept d
+        ON
+        a.deptId = d.id
+      <where>
+        a.state <![CDATA[ <> ]]> 0
+        <if test="name != null and name != '' ">
+          and a.name like concat('%',#{name},'%')
+        </if>
+          <if test="vcDevIds != null">
+              and a.id IN
+              <foreach collection="vcDevIds" open="(" close=")" item="vcDevId" separator=",">
+                  #{vcDevId}
+              </foreach>
+        </if>
+      </where>
+        GROUP BY a.id
+    </select>
+
+    <select id="getDeviceByIP" resultType="com.visionvera.remoteservice.bean.VcDevBean" parameterType="String">
+	  SELECT
+			a.id,
+			a.`name`,
+			a.mac,
+			a.ip,
+			a.type as typeId,
+			a.description,
+			a.alias,
+			a.role AS roleId,
+			a.p_x AS pX,
+			a.p_y AS pY,
+			a.p_z AS pZ,
+			a.p_layer AS pLayer,
+			a.svrid,
+			a.updatetime,
+			a.svr_region_id AS regionId,
+			a.address,
+			a.state,
+			a.serviceKey,
+			a.deptId,
+			a.windowId,
+			a.userId,
+			a.is_single_camera AS isSingleCamera
+		FROM
+			vc_dev AS a
+		WHERE
+			a.ip = #{ip}
+    </select>
+
+    <update id="updateDeviceDetail">
+		UPDATE vc_dev
+		SET type = #{type},ip = #{ip}
+		WHERE id = #{deviceId}
+	</update>
+
+    <update id="setIdle">
+		UPDATE vc_dev
+		SET state = 1
+		WHERE id = #{deviceId}
+	</update>
+
+    <select id="getDeviceListByServiceKeyAndDeptId" resultType="com.visionvera.remoteservice.bean.VcDevBean"
+            parameterType="java.util.Map">
+        SELECT
+        a.id,
+        a.`name`,
+        a.mac,
+        a.ip,
+        a.type as typeId,
+        a.description,
+        a.alias,
+        a.role AS roleId,
+        a.p_x AS pX,
+        a.p_y AS pY,
+        a.p_z AS pZ,
+        a.p_layer AS pLayer,
+        a.svrid,
+        a.updatetime,
+        a.svr_region_id AS regionId,
+        a.address,
+        a.state,
+        a.serviceKey,
+        a.deptId,
+        a.windowId,
+        a.userId,
+        a.associated,
+        a.is_single_camera AS isSingleCamera
+        FROM
+        vc_dev AS a
+        where a.state <![CDATA[ <> ]]> 0
+        and a.windowId is null
+        <if test="serviceKey != null ">
+            and serviceKey = #{serviceKey}
+        </if>
+        <if test="deptId != null ">
+            and deptId = #{deptId}
+        </if>
+    </select>
+
+    <select id="selectAllDeviceId" resultType="String">
+         SELECT
+          a.id
+         FROM
+          vc_dev AS a
+         where a.state <![CDATA[ <> ]]> 0
+    </select>
+
+</mapper>
+
+
+
+
+
+
+
+
+

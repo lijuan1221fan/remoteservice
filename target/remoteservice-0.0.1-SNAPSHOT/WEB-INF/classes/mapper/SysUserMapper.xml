@@ -1,0 +1,551 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.visionvera.remoteservice.dao.SysUserDao">
+
+  <select id="getSysUserList" resultType="com.visionvera.remoteservice.bean.SysUserBean">
+    SELECT
+    t.userId,
+    t.loginName,
+    t.userName,
+    t.`password`,
+    CASE
+    t.`userState`
+    WHEN '1' THEN
+    '可用'
+    WHEN '-1' THEN
+    '不可用'
+    END AS userState,
+    t.mobilePhone,
+    t.email,
+    t.affiliation,
+    t.serviceKey,
+    t.deptId,
+    s.roleName,
+    s.roleId,
+    t.type,
+    c.serviceName,
+    c.type as serviceCenterType
+    FROM
+    t_sys_user t
+    LEFT JOIN t_sys_user_role_rel u ON t.userId = u.userId
+    LEFT JOIN t_sys_role s ON s.roleId = u.roleId
+    LEFT JOIN t_service_center c ON t.serviceKey = c.serviceKey
+    WHERE 1 = 1
+    <if test="serviceCenterKeyList != null and serviceCenterKeyList.size > 0" >
+      AND t.serviceKey in
+      <foreach collection="serviceCenterKeyList" item="serviceCenterKey" open="(" close=")" separator=",">
+        #{serviceCenterKey}
+      </foreach>
+    </if>
+    <if test="deptList != null and deptList.size > 0" >
+      AND t.deptId in
+      <foreach collection="deptList" item="dept" open="(" close=")" separator=",">
+        #{dept.id}
+      </foreach>
+    </if>
+
+    <if test="userName != null and userName != '' ">
+      AND (t.loginName LIKE CONCAT('%',#{userName},'%') OR t.userName LIKE CONCAT('%',#{userName},'%'))
+    </if>
+    <if test="type != null and type != ''">
+      AND t.type = #{type}
+    </if>
+    AND t.userState <![CDATA[ <> ]]> 0  AND t.userId != 1 AND t.userId != #{userId}
+    order by t.updatetime desc
+  </select>
+
+
+  <update id="deleteSysUser">
+    update t_sys_user
+    set `userState` = 0
+    where userId in
+    <foreach collection="userIds" item="id" open="(" close=")" separator=",">
+      #{id}
+    </foreach>
+  </update>
+
+  <select id="getSysUserInfo" resultType="com.visionvera.remoteservice.bean.SysUserBean">
+        SELECT
+        t.userId,
+        t.loginName,
+        t.userName,
+        t.`password`,
+        t.`state`,
+        t.workState,
+        t.mobilePhone,
+        t.email,
+        t.affiliation,
+        t.serviceKey,
+        t.deptId,
+        u.roleId,
+        t.salt,
+        t.type
+        FROM
+        t_sys_user t
+        LEFT JOIN t_sys_user_role_rel u ON t.userId = u.userId
+        WHERE t.userId = #{userId}
+    </select>
+
+  <select id="checkUserLogin" parameterType="map" resultType="com.visionvera.remoteservice.bean.SysUserBean">
+        select userId ,loginName ,userName , `password` ,`state` ,mobilePhone
+        , email , createTime , updatetime , lastLoginTime , version ,affiliation,
+        serviceKey,deptId
+        from t_sys_user
+        where loginName = #{loginName}
+        and password =#{password}
+        AND `state` <![CDATA[ <> ]]> 0
+    </select>
+
+  <select id="getRoleByUserId" resultType="com.visionvera.remoteservice.bean.SysRoleBean" parameterType="Integer">
+        SELECT b.roleId , b.roleName , b.description ,b.createTime ,b.updateTime ,b.`state` ,b.version
+        FROM t_sys_user_role_rel a, t_sys_role b
+        WHERE a.roleId = b.roleId
+        AND a.userId = #{userId}
+    </select>
+
+  <update id="updateState" parameterType="map" >
+        UPDATE t_sys_user SET `state` = #{state} WHERE userId = #{userId}
+    </update>
+
+  <update id="updateLastLoginTime"  parameterType="int">
+        UPDATE t_sys_user SET lastLoginTime = NOW() WHERE userId = #{userId} ;
+    </update>
+
+  <update id="updateWorkState" parameterType="map" >
+        UPDATE t_sys_user SET workState = #{workState} WHERE userId = #{userId}
+    </update>
+
+  <select id="getByUserName" resultType="com.visionvera.remoteservice.bean.SysUserBean">
+          SELECT
+            t.userId,
+            t.loginName,
+            t.userName,
+            t.`password`,
+            t.userState,
+            t.workState,
+            t.mobilePhone,
+            t.email,
+            t.affiliation,
+            t.serviceKey,
+            t.deptId,
+            s.roleName,
+            s.roleId,
+            t.type,
+            c.serviceName,
+            c.type as serviceCenterType,
+            d.dept_name as deptName,
+            t.salt
+          FROM
+            t_sys_user t
+            LEFT JOIN t_sys_user_role_rel u ON t.userId = u.userId
+            LEFT JOIN t_sys_role s ON s.roleId = u.roleId
+            LEFT JOIN t_service_center c ON t.serviceKey = c.serviceKey
+            LEFT JOIN t_sys_dept d ON t.deptId = d.id
+        WHERE  t.loginName = #{loginName} and t.userState <![CDATA[ <> ]]> 0
+    </select>
+
+  <insert id="addUser" parameterType="com.visionvera.remoteservice.bean.SysUserBean" useGeneratedKeys="true" keyProperty="userId">
+        INSERT INTO t_sys_user (
+            `loginName`,
+            `userName`,
+            `password`,
+            `state`,
+            `workState`,
+            `mobilePhone`,
+            `email`,
+            `createTime`,
+            `updatetime`,
+            `lastLoginTime`,
+            `version`,
+            `affiliation`,
+            `serviceKey`,
+            `deptId`,
+            `salt`,
+            `type`,
+            `userState`
+        )
+        VALUES
+            (
+                #{loginName},
+                #{userName},
+                #{password},
+                0,
+                0,
+                #{mobilePhone},
+                #{email},
+                NOW(),
+                NOW(),
+                null,
+                0,
+                #{affiliation},
+                #{serviceKey},
+                #{deptId},
+                #{salt},
+                #{type},
+                1
+	    );
+    </insert>
+
+  <update id="editUser" parameterType="com.visionvera.remoteservice.bean.SysUserBean">
+        UPDATE t_sys_user
+            SET `loginName` =  #{loginName},
+            `userName` =  #{userName},
+            `mobilePhone` =  #{mobilePhone},
+            `email` = #{email},
+            `updatetime` = now(),
+            `affiliation` = #{affiliation},
+            `serviceKey` = #{serviceKey},
+            `deptId` = #{deptId},
+            `type` = #{type}
+            WHERE
+            `userId` = #{userId};
+    </update>
+  <update id="updateUserStateByUserId" parameterType="com.visionvera.remoteservice.bean.SysUserBean">
+        UPDATE t_sys_user
+        <set>
+        <if test="loginName != null">
+          `loginName` =  #{loginName},
+        </if>
+        <if test="userName != null">
+            `userName` =  #{userName},
+        </if>
+        <if test="mobilePhone != null">
+            `mobilePhone` =  #{mobilePhone},
+        </if>
+        <if test="email !=null">
+            `email` = #{email},
+        </if>
+
+        <if test="affiliation !=null">
+            `affiliation` = #{affiliation},
+        </if>
+        <if test="serviceKey !=null">
+            `serviceKey` = #{serviceKey},
+        </if>
+        <if test="deptId !=null">
+            `deptId` = #{deptId},
+        </if>
+        <if test="type !=null">
+            `type` = #{type},
+        </if>
+            `updatetime` = now(),
+        </set>
+        WHERE
+        `userId` = #{userId};
+        </update>
+
+  <select id="getAllMenuId" resultType="java.lang.Long">
+    SELECT DISTINCT m.permissionId
+    FROM t_sys_permission m
+    WHERE m.type IS NOT NULL
+  </select>
+
+  <select id="getMenuIdList" parameterType="java.lang.Integer" resultType="java.lang.Long">
+    SELECT DISTINCT rm.permissionId
+    FROM
+      t_sys_user_role_rel ur
+      LEFT JOIN t_sys_role_permission_rel rm ON ur.roleId = rm.roleId
+    WHERE
+      ur.userId = #{userId}
+  </select>
+
+  <insert id="addSysUserRoleRel">
+        INSERT INTO `t_sys_user_role_rel` (`userId`, `roleId` )
+            VALUES
+            ( #{userId}, #{roleId});
+    </insert>
+
+  <update id="updateUserState" parameterType="com.visionvera.remoteservice.bean.SysUserBean">
+        UPDATE `t_sys_user`
+            SET
+            `userState` = #{userState}
+            WHERE
+            `userId` = #{userId};
+    </update>
+
+  <update id="updateSysUserRoleRel">
+        UPDATE t_sys_user_role_rel SET  roleId  = #{roleId} WHERE userId = #{userId}
+    </update>
+
+  <update id="resetPswd" parameterType="com.visionvera.remoteservice.bean.SysUserBean">
+        UPDATE `t_sys_user`
+            SET
+            `password` = #{password}
+            WHERE
+            `userId` = #{userId};
+    </update>
+
+  <!-- 查询审批中心下得用户 -->
+  <select id="getUserIdsByServiceIds" resultType="Integer" >
+    SELECT
+    a.userId
+    FROM
+    t_sys_user AS a
+    WHERE
+    a.`userState` <![CDATA[ <> ]]> 0
+    and a.serviceKey in
+    <foreach collection="serviceKeys" open="(" close=")" item="serviceKey" separator=",">
+      #{serviceKey}
+    </foreach>
+  </select>
+
+  <!--根据部门id 查询用户id-->
+  <select id="selectUserIdByDeptId" resultType="Integer">
+    SELECT userId
+    FROM t_sys_user
+    WHERE deptId IN
+    <foreach collection="array" item="deptId" open="(" close=")" separator="," >
+      #{deptId}
+    </foreach>
+    AND `state` <![CDATA[ <> ]]> 0
+  </select>
+
+  <select id="getSysUserDetail" resultType="com.visionvera.remoteservice.bean.SysUserBean" parameterType="Integer">
+    SELECT
+    t.userId,
+    t.loginName,
+    t.userName,
+    t.`password`,
+    CASE
+    t.`userState`
+    WHEN 1 THEN
+    '可用'
+    WHEN 2 THEN
+    '不可用'
+    END AS userState,
+    t.mobilePhone,
+    t.email,
+    t.affiliation,
+    t.serviceKey,
+    t.deptId,
+    s.roleName,
+    s.roleId,
+    t.type,
+    c.serviceName,
+    c.type as serviceCenterType,
+    d.dept_name
+    FROM
+    t_sys_user t
+    LEFT JOIN t_sys_user_role_rel u ON t.userId = u.userId
+    LEFT JOIN t_sys_role s ON s.roleId = u.roleId
+    LEFT JOIN t_service_center c ON t.serviceKey = c.serviceKey
+    LEFT JOIN t_sys_dept d ON t.deptId = d.id
+    WHERE  t.userId = #{userId} and t.userState <![CDATA[ <> ]]> 0
+  </select>
+
+  <select id="getLoginUserInfo" parameterType="int" resultType="com.visionvera.remoteservice.bean.SysUserBean">
+    SELECT
+    t.userId,
+    t.loginName,
+    t.userName,
+    t.mobilePhone,
+    t.email,
+    t.affiliation,
+    t.serviceKey,
+    t.deptId,
+    s.roleName,
+    s.roleId,
+    t.type,
+    c.serviceName,
+    c.type as serviceCenterType,
+    d.dept_name as deptName,
+    c.parentKey
+    FROM
+    t_sys_user t
+    LEFT JOIN t_sys_user_role_rel u ON t.userId = u.userId
+    LEFT JOIN t_sys_role s ON s.roleId = u.roleId
+    LEFT JOIN t_service_center c ON t.serviceKey = c.serviceKey
+    LEFT JOIN t_sys_dept d ON t.deptId = d.id
+    WHERE  t.userId = #{userId}
+  </select>
+
+  <select id="getSysUserByLoginNameAndUserId"
+    resultType="com.visionvera.remoteservice.bean.SysUserBean">
+    SELECT
+            t.userId,
+            t.loginName,
+            t.userName,
+            t.`password`,
+            t.userState,
+            t.workState,
+            t.mobilePhone,
+            t.email,
+            t.affiliation,
+            t.serviceKey,
+            t.deptId,
+            s.roleName,
+            s.roleId,
+            t.type,
+            c.serviceName,
+            c.type as serviceCenterType,
+            d.dept_name as deptName,
+            t.salt
+          FROM
+            t_sys_user t
+            LEFT JOIN t_sys_user_role_rel u ON t.userId = u.userId
+            LEFT JOIN t_sys_role s ON s.roleId = u.roleId
+            LEFT JOIN t_service_center c ON t.serviceKey = c.serviceKey
+            LEFT JOIN t_sys_dept d ON t.deptId = d.id
+        WHERE  t.loginName = #{loginName} and t.userState <![CDATA[ <> ]]> 0
+  </select>
+  <select id="getUserListByServiceKey" resultType="com.visionvera.remoteservice.bean.SysUserBean">
+    SELECT
+    t.*
+    FROM t_sys_user t
+    WHERE t.userState <![CDATA[ > ]]> 0
+    and t.state = 1
+    and t.workState <![CDATA[ > ]]> 0
+    and t.type = 3
+  </select>
+  <select id="getUserByParam" parameterType="com.visionvera.remoteservice.bean.SysUserBean" resultType="com.visionvera.remoteservice.bean.SysUserBean">
+     SELECT
+		t.userId,
+        t.loginName,
+        t.userName,
+        t.`password`,
+        t.`state`,
+        t.workState,
+        t.mobilePhone,
+        t.email,
+        t.affiliation,
+        t.serviceKey,
+        t.deptId,
+        t.type
+      from t_sys_user t
+		<where>
+		<if test="state != null">
+     and  t.state =#{state}
+    </if>
+    <if test="userState != null">
+      and t.userState =#{userState}
+    </if>
+    <if test=" type != null">
+      and t.type = #{type}
+    </if>
+    <if test="userId != null">
+      and t.userId = #{userId}
+    </if>
+    <if test="workState != null and workState == 2">
+      and t.workState in (1,2)
+    </if>
+    <if test = "serviceKey != null">
+      and t.serviceKey = #{serviceKey}
+    </if>
+    <if test = "serviceKeys != null">
+      and t.serviceKey in
+      <foreach collection="serviceKeys" item="serviceKey" open="(" close=")" separator=",">
+        #{serviceKey}
+      </foreach>   
+    </if>
+
+    </where>
+  </select>
+  <select id="getUserByParamAndNoBusinessInfo" parameterType="com.visionvera.remoteservice.bean.SysUserBean" resultType="com.visionvera.remoteservice.bean.SysUserBean">
+    SELECT
+    t.userId,
+    t.loginName,
+    t.userName,
+    t.`password`,
+    t.`state`,
+    t.workState,
+    t.mobilePhone,
+    t.email,
+    t.affiliation,
+    t.serviceKey,
+    t.deptId
+    from t_sys_user t
+    WHERE
+    t.userId NOT IN (SELECT tbi.operator_id FROM t_business_info tbi WHERE  state = 2)
+    <if test="state != null">
+      and  t.state =#{state}
+    </if>
+    <if test="userState != null">
+      and t.userState =#{userState}
+    </if>
+    <if test=" type != null">
+      and t.type = #{type}
+    </if>
+    <if test="userId != null">
+      and t.userId = #{userId}
+    </if>
+    <if test="workState != null">
+      and t.workState = #{workState}
+    </if>
+    <if test="serviceKey != null">
+      and t.serviceKey = #{serviceKey}
+    </if>
+    <if test = "serviceKeys != null">
+      and t.serviceKey in
+      <foreach collection="serviceKeys" item="serviceKey" open="(" close=")" separator=",">
+        #{serviceKey}
+      </foreach>
+    </if>
+    GROUP BY t.userId
+  </select>
+
+
+  <select id="getUserByParamAndBusinessInfo" parameterType="com.visionvera.remoteservice.bean.SysUserBean" resultType="com.visionvera.remoteservice.bean.SysUserBean">
+    SELECT
+    t.userId,
+    t.loginName,
+    t.userName,
+    t.`password`,
+    t.`state`,
+    t.workState,
+    t.mobilePhone,
+    t.email,
+    t.affiliation,
+    t.serviceKey,
+    t.deptId
+    from t_sys_user t
+    WHERE
+    t.userId IN (SELECT tbi.operator_id FROM t_business_info tbi WHERE state = 2)
+    <if test="state != null">
+      and  t.state =#{state}
+    </if>
+    <if test="userState != null">
+      and t.userState =#{userState}
+    </if>
+    <if test=" type != null">
+      and t.type = #{type}
+    </if>
+    <if test="userId != null">
+      and t.userId = #{userId}
+    </if>
+    <if test="workState != null and workState == 2 ">
+      and (t.workState = 1 or t.workState = 2   )
+    </if>
+    <if test="serviceKey != null">
+      and t.serviceKey = #{serviceKey}
+    </if>
+    GROUP BY t.userId
+  </select>
+  <update id="updateSysUserState" >
+    update t_sys_user SET state  = 0,workState = 0 WHERE userState = 1
+  </update>
+  <select id="getUserByIds" resultType="com.visionvera.remoteservice.bean.SysUserBean">
+    SELECT
+    t.userId,
+    t.loginName,
+    t.userName,
+    t.`password`,
+    t.`state`,
+    t.workState,
+    t.mobilePhone,
+    t.email,
+    t.affiliation,
+    t.serviceKey,
+    t.deptId
+    from t_sys_user t
+    where t.userId in
+    <foreach collection="userIds" item="id" open="(" close=")" separator=",">
+      #{id}
+    </foreach>
+    and t.state = 1
+  </select>
+  <update id="updateSysUserStateByWebSocket" >
+    update t_sys_user SET state=#{state} WHERE userState = 1 and userId =#{userId}
+  </update>
+</mapper>

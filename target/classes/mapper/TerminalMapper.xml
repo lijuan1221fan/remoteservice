@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.visionvera.remoteservice.dao.TerminalDao">
+
+	<!--  查询终端号码 -->
+    <select id="getTerminalList" resultType="String" parameterType="String">
+         SELECT number FROM t_terminal 
+         where serviceKey = #{serviceKey} and `status` > -1
+    </select>
+    
+    <!-- 根据终端号码修改终端状态 -->
+	<update id="modifyTerminalStatusByNumber" parameterType="Map" >
+	      update t_terminal set status = #{status} where number = #{terminalNumber}
+	</update>
+	
+	<!-- 用户对应终端  -->
+	<select id="getTerminalListbyUserId" parameterType="Integer" resultType="com.visionvera.remoteservice.bean.TerminalBean">
+		SELECT 
+		a.terminalId ,
+		a.terminalName ,
+		a.number ,
+		a.ip ,
+		a.serviceKey ,
+		a.type ,
+		a.status ,
+		a.address ,
+		a.createTime ,
+		a.updateTime ,
+		a.version
+		FROM t_terminal a ,t_user_terminal_rel b
+		WHERE a.terminalId = b.terminalId
+		AND b.userId = #{userId}
+		AND a.`status` > -1
+	</select>
+	
+	<!-- 根据终端号查询终端 -->
+	<select id="getTerminalByNumber" resultType="com.visionvera.remoteservice.bean.TerminalBean" parameterType="String" >
+	    SELECT 
+		a.terminalId ,
+		a.terminalName ,
+		a.number ,
+		a.ip ,
+		a.serviceKey ,
+		a.type ,
+		a.status ,
+		a.address ,
+		a.createTime ,
+		a.updateTime ,
+		a.version
+		FROM t_terminal a  
+		WHERE a.number= #{number}
+	</select>	 
+	
+	<!-- 获取终端列表 -->
+	<select id="getTerminalListByMap" parameterType="Map" resultType="com.visionvera.remoteservice.bean.TerminalBean">
+	     SELECT a.terminalId , a.terminalName , a.number ,a.ip ,a.serviceKey ,a.type , a.`status` ,
+	            a.address ,a.createTime , a.updateTime ,a.version , b.serviceName
+		 FROM t_terminal a , t_service_center b
+		 <where>
+		   		AND a.serviceKey = b.serviceKey
+		 	<if test="terminalId != null ">
+		 		AND a.terminalId = #{terminalId}
+		 	</if>
+		 	<if test="terminalName != null and terminalName != ''  ">
+		 		AND a.terminalName LIKE CONCAT('%',#{terminalName},'%')
+		 	</if>
+		 	<if test="number != null and number != ''  ">
+		 		AND a.number LIKE CONCAT('%',#{number},'%')
+		 	</if>
+		 	<if test="serviceKey != null and serviceKey != '' ">
+		 		AND a.serviceKey = #{serviceKey}
+		 	</if>
+		 		and a.`status` > -2
+		 </where>
+	</select>
+	
+	<!-- 按状态筛选 -->
+	<select id="filtrateByState" parameterType="Map" resultType="Integer">
+		SELECT terminalId
+		FROM t_terminal
+		WHERE `status` > -2
+		AND `status` != #{state}
+		AND terminalId IN 
+		<foreach collection="terminalIdArray" item="terminalId" open="(" close=")" separator=",">
+			#{terminalId}
+		</foreach>
+	</select>
+ 
+ 	<!-- 删除终端  -->
+ 	<update id="deleteTerminal" >
+ 		update t_terminal 
+ 		set `status` = -2
+ 		where terminalId in
+ 		<foreach collection="list" item="terminalId" open="(" close=")" separator=",">
+			#{terminalId}
+		</foreach>
+ 	</update>
+ 	
+ 	<!-- 根据终端id 查询终端号码 -->
+ 	<select id="getNumberListById" resultType="String">
+ 	   select number
+ 	   from t_terminal
+ 	   where terminalId in
+ 		<foreach collection="list" item="terminalId" open="(" close=")" separator=",">
+			#{terminalId}
+		</foreach>
+ 	</select>
+ 	
+ 	<!-- 查询工作状态 -->
+ 	<select id="queryWorkStatus" resultType="int">
+		SELECT COUNT(terminalId)
+		FROM t_terminal
+		WHERE `status` = 1
+		AND terminalId IN
+		<foreach collection="array" item="terminalId" open="(" close=")" separator=",">
+		   #{terminalId}
+		</foreach>
+ 	</select>
+ 	
+ 	<!-- 是否存在关联 -->
+ 	<select id="whetherIsConnection" resultType="int">
+		SELECT COUNT(a.terminalId )
+		FROM t_terminal a ,t_user_terminal_rel b
+		WHERE a.terminalId = b.terminalId
+		AND a.`status` > -2
+		AND a.`status` != 1
+		AND a.terminalId IN
+ 		<foreach collection="array" item="terminalId" open="(" close=")" separator=",">
+		   #{terminalId}
+		</foreach>
+ 	</select>
+ 	
+ 	<!-- 删除关联-->
+ 	<delete id="deleteConnection">
+		DELETE FROM t_user_terminal_rel
+		WHERE terminalId IN
+		<foreach collection="list" item="terminalId" open="(" close=")" separator=",">
+		   #{terminalId}
+		</foreach>	
+ 	</delete>
+ 	
+ 	<!-- 判断终端号码是否重复 -->
+ 	<select id="checkoutNumber" resultType="int" parameterType="Map">
+		SELECT COUNT(terminalId)
+		FROM t_terminal
+		<where>
+			AND number = #{number}
+			AND `status` > -2 
+			<if test="terminalId != null ">
+				AND terminalId != #{terminalId}
+			</if>
+		</where>
+ 	</select>
+ 	<!-- 判读终端名称是否重复 -->
+ 	<select id="checkoutName" resultType="int" parameterType="Map">
+ 		SELECT COUNT(terminalId)
+		FROM t_terminal
+		<where>
+			AND terminalName = #{terminalName}
+			AND `status` > -2 
+			<if test="terminalId != null ">
+				AND terminalId != #{terminalId}
+			</if>
+		</where>
+ 	</select>
+ 
+ 	<!-- 添加终端 -->
+ 	<insert id="addTerminal" parameterType="com.visionvera.remoteservice.bean.TerminalBean">
+		INSERT INTO t_terminal
+		(terminalName, number, ip, serviceKey ,type , `status` , address )
+		VALUES
+		(#{terminalName} ,#{number} ,#{ip} ,#{serviceKey} ,#{type} ,#{status} ,#{address} )
+ 	</insert>
+ 	
+    <!-- 修改终端  -->
+    <update id="updateTerminal" parameterType="com.visionvera.remoteservice.bean.TerminalBean" >
+       update t_terminal 
+       <set>
+           <if test="terminalName != null and terminalName != '' ">
+               terminalName = #{terminalName} ,
+           </if>
+           <if test="number != null and number != '' ">
+           		number = #{number} ,
+           </if>
+           <if test="ip != null and ip != '' ">
+           		ip = #{ip} , 
+           </if>
+           <if test="serviceKey != null and serviceKey != '' ">
+           		serviceKey = #{serviceKey} ,
+           </if>
+           <if test="type != null  ">
+           		type = #{type} ,
+           </if>
+           <if test="status != null  ">
+           		`status` = #{status} ,
+           </if>
+           <if test="address != null and address != ''  ">
+           		address = #{address} ,
+           </if>
+           version = #{version} + 1
+       </set>
+      	   where version = #{version} and terminalId = #{terminalId}
+    </update>
+</mapper>

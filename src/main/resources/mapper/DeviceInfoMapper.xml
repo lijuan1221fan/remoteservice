@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.visionvera.remoteservice.dao.DeviceInfoDao">
+
+  <!-- 通用查询映射结果 -->
+  <resultMap id="BaseResultMap" type="com.visionvera.remoteservice.bean.DeviceInfo">
+    <id column="id" property="id" jdbcType="INTEGER"/>
+    <result column="service_key" property="serviceKey" jdbcType="VARCHAR"/>
+    <result column="private_name" property="privateName" jdbcType="VARCHAR"/>
+    <result column="device_name" property="deviceName" jdbcType="VARCHAR"/>
+    <result column="type" property="type" jdbcType="VARCHAR"/>
+    <result column="state" property="state" jdbcType="INTEGER"/>
+    <result column="ip" property="ip" jdbcType="VARCHAR"/>
+    <result column="port" property="port" jdbcType="INTEGER"/>
+    <result column="address" property="address" jdbcType="VARCHAR"/>
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+    <result column="remark" property="remark" jdbcType="VARCHAR"/>
+    <result column="password" property="password" jdbcType="VARCHAR"/>
+    <result column="device_code" property="deviceCode" jdbcType="VARCHAR"/>
+    <result column="device_ip" property="deviceIp" jdbcType="VARCHAR"/>
+    <result column="printer_type" property="printerType" jdbcType="VARCHAR"/>
+    <result column="serviceName" property="serviceName" jdbcType="VARCHAR"/>
+  </resultMap>
+  <!-- 通用查询结果列 -->
+  <sql id="Base_Column_List">
+    id, service_key, private_name, device_name, type, state, ip, port, address, create_time,
+    update_time, remark, password, device_code, device_ip, printer_type
+  </sql>
+
+  <select id="selectExistDevice" resultMap="BaseResultMap"
+    parameterType="com.visionvera.remoteservice.request.GetDeviceListRequest">
+    select
+    di.*, sc.serviceName
+    FROM
+    t_device_info di
+    left join
+    t_service_center sc
+    on sc.serviceKey=di.service_key
+    <where>
+      <if test="privateName != null and privateName!=''">
+        AND private_name LIKE '%' #{privateName,jdbcType=VARCHAR} '%'
+      </if>
+      <if test="type != null and type!=''">
+        AND di.type = #{type,jdbcType=VARCHAR}
+      </if>
+      <if test="serviceKey !=null and serviceKey !=''">
+        and di.service_key = #{serviceKey}
+      </if>
+      <if test="serviceKeys != null">
+        AND di.service_key in
+        <foreach collection="serviceKeys" item="serviceKey" open="(" close=")" separator="," >
+          #{serviceKey}
+        </foreach>
+      </if>
+      <if test="ids != null">
+        AND di.id in
+        <foreach collection="ids" item="id" open="(" close=")" separator="," >
+          #{id}
+        </foreach>
+      </if>
+      AND di.state <![CDATA[ <> ]]> 0
+    </where>
+
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+    select
+    d.*, sc.serviceName
+    from t_device_info d left join t_service_center sc on sc.serviceKey = d.service_key
+    where id = #{id,jdbcType=INTEGER} and d.state <![CDATA[ <> ]]> 0
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_device_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.visionvera.remoteservice.bean.DeviceInfo">
+    insert into t_device_info (id, service_key, private_name,
+                               device_name, type, state,
+                               ip, port, address,
+                               create_time, update_time, remark,
+                               password, device_code, device_ip,
+                               printer_type)
+    values (#{id,jdbcType=INTEGER}, #{serviceKey,jdbcType=VARCHAR}, #{privateName,jdbcType=VARCHAR},
+                                    #{deviceName,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR},
+                                    #{state,jdbcType=INTEGER},
+                                    #{ip,jdbcType=VARCHAR}, #{port,jdbcType=INTEGER},
+                                    #{address,jdbcType=VARCHAR},
+                                    #{createTime,jdbcType=TIMESTAMP},
+                                    #{updateTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR},
+            #{password,jdbcType=VARCHAR}, #{deviceCode,jdbcType=VARCHAR},
+            #{deviceIp,jdbcType=VARCHAR},
+            #{printerType,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.visionvera.remoteservice.bean.DeviceInfo"
+    useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO `t_device_info` (
+      `service_key`,
+      `private_name`,
+      `device_name`,
+      `type`,
+      `state`,
+      `ip`,
+      `port`,
+      `address`,
+      `create_time`,
+      `update_time`,
+      `remark`,
+      `printer_type`
+    )
+    VALUES
+      (
+        #{serviceKey},
+        #{privateName},
+        #{deviceName},
+        #{type},
+        #{state},
+        #{ip},
+        #{port},
+        #{address},
+        now(),
+        now(),
+        #{remark},
+        #{printerType}
+      );
+  </insert>
+
+  <update id="updateByPrimaryKeySelective"
+    parameterType="com.visionvera.remoteservice.bean.UpdateDeviceInfo">
+    update t_device_info
+    <set>
+      <if test="serviceKey != null">
+        service_key = #{serviceKey,jdbcType=VARCHAR},
+      </if>
+      <if test="privateName != null">
+        private_name = #{privateName,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceName != null">
+        device_name = #{deviceName,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null">
+        state = #{state,jdbcType=INTEGER},
+      </if>
+      <if test="ip != null">
+        ip = #{ip,jdbcType=VARCHAR},
+      </if>
+      <if test="port != null">
+        port = #{port,jdbcType=INTEGER},
+      </if>
+      <if test="address != null">
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="printerType != null">
+        printer_type = #{printerType,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.visionvera.remoteservice.bean.DeviceInfo">
+    update t_device_info
+    set service_key = #{serviceKey,jdbcType=VARCHAR},
+      private_name  = #{privateName,jdbcType=VARCHAR},
+      device_name   = #{deviceName,jdbcType=VARCHAR},
+      type          = #{type,jdbcType=VARCHAR},
+      state        = #{state,jdbcType=INTEGER},
+      ip            = #{ip,jdbcType=VARCHAR},
+      port          = #{port,jdbcType=INTEGER},
+      address       = #{address,jdbcType=VARCHAR},
+      update_time   = #{updateTime,jdbcType=TIMESTAMP},
+      remark        = #{remark,jdbcType=VARCHAR},
+      password      = #{password,jdbcType=VARCHAR},
+      device_code   = #{deviceCode,jdbcType=VARCHAR},
+      device_ip     = #{deviceIp,jdbcType=VARCHAR},
+      printer_type  = #{printerType,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByServiceKeyAndPrinterType" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List"/>
+    FROM t_device_info
+    WHERE
+    service_key = #{serviceKey}
+    and type = 3
+    and `state`<![CDATA[ <> ]]> 0
+    and printer_type = #{printerType}
+    limit 1
+  </select>
+  <!-- 删除设备信息 -->
+  <update id="deleteDeviceInfo">
+    <foreach collection="array" item="deviceId" separator=";">
+      update t_device_info
+      set state = 0
+      where id = #{deviceId}
+    </foreach>
+  </update>
+
+  <!-- 根据servicekey删除设备 -->
+  <delete id="deleteDeviceInfoByServiceIds">
+    delete from t_device_info
+    where service_key in
+    <foreach item="serviceKey" collection="list" open="(" separator="," close=")">
+      #{serviceKey}
+    </foreach>
+  </delete>
+
+  <select id="selectByServiceKeys" resultType="com.visionvera.remoteservice.bean.DeviceInfo">
+    select id,service_key,private_name,device_name,type,state,ip,port,address,printer_type,remark
+    from t_device_info where service_key in
+    <foreach item="serviceKey" collection="serviceKeys" open="(" separator="," close=")">
+      #{serviceKey}
+    </foreach>
+    and state <![CDATA[ <> ]]> 0
+  </select>
+
+  <select id="getAndroidByDeviceCode"
+    resultType="com.visionvera.remoteservice.bean.DeviceInfo">
+    select *
+    from t_device_info
+    where device_code = #{deviceCode};
+  </select>
+
+  <insert id="addAndroid" parameterType="com.visionvera.remoteservice.bean.DeviceInfo"
+    useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO `t_device_info` (
+      `service_key`,
+      `private_name`,
+      `device_name`,
+      `type`,
+      `state`,
+      `ip`,
+      `port`,
+      `address`,
+      `create_time`,
+      `password`,
+      `device_code`,
+      `device_ip`
+    )
+    VALUES
+      (
+        #{serviceKey},
+        #{privateName},
+        #{deviceName},
+        #{type},
+        #{state},
+        #{ip},
+        #{port},
+        #{address},
+        now(),
+        #{password},
+        #{deviceCode},
+        #{deviceIp}
+      );
+  </insert>
+</mapper>

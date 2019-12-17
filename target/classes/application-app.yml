@@ -1,0 +1,69 @@
+spring:
+  datasource:
+       druid:
+         #数据库访问地址
+         url: jdbc:mysql://172.16.140.150:3306/rs_app?serverTimezone=Asia/Shanghai&characterEncoding=UTF-8&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull
+         #数据库登录名
+         username: root
+         #数据库密码
+         password: Vv12345!
+         driver-class-name: com.mysql.jdbc.Driver
+         initial-size: 10
+         max-active: 100
+         min-idle: 10
+         max-wait: 60000
+         pool-prepared-statements: true
+         max-pool-prepared-statement-per-connection-size: 20
+         time-between-eviction-runs-millis: 60000
+         min-evictable-idle-time-millis: 300000
+         validation-query: SELECT 1 FROM DUAL
+         test-while-idle: true
+         test-on-borrow: false
+         test-on-return: false
+         stat-view-servlet:
+           enabled: true
+           url-pattern: /druid/*
+         filter:
+           stat:
+             log-slow-sql: true
+              merge-sql: false
+           wall:
+             config:
+               multi-statement-allow: true
+  redis:
+    #redis数据库
+    database: 13
+    #redis地址
+    host: 172.16.140.150
+    #redis端口
+    port: 6379
+    #rdis密码
+    password: 111111                  
+    timeout: 1800
+    jedis:
+      pool:
+        max-active: 8
+        max-wait: -1
+        max-idle: 8
+        min-idle: 0
+#系统维护开关  true/false
+maintenance:
+  time: true
+  cron: 0 0 2 * * ?
+  process: true
+  midday: 0 30 12 * * ?
+#开始业务等待时间发送短信
+sendSms:
+  sleep: 2
+  core-pool-size: 10
+  max-pool-size: 20
+#x86图片临时存储位置
+temp:
+  save:
+    path: X86/temp/pic
+    docpath: X86/temp/doc
+    downloadpath: X86/temp/download
+    datapath: X86/data
+# 12小时后过期
+token:
+  keepTime: 12
